@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/scanRate"
+        style="@style/set_text">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Mac"
+            android:textStyle="italic"
+            android:textSize="16sp"
+            />
+
+        <EditText
+            android:background="@drawable/edit_select"
+            android:singleLine="true"
+            android:id="@+id/mac"
+            android:layout_width="150dp"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        />
+    <RelativeLayout
+
+        style="@style/set_text">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="备注"
+            android:textStyle="italic"
+            android:textSize="16sp"
+            />
+
+        <EditText
+            android:background="@drawable/edit_select"
+            android:singleLine="true"
+            android:id="@+id/suspect"
+            android:layout_width="150dp"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        />
+  <!--  <RelativeLayout
+        android:id="@+id/Mac"
+        style="@style/set_text"
+        android:layout_height="280dp">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="案件概述"
+            android:textStyle="italic"
+            android:textSize="16sp"
+            />
+
+        <EditText
+            android:background="@drawable/edit_select"
+            android:id="@+id/caseOverview"
+            android:gravity="top"
+            android:layout_width="150dp"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="100dp"
+            android:ellipsize="end" />
+    </RelativeLayout>-->
+</LinearLayout>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/equipment"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="设备编号"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/equipment_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"
+                    />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/targetAp"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="布控目标"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/target_count"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/isSearch"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="布控警报"
+                    android:textStyle="bold"/>
+
+                <com.kyleduo.switchbutton.SwitchButton
+                    android:id="@+id/set_switch_isRing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"
+                    android:textColor="@drawable/switch_color"
+                    android:textSize="16dp"
+                    app:kswTextOff="off"
+                    app:kswTextOn="On"
+                    app:kswTintColor="@color/orange"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/scanChannel"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="扫描信道"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/channel_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/workStyle"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="工作模式"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/workStyle_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/set_track_channel"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="信道锁定"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/set_track_channel_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/urlRe"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="设备地址"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/url"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/task"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Task"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/ghz"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="频段"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/ghz_text"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="@color/gray"/>
+
+            <RelativeLayout
+                android:id="@+id/about"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="关于我们"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

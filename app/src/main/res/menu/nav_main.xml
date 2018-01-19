@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_AP"
+            android:title="A P列表 "
+            android:checked="true"
+            android:icon="@drawable/task" />
+        <item
+            android:id="@+id/nav_Mac"
+            android:title="终端列表 "
+            android:checked="true"
+            android:icon="@drawable/task"/>
+        <item
+            android:id="@+id/nav_set"
+            android:title="设  置"
+            android:checked="true"
+            android:icon="@drawable/set" />
+
+        <item
+            android:id="@+id/nav_login"
+            android:title="注  册"
+            android:checked="true"
+            android:icon="@drawable/login" />
+
+    </group>
+    <group>
+        <item
+            android:id="@+id/nav_about"
+            android:title="关于我们"
+            android:checked="true"
+            android:icon="@android:drawable/ic_menu_agenda" />
+    </group>
+</menu>

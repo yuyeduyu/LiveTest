@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.ascend.wangfeng.locationbyhand.view.activity.AnalyeActivity">
+<include layout="@layout/custom_toolbar"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:background="@color/AssistLine"/>
+    <Button
+        android:id="@+id/btn"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加数据源"
+        android:paddingLeft="16dp"
+        android:gravity="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:text="查询结果:"
+        android:paddingLeft="16dp"
+        android:gravity="center_vertical"
+        android:background="@color/gray"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"/>
+</LinearLayout>

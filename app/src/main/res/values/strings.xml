@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name" translatable="false">无线雷达-C(ble)</string>
+    <string name="open" translatable="false">open</string>
+    <string name="close" translatable="false">close</string>
+    <string name="main_title_frame_aplist" translatable="false">A P列表</string>
+    <string name="main_title_frame_maclist" translatable="false">终端列表</string>
+    <string name="main_title_frame_set" translatable="false">设  置</string>
+    <string name="chart" translatable="false">图表</string>
+    <string name="activity_target_mac_error" translatable="false">Mac号格式错误</string>
+    <string name="fun_unfinish" translatable="false">未开放</string>
+
+
+    <!--aboutActivity-->
+    <string name="version_name" translatable="false">未知</string>
+    <string name="version" translatable="false">当前版本 ：</string>
+
+    <string name="ap_name" translatable="false">名称 &#160; &#160; &#160; :&#160; </string>
+    <string name="ap_mac" translatable="false">Mac  &#160; &#160; &#160; :&#160; </string>
+    <string name="ap_signal" translatable="false">信号强度 :&#160; </string>
+    <string name="ap_ltime" translatable="false">更新时间 :&#160; </string>
+    <string name="sta_AP" translatable="false">连接AP  &#160;  : &#160; </string>
+    <string name="ap_mac_null">00:00:00:00:00:00</string>
+    <string name="ble_support_no">不支持蓝牙</string>
+    <string name="ble_connected">连接成功</string>
+    <string name="ble_disconnected">断开连接</string>
+    <string name="hint_change_ghz">正在切换,请勿重复操作</string>
+    <string name="hint_change_58">切换至5.8G,耗时较长,请耐心等待一至两分钟</string>
+    <string name="hint_change_24">正在切换至2.4G</string>
+    <string name="hint_disconnect">连接已断开</string>
+</resources>

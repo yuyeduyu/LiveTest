@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/scanRate"
+        style="@style/set_text">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="设备ip"
+            android:textStyle="italic"
+            android:textSize="16sp"
+            />
+
+        <EditText
+            android:background="@drawable/edit_select"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            android:id="@+id/url"
+            android:layout_width="150dp"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        />
+</LinearLayout>

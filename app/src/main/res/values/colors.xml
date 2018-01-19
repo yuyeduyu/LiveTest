@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#03A9F4</color>
+    <color name="primary_dark">#0288D1</color>
+    <color name="primary_light">#B3E5FC</color>
+    <color name="accent">#ffff00</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
+    <color name="gray">#56757575</color>
+    <color name="tgray">#1c757575</color>
+    <color name="white">#FFFFFF</color>
+    <color name="bg_gray">#eaeaea</color>
+    <!--雷达背景颜色-->
+    <color name="radarBackColor">#FDEDCF</color>
+    <!--辅助线颜色-->
+    <color name="AssistLine">#E9DDDC</color>
+    <color name="mytestcolor">#56566DFF</color>
+    <color name="SignalLevelLine">#566DFF</color>
+    <color name="black">#000000</color>
+    <color name="red">#ff0000</color>
+    <color name="blue">#0288D1</color>
+    <color name="blue_tran_80">#cc75b7da</color>
+    <color name="blue_tran_60">#770288D1</color>
+    <color name="blue_tran_40">#660288D1</color>
+    <color name="blue_tran_30">#440288D1</color>
+    <color name="blue_tran_20">#220288D1</color>
+    <color name="blue_tran_0">#000288D1</color>
+    <color name="yellow">#FFC107</color>
+    <color name="orange">#e17824</color>
+    <color name="green">#3ece59</color>
+    <color name="green_tran_30">#333ece59</color>
+    <color name="green_tran">#003ece59</color>
+    <color name="purple">#973466</color>
+    <color name="channel_number">#00BCD4</color>
+
+    <!--界面颜色-->
+    <color name="distance_near">#66fd66</color>
+    <color name="distance_middle">#33cb33</color>
+    <color name="distance_far">#007f01</color>
+    <color name="selected">#fd0001</color>
+    <color name="ap">#000001</color>
+    <color name="target">#fdfd01</color>
+    <color name="sta">#a5a5a5</color>
+</resources>
