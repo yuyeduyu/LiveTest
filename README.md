@@ -1,5 +1,5 @@
 #手持设备 ![](app/src/main/res/drawable/ascend.png)
- <div><img src="ahttps://192.168.168.19:8443/!/#ascend/view/head/web/wechat/android/app/src/main/res/drawable/ascend.png"width="270" height="486"/></div>
+ <div><img src="/src/main/res/drawable/ascend.png"width="270" height="486"/></div>
 
 #### v1.1.2(code:4)
 * 6/23 重新发布 ,修复部分手机打不开问题
