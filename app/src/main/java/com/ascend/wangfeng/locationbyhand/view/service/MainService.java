@@ -119,7 +119,12 @@ public class MainService extends Service implements MainServiceContract.View {
                 if (MyApplication.getIsDataRun()) {
                     MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
                     if (mLock) {
-                        event.setData("END");
+                        // 发送 信道,防止锁定失败
+                        if (MyApplication.mGhz == Ghz.G24) {
+                            event.setData("CHANNEL:" + mChannel);
+                        } else {
+                            event.setData("CHANNEL:" + mChannel5);
+                        }
                     } else {
                         if (MyApplication.mGhz == Ghz.G24) {
                             event.setData("CHANNEL:" + mChannel);
