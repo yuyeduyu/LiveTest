@@ -34,6 +34,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.MacData;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ScanEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.ble.BluetoothLeClass;
 import com.ascend.wangfeng.locationbyhand.util.ble.Utils;
 
@@ -325,6 +326,14 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     RxBus.getDefault().post(new GhzEvent(Ghz.G58));
                 }
                 break;
+            case 6://set ap's name success
+                String password = (String)SharedPreferencesUtils.getParam(MyApplication.mContext,
+                        "pa_ap_password","");
+                sendData("PASSWD:" + password);
+                break;
+            case 7: // set ap's password success
+                Toast.makeText(this, "set password success", Toast.LENGTH_SHORT).show();
+                break;
 
         }
     }
@@ -370,6 +379,19 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     ap.setSignal(formatInt(elements[4]));
                     ap.setLtime(time);
                     aps.add(ap);
+                    break;
+                case 3:// 虚拟身份
+                    Integer type = formatInt(elements[1]);
+                    String mac = elements[2];
+                    String identity = elements[4];
+                    for (int j = 0; j < stas.size(); j++) {
+                        if (stas.get(j).equals(mac)){
+                            stas.get(j).addIdentity(type,identity);
+                            break;
+                        }
+                    }
+                    break;
+                default:
                     break;
             }
         }

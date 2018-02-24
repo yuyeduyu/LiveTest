@@ -2,12 +2,15 @@ package com.ascend.wangfeng.locationbyhand.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 /**
  * Created by fengye on 2017/3/14.
  * email 1040441325@qq.com
  */
 
-public class StaVo implements Comparable<StaVo> {
+public class StaVo implements Comparable<StaVo>,Serializable{
 
     /**
      * mac : 84:78:8B:BF:B5:83
@@ -35,6 +38,28 @@ public class StaVo implements Comparable<StaVo> {
     private long ltime;
     private boolean tag;
     private String note;
+
+    public HashMap<Integer, String> getIdentities() {
+        return identities;
+    }
+
+    public void setIdentities(HashMap<Integer, String> identities) {
+        this.identities = identities;
+    }
+
+    public void addIdentity(Integer type, String identity){
+        if (this.identities == null){
+            this.identities = new HashMap<>();
+        }
+        this.identities.put(type,identity);
+    }
+    public void addIdentities(HashMap<Integer, String> identities){
+        if (this.identities == null){
+            this.identities = new HashMap<>();
+        }
+        this.identities.putAll(identities);
+    }
+    private HashMap<Integer,String> identities;
 
     public String getMac() {
         return mac;

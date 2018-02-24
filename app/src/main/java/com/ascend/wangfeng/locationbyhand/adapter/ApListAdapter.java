@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
 
@@ -56,7 +57,11 @@ public class ApListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
         SimpleDateFormat format =  new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
         holder.time.setText(time + "");
-
+        if (Config.getApPasswordMac()!=null&& Config.getApPasswordMac().equals(data.getBssid())){
+            holder.mShowPasswordImg.setVisibility(View.VISIBLE);
+        }else {
+            holder.mShowPasswordImg.setVisibility(View.GONE);
+        }
     }
 
     @Override

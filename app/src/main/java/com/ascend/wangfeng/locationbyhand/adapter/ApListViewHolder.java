@@ -21,8 +21,10 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
     TextView signal;
     TextView time;
     LinearLayout mLayout;
+    LinearLayout mVIdLayout;
     OnItemClickLisener mClickLisener;
     OnItemClickLisener mLongClickLisener;
+    ImageView mShowPasswordImg;
 
     public ApListViewHolder(View itemView,OnItemClickLisener clickLisener,OnItemClickLisener longClickLisener) {
         super(itemView);
@@ -32,6 +34,8 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
         signal =(TextView)itemView.findViewById(R.id.signal);
         time =(TextView)itemView.findViewById(R.id.time);
         mLayout = (LinearLayout) itemView.findViewById(R.id.item_scan);
+        mVIdLayout = (LinearLayout) itemView.findViewById(R.id.v_id);
+        mShowPasswordImg = (ImageView) itemView.findViewById(R.id.img_show_password);
         this.mClickLisener=clickLisener;
         this.mLongClickLisener =longClickLisener;
         itemView.setOnClickListener(this);

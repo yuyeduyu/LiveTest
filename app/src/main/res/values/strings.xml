@@ -27,4 +27,5 @@
     <string name="hint_change_58">切换至5.8G,耗时较长,请耐心等待一至两分钟</string>
     <string name="hint_change_24">正在切换至2.4G</string>
     <string name="hint_disconnect">连接已断开</string>
+    <string name="un_set_password">未设置密码</string>
 </resources>

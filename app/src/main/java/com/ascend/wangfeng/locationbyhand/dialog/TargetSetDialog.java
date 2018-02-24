@@ -29,7 +29,7 @@ import rx.schedulers.Schedulers;
 public class TargetSetDialog {
     private static final String TAG = "TargetSetDialog";
 
-    public static void showDialog(AppCompatActivity activity, final NoteVo noteVo, final IShowView view) {
+    public static void showDialog(final AppCompatActivity activity, final NoteVo noteVo, final IShowView view) {
         //添加布控目标；
         final View layout = activity.getLayoutInflater().inflate(R.layout.dialog_targetactivity
                 , null);
@@ -56,10 +56,49 @@ public class TargetSetDialog {
                         delMac(macStr, view);
                     }
                 })
-                .setNeutralButton("忽略", null)
+                .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        showSetPasswordDialog(activity, noteVo, view);
+                    }
+                })
                 .create().show();
     }
+    public static void showSetPasswordDialog(final AppCompatActivity activity, NoteVo apVo, final IShowView view) {
+        final View layout = activity.getLayoutInflater().inflate(R.layout.dialog_ap_password
+                , null);
 
+        final EditText mac = (EditText) layout.findViewById(R.id.edit_mac);
+        final EditText name = (EditText) layout.findViewById(R.id.edit_name);
+        final EditText password = (EditText) layout.findViewById(R.id.edit_password);
+        if (apVo != null) {
+            mac.setText(apVo.getMac());
+            name.setText(apVo.getName());
+        }
+        new AlertDialog.Builder(activity).setTitle("设置密码")
+                .setView(layout)
+                .setPositiveButton("添加", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        String nameStr = name.getText().toString();
+                        String macStr = mac.getText().toString() + "";
+                        String passwordStr = password.getText().toString();
+                        Config.setApPassword(macStr,nameStr,passwordStr);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        String macStr = mac.getText().toString() + "";
+                        if (macStr.equals(Config.getApPasswordMac())) {
+                          Config.clearApPassword();
+                        } else {
+                            view.show(0,activity.getString(R.string.un_set_password));
+                        }
+                    }
+                })
+                .create().show();
+    }
     private static void addMac(String mac, String note, final IShowView view) {
         NoteDoDeal deal = new NoteDoDeal(MyApplication.getmNoteDos());
         NoteDo noteDo = new NoteDo();

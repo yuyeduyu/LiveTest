@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.TabMainAdapter;
@@ -81,6 +82,8 @@ public class MainActivity extends BaseActivity {
                     public void onNext(ConnectedEvent event) {
                         if (event.isConnected()) {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+                            //重载ap设置的密码
+                            Config.reLoadApPassword();
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
                         }

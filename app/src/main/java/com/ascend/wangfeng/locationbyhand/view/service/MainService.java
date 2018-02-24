@@ -34,6 +34,7 @@ import com.ascend.wangfeng.locationbyhand.util.BellandShake;
 import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.MatchMac;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
+import com.ascend.wangfeng.locationbyhand.util.NumberUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,8 @@ public class MainService extends Service implements MainServiceContract.View {
     public static final int CHANNEL_RATE = 5;
     public static final int CHANNEL_RATE_5G = 1;
     public static final int DATA_RATE = 2000;
-    public static final int SINGAL = -60;//信号轻度阈值
+    public static final int SINGAL = 20;//信号强度差值阈值
+    public static final int DEFAULT_SINGAL = -111;// 默认信号强度
     private final String TAG = getClass().getCanonicalName();
     private MainServicePresenterImpl mPresenter;
     private int saveCount;//计数器
@@ -154,13 +156,18 @@ public class MainService extends Service implements MainServiceContract.View {
                         } else {
                             saveCount++;
                         }*/
-                        saveToSqlite(data);
-                        maintainData(data);
-                        checkRing();
-                        //发送数据
-                        updateData(mApVos, mStaVos);
-                        toLineData();
-                        toListData();
+                        try {
+                            saveToSqlite(data);
+                            maintainData(data);
+                            checkRing();
+                            //发送数据
+                            updateData(mApVos, mStaVos);
+                            toLineData();
+                            toListData();
+                        }catch (Exception e){
+                            Log.e(TAG, "onNext: "+e.getMessage() );
+                        }
+
 
 
                     }
@@ -301,8 +308,9 @@ public class MainService extends Service implements MainServiceContract.View {
             for (int j = 0; j < mApVos.size(); j++) {
                 if (apVos.get(i).getBssid().equals(mApVos.get(j).getBssid())) {
                     Log.i(TAG, "maintainData: ap" + apVos.get(i).getBssid());
-                    if (apVos.get(i).getSignal() < SINGAL) {//信号强度小于60,信道不改变
-                        // 改变 新数据的channel,然后用新数据覆盖旧数据
+                    // 信道处理
+                    if (!NumberUtil.muchLarger(apVos.get(i).getSignal(),mApVos.get(j).getSignal(),SINGAL)) {//信号强度差值不大于20
+                        // 使用旧数据的信道
                         apVos.get(i).setChannel(mApVos.get(j).getChannel());
                     }
                     mApVos.set(j, apVos.get(i));
@@ -327,6 +335,20 @@ public class MainService extends Service implements MainServiceContract.View {
         for (int i = staVos.size() - 1; i >= 0; i--) {
             for (int j = 0; j < mStaVos.size(); j++) {
                 if (staVos.get(i).getMac().equals(mStaVos.get(j).getMac())) {
+                    // 信号强度处理
+                    if (staVos.get(i).getSignal() == DEFAULT_SINGAL){
+                        // 若为默认值,则使用上次采集的信号强度
+                        staVos.get(i).setSignal(mStaVos.get(j).getSignal());
+                    }
+                    // 连接关系处理
+                    if (staVos.get(i).getApmac().equals(NOMAC)){
+                        staVos.get(i).setApmac(mStaVos.get(j).getApmac());
+                    }
+                    // 虚拟身份保存
+                    if (mStaVos.get(j).getIdentities()!=null&&mStaVos.get(j).getIdentities().size()>0){
+                        staVos.get(i).addIdentities(mStaVos.get(j).getIdentities());
+                    }
+
                     mStaVos.set(j, staVos.get(i));
                     staVos.remove(i);
                     break;
