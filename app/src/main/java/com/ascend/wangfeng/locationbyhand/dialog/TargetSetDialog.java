@@ -56,12 +56,13 @@ public class TargetSetDialog {
                         delMac(macStr, view);
                     }
                 })
-                .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
+                // 暂不使用虚拟身份功能
+              /*  .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
                         showSetPasswordDialog(activity, noteVo, view);
                     }
-                })
+                })*/
                 .create().show();
     }
     public static void showSetPasswordDialog(final AppCompatActivity activity, NoteVo apVo, final IShowView view) {
@@ -86,7 +87,7 @@ public class TargetSetDialog {
                         Config.setApPassword(macStr,nameStr,passwordStr);
                     }
                 })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                .setNegativeButton("删除", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
                         String macStr = mac.getText().toString() + "";

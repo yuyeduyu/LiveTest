@@ -93,7 +93,7 @@
 
 ### 2018/3/12
 * bug: 断开后无法自动重连,(cause:在重连操作前,在子线程调用Toast 方法)
-
+* 隐藏虚拟身份功能
 ***
 ### Question
 * 未注册时,报错,fatal Exception thrown on Scheduler.Worker thread.(已处理)
