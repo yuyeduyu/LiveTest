@@ -67,6 +67,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     private Runnable mScanRunable;
     private Handler mScanHandle;
     private String adress;//当前连接的adress
+    private Handler mConnectHandler;
+    private java.lang.Runnable mConnectRunable;
 
 
     @Nullable
@@ -105,6 +107,16 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             @Override
             public void run() {
                 stopScan();
+            }
+        };
+        mConnectHandler = new Handler();
+        mConnectRunable = new Runnable() {
+            @Override
+            public void run() {
+                if (mBLE != null && adress != null){
+                    mBLE.connect(adress);
+                    mConnectHandler.postDelayed(mConnectRunable,2000);
+                }
             }
         };
 
@@ -184,6 +196,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     /**
      * 弹出重连窗口
      */
+    @Deprecated
     private void alert() {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
@@ -218,14 +231,16 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     public void onConnect(BluetoothGatt gatt) {
         mConnected = true;
         RxBus.getDefault().post(new ConnectedEvent(true));
+        mConnectHandler.removeCallbacks(mConnectRunable);
         toast("连接成功");
     }
 
     private void toast(final String message) {
-        Handler handler = new Handler(Looper.getMainLooper());
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             public void run() {
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                handler.removeCallbacks(this);
             }
         });
     }
@@ -234,10 +249,12 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     public void onDisconnect(BluetoothGatt gatt) {
         mConnected = false;
         gattCharacteristic =null;
-        Toast.makeText(BleService.this, R.string.hint_disconnect, Toast.LENGTH_SHORT).show();
+        toast(getString(R.string.hint_disconnect));
+
         // when diconnected, reconnect
         if (adress!= null) {
             mBLE.connect(adress);
+           // mConnectHandler.post(mConnectRunable);
         }
         RxBus.getDefault().post(new ConnectedEvent(false));
     }
@@ -475,4 +492,10 @@ private int formatInt(String value){
     return result;
 }
 
+    @Override
+    public void onDestroy() {
+        mScanHandle.removeCallbacks(mScanRunable);
+        mConnectHandler.removeCallbacks(mConnectRunable);
+        super.onDestroy();
+    }
 }

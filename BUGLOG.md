@@ -91,6 +91,9 @@
 * AP-MAC处理: 若apMac不存在("00:00:00:00:00:00"),则使用之前的AP-MAC;
 * add virtualIdentity function
 
+### 2018/3/12
+* bug: 断开后无法自动重连,(cause:在重连操作前,在子线程调用Toast 方法)
+
 ***
 ### Question
 * 未注册时,报错,fatal Exception thrown on Scheduler.Worker thread.(已处理)

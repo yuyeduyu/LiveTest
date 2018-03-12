@@ -11,7 +11,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 13
-        versionName "2.1.1"
+        versionName "2.1.2--beta"
     }
     buildTypes {
         release {
@@ -26,7 +26,6 @@ buildscript {
         mavenCentral()
     }
 }
-
 greendao {
     schemaVersion 3
     daoPackage 'com.anye.greendao.gen'
