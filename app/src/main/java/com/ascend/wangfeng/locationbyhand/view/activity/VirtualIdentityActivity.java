@@ -32,7 +32,7 @@ public class VirtualIdentityActivity extends AppCompatActivity {
     private TitleAdapter titleAdapter;
     private VirtualIdentityAdapter adapter;
     private ArrayList<MapBean> mIndentities;
-    private ArrayList<Object> keyValues;
+    private ArrayList<MapBean> keyValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class VirtualIdentityActivity extends AppCompatActivity {
         setContentView(R.layout.activity_virtual_identity);
         ButterKnife.bind(this);
         initData();
+        initView();
     }
 
     private void initData() {
@@ -47,12 +48,14 @@ public class VirtualIdentityActivity extends AppCompatActivity {
         StaVo staVo = (StaVo) bundle.getSerializable("sta");
         mIndentities = MapUtil.toList(staVo.getIdentities());
         adapter = new VirtualIdentityAdapter();
+        adapter.setIdentities(mIndentities);
         titleAdapter = new TitleAdapter();
         keyValues = new ArrayList<>();
         keyValues.add(new MapBean("目标MAC", staVo.getMac()));
         keyValues.add(new MapBean("连接AP", staVo.getApmac()));
         keyValues.add(new MapBean("AP-MAC", staVo.getEssid()));
         keyValues.add(new MapBean("采集时间", TimeUtil.getTime(staVo.getLtime())));
+        titleAdapter.setKeyValues(keyValues);
     }
     private void initView() {
         mToolbar.setTitle("虚拟身份");

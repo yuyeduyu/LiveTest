@@ -44,6 +44,7 @@ public class Config {
      * 清空密码
      */
     public static void clearApPassword(){
+
         SharedPreferencesUtils.setParam(MyApplication.mContext,"pa_ap_mac","");
         SharedPreferencesUtils.setParam(MyApplication.mContext,"pa_ap_name","");
         SharedPreferencesUtils.setParam(MyApplication.mContext,"pa_ap_password","");;

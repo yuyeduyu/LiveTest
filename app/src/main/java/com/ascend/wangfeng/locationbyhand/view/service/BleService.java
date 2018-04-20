@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
@@ -42,6 +43,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by fengye on 2017/8/10.
@@ -61,7 +65,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     private BluetoothAdapter mBleAdapter;
     private BluetoothLeClass mBLE;
     private boolean mIsScan;//是否正在扫描BLE
-    public static boolean  mConnected;//是否处于连接中
+    public static boolean mConnected;//是否处于连接中
     private BluetoothGattCharacteristic gattCharacteristic;
     private List<Byte> mList = new ArrayList<>();
     private Runnable mScanRunable;
@@ -69,6 +73,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     private String adress;//当前连接的adress
     private Handler mConnectHandler;
     private java.lang.Runnable mConnectRunable;
+
+    private LinkedBlockingQueue<String> mStringLinkedBlockingQueue = new LinkedBlockingQueue();
 
 
     @Nullable
@@ -83,9 +89,31 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         initBle();
         initScan();
         initCMD();
+        initWriteThread();
         //initTest();
         //scanDevice(true);
         //mBLE.connect(address);
+    }
+
+    // 初始化写线程
+    private void initWriteThread() {
+        ExecutorService pool = Executors.newFixedThreadPool(1);
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (gattCharacteristic != null && !mStringLinkedBlockingQueue.isEmpty()) {
+                        gattCharacteristic.setValue(mStringLinkedBlockingQueue.poll());
+                        mBLE.writeCharacteristic(gattCharacteristic);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void initTest() {//发送测试数据
@@ -113,9 +141,9 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         mConnectRunable = new Runnable() {
             @Override
             public void run() {
-                if (mBLE != null && adress != null){
+                if (mBLE != null && adress != null) {
                     mBLE.connect(adress);
-                    mConnectHandler.postDelayed(mConnectRunable,2000);
+                    mConnectHandler.postDelayed(mConnectRunable, 2000);
                 }
             }
         };
@@ -138,7 +166,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                                 // before connect ,clear connected
                                 adress = null;
                                 mBLE.disconnect();
-                                adress=event.getDevice().getAddress();
+                                adress = event.getDevice().getAddress();
                                 mBLE.connect(adress);
                                 break;
                             case MessageEvent.SEND_DATA:
@@ -248,13 +276,13 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     @Override
     public void onDisconnect(BluetoothGatt gatt) {
         mConnected = false;
-        gattCharacteristic =null;
+        gattCharacteristic = null;
         toast(getString(R.string.hint_disconnect));
 
         // when diconnected, reconnect
-        if (adress!= null) {
+        if (adress != null) {
             mBLE.connect(adress);
-           // mConnectHandler.post(mConnectRunable);
+            // mConnectHandler.post(mConnectRunable);
         }
         RxBus.getDefault().post(new ConnectedEvent(false));
     }
@@ -270,13 +298,13 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             //byte数组,包装类,转化集合;组合
             try {
                 String testdata = new String(characteristic.getValue(), "UTF-8");
-                Log.i(TAG, "formBLE: "+ testdata);
+                Log.i(TAG, "formBLE: " + testdata);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
             byte[] bytes = characteristic.getValue();
             Byte[] bytes1 = new Byte[bytes.length];
-                Log.i(TAG, "onCharacteristicRead: "+mList.toString());
+            Log.i(TAG, "onCharacteristicRead: " + mList.toString());
             for (int i = 0; i < bytes.length; i++) {
                 bytes1[i] = bytes[i];
             }
@@ -304,10 +332,9 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            if (request == null||request.length()<=0) return;
+            if (request == null || request.length() <= 0) return;
             format(request);//处理数据并发送
-            Log.i(TAG, "onCharacteristicAfte: "+request);
-
+            Log.i(TAG, "onCharacteristicAfte: " + request);
         }
     }
 
@@ -317,17 +344,17 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         switch (a) {
             case 1://sta
                 Log.i(TAG, "case: 1");
-                MacData data=collectMac(request);
+                MacData data = collectMac(request);
                 RxBus.getDefault().post(data);
                 break;
             case 3://电量
-               int vol = getVol(request);
+                int vol = getVol(request);
                 RxBus.getDefault().post(new VolEvent(vol));
                 Log.i(TAG, "case: 3");
                 break;
             case 4://编号
-                String num =getNumber(request);
-                MyApplication.mDevicdID= num;
+                String num = getNumber(request);
+                MyApplication.mDevicdID = num;
                 //获取编号后,获取频段
                 sendData("GETMOD");
                 Log.i(TAG, "case: 4");
@@ -335,24 +362,61 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             case 5://频段
                 Integer ghz = getGhz(request);
                 MyApplication.setIsDataRun(true);
-                if (ghz ==1){
+                if (ghz == 1) {
                     MyApplication.mGhz = Ghz.G24;
                     RxBus.getDefault().post(new GhzEvent(Ghz.G24));
-                }else {
+                } else {
                     MyApplication.mGhz = Ghz.G58;
                     RxBus.getDefault().post(new GhzEvent(Ghz.G58));
                 }
                 break;
             case 6://set ap's name success
-                String password = (String)SharedPreferencesUtils.getParam(MyApplication.mContext,
-                        "pa_ap_password","");
-                sendData("PASSWD:" + password);
+                if(isApNameSuccess(request)){
+                    String password = (String) SharedPreferencesUtils.getParam(MyApplication.mContext,
+                            "pa_ap_password", "");
+                    sendData("PASSWD:" + password);
+                }else {
+                    Config.clearApPassword();
+                    toast(getResources().getString(R.string.set_passwor_error));
+                }
                 break;
             case 7: // set ap's password success
-                Toast.makeText(this, "set password success", Toast.LENGTH_SHORT).show();
+                if(isApPasswordSuccess(request)){
+                    toast(getResources().getString(R.string.set_password_success));
+                }else {
+                    Config.clearApPassword();
+                    toast(getResources().getString(R.string.set_password_success));
+                }
+                break;
+            case 8:
+                toast(getResources().getString(R.string.delte_password));
                 break;
 
         }
+    }
+
+    private boolean isApPasswordSuccess(String request) {
+        String[] rows = request.split(SEPARATOR_ROW);
+        if (rows.length>1){
+            String[] eles = rows[1].split(SEPARATOR_ELEMENT);
+            String result = eles[1];
+            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext,"pa_ap_password",""))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isApNameSuccess(String request) {
+        String[] rows = request.split(SEPARATOR_ROW);
+        if (rows.length>1){
+            String[] eles = rows[1].split(SEPARATOR_ELEMENT);
+            String result = eles[1];
+            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext,"pa_ap_name",""))){
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getNumber(String request) {
@@ -362,6 +426,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         String num = elements[1];
         return num;
     }
+
     private Integer getGhz(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
         //第二行数据
@@ -402,8 +467,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     String mac = elements[2];
                     String identity = elements[4];
                     for (int j = 0; j < stas.size(); j++) {
-                        if (stas.get(j).equals(mac)){
-                            stas.get(j).addIdentity(type,identity);
+                        if (stas.get(j).getMac().equals(mac)) {
+                            stas.get(j).addIdentity(type, identity);
                             break;
                         }
                     }
@@ -412,8 +477,9 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     break;
             }
         }
-        return new MacData(aps,stas);
+        return new MacData(aps, stas);
     }
+
     public int getVol(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
         //第二行数据
@@ -476,21 +542,23 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     }
 
     private void sendData(String value) {
-        Log.i(TAG, "sendData: "+value);
-        if (gattCharacteristic != null) {
+        Log.i(TAG, "sendData: " + value);
+        mStringLinkedBlockingQueue.offer(value);
+       /* if (gattCharacteristic != null) {
             gattCharacteristic.setValue(value);
             mBLE.writeCharacteristic(gattCharacteristic);
+        }*/
+    }
+
+    private int formatInt(String value) {
+        int result = 0;
+        try {
+            result = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "formatInt Error: " + value);
         }
+        return result;
     }
-private int formatInt(String value){
-    int result = 0;
-    try {
-        result = Integer.parseInt(value);
-    }catch (NumberFormatException e){
-        Log.e(TAG, "formatInt Error: "+value);
-    }
-    return result;
-}
 
     @Override
     public void onDestroy() {

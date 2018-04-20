@@ -16,6 +16,8 @@ import com.ascend.wangfeng.locationbyhand.bean.AlarmMacListDo;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.NoteVo;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
+import com.ascend.wangfeng.locationbyhand.event.RxBus;
+import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -56,13 +58,13 @@ public class TargetSetDialog {
                         delMac(macStr, view);
                     }
                 })
-                // 暂不使用虚拟身份功能
-              /*  .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
+
+                .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
                         showSetPasswordDialog(activity, noteVo, view);
                     }
-                })*/
+                })
                 .create().show();
     }
     public static void showSetPasswordDialog(final AppCompatActivity activity, NoteVo apVo, final IShowView view) {
@@ -92,6 +94,9 @@ public class TargetSetDialog {
                     public void onClick(DialogInterface anInterface, int i) {
                         String macStr = mac.getText().toString() + "";
                         if (macStr.equals(Config.getApPasswordMac())) {
+                            MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+                            event.setData("RMESSID");
+                            RxBus.getDefault().post(event);
                           Config.clearApPassword();
                         } else {
                             view.show(0,activity.getString(R.string.un_set_password));

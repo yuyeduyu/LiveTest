@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.locationbyhand"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 14
-        versionName "2.1.2"
+        versionCode 15
+        versionName "2.1.3_beta"
     }
     buildTypes {
         release {

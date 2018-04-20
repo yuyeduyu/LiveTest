@@ -78,21 +78,23 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
     private void addVId(final ApListViewHolder holder, final StaVo data) {
         final HashMap<Integer,String> identities = data.getIdentities();
         holder.mVIdLayout.removeAllViews();
-        holder.mVIdLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //跳转虚拟身份页面
-                Intent intent = new Intent( holder.itemView.getContext(),
-                        VirtualIdentityActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("sta",data);
-                intent.putExtras(bundle);
-                holder.itemView.getContext().startActivity(intent);
-            }
-        });
+
         if (identities != null&&identities.size() > 0){
+            holder.mVIdLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //跳转虚拟身份页面
+                    Intent intent = new Intent( holder.itemView.getContext(),
+                            VirtualIdentityActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("sta",data);
+                    intent.putExtras(bundle);
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            });
+
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,1.0f);
+                    ViewGroup.LayoutParams.MATCH_PARENT,1.0f);
             for (Map.Entry<Integer,String> entry: identities.entrySet()) {
                 ImageView imageView = new ImageView(holder.itemView.getContext());
                 imageView.setLayoutParams(lp);
