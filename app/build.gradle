@@ -7,11 +7,11 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.ascend.wangfeng.locationbyhand"
+        applicationId "com.ascend.wangfeng.wxldcplus"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 15
-        versionName "2.1.3_beta"
+        versionCode 16
+        versionName "3.0.0"
     }
     buildTypes {
         release {
