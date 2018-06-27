@@ -27,6 +27,7 @@ import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.GhzEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.MainServiceEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.presenter.SetPresenterImpl;
 import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
@@ -82,16 +83,24 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout mGhz;
     @BindView(R.id.task)
     RelativeLayout mTask;
+    @BindView(R.id.workMode)
+    RelativeLayout workMode;
+    @BindView(R.id.about)
+    RelativeLayout about;
+    @BindView(R.id.workMode_text)
+    TextView workModeText;
     private String TAG = getClass().getCanonicalName();
 
 
     String[] mChannelitems = new String[]{"自动", "1", "6", "11"};
     String[] mWorkStyles = new String[]{"移动模式", "静止模式"};
     String[] mTrackChannels = new String[]{"非自动锁定模式", "自动锁定模式"};
+    String[] mWorkMode = new String[]{"采集模式", "升级模式"};
 
     private int channel;//channel编号
     private int workstyle;//工作模式编号
     private int trackChannel;//信道锁定模式编号
+    private int workmode;//采集 升级 模式编号
     private String url;
     private AlertDialog channelDialog;//扫描信道弹框
     private AlertDialog workDialog;//工作模式
@@ -102,10 +111,12 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     private int targetsCount;
     private String mEquipmentCount;
     private Subscription mGhzRxBus;
+    private Subscription mWorkModeRxBus;
     private long lastClicktime;//save ghz change time
     private long CLICK_RATE = 3 * 60 * 1000;
     // is changing GHZ, if true, it can show change success
     private Boolean isChangeGhz = false;
+    private Boolean isChangeWorkMode = false;
 
     private Handler mGhzChangeHandler = new Handler();
     private Runnable mGhzChangeRunable = new Runnable() {
@@ -114,7 +125,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
             event.setData("GETMOD");
             RxBus.getDefault().post(event);
-            Log.i(TAG, "run: "+"GETMOD");
+            Log.i(TAG, "run: " + "GETMOD");
             mGhzChangeHandler.postDelayed(mGhzChangeRunable, 10 * 1000);
         }
     };
@@ -134,25 +145,26 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         initView();
         initGhz();
     }
-    private void showGhzChangeDialog(){
-        String[] items=new String[]{"2.4GHz","5.8GHz"};
-        int position=0;
+
+    private void showGhzChangeDialog() {
+        String[] items = new String[]{"2.4GHz", "5.8GHz"};
+        int position = 0;
         if (!mGhzText.getText().toString().equals("2.4GHz")) {
-            position=1;
+            position = 1;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("频段").setSingleChoiceItems(items, position, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface anInterface, int i) {
-                if (i==0){
-                    if (MyApplication.mGhz==Ghz.G58){
+                if (i == 0) {
+                    if (MyApplication.mGhz == Ghz.G58) {
                         changeGhz(Ghz.G24);
-                        Log.i(TAG, "onClick: "+i+"2.4");
+                        Log.i(TAG, "onClick: " + i + "2.4");
                     }
-                }else {
-                    if (MyApplication.mGhz==Ghz.G24){
+                } else {
+                    if (MyApplication.mGhz == Ghz.G24) {
                         changeGhz(Ghz.G58);
-                        Log.i(TAG, "onClick: "+"5.8");
+                        Log.i(TAG, "onClick: " + "5.8");
                     }
 
                 }
@@ -166,18 +178,18 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     /**
      * 切换频段
      */
-    private void changeGhz(Ghz ghz){
-        int ghzNumber=1;
-        if (ghz==Ghz.G24){
-            ghzNumber=1;
-        }else {
-            ghzNumber=2;
+    private void changeGhz(Ghz ghz) {
+        int ghzNumber = 1;
+        if (ghz == Ghz.G24) {
+            ghzNumber = 1;
+        } else {
+            ghzNumber = 2;
         }
         // ischanging  cant't rechange
         if (!isChangeGhz) {
             lastClicktime = System.currentTimeMillis();
             MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
-            event.setData("SETMOD" +ghzNumber);
+            event.setData("SETMOD" + ghzNumber);
             RxBus.getDefault().post(event);
             RxBus.getDefault().post(new MainServiceEvent(MainServiceEvent.CLEAE_DATA));
             if (ghzNumber == 2) {
@@ -185,13 +197,14 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             } else {
                 Snackbar.make(mEquipment, R.string.hint_change_24, Snackbar.LENGTH_INDEFINITE).show();
             }
-            mGhzChangeHandler.postDelayed(mGhzChangeRunable,10*1000);
+            mGhzChangeHandler.postDelayed(mGhzChangeRunable, 10 * 1000);
             MyApplication.setIsDataRun(false);
             isChangeGhz = true;
         } else {
             Snackbar.make(mEquipment, R.string.hint_change_ghz, Snackbar.LENGTH_SHORT).show();
         }
     }
+
     private void initGhz() {
         setGhzText();
         mGhz.setOnClickListener(new View.OnClickListener() {
@@ -206,15 +219,37 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 .subscribe(new BaseSubcribe<GhzEvent>() {
                     @Override
                     public void onNext(GhzEvent event) {
-                        Log.i(TAG, "onNext: "+event.getGhz());
-                        if (mGhzChangeHandler!=null){
+                        Log.i(TAG, "onNext: " + event.getGhz());
+                        if (mGhzChangeHandler != null) {
                             mGhzChangeHandler.removeCallbacks(mGhzChangeRunable);
                             MyApplication.setIsDataRun(true);
                         }
-                        if (isChangeGhz){
+                        if (isChangeGhz) {
                             Snackbar.make(mEquipment, "切换成功", Snackbar.LENGTH_SHORT).show();
                             setGhzText();
                             isChangeGhz = false;
+                        }
+                    }
+                });
+        //工作模式切换 RxBus
+        mWorkModeRxBus = RxBus.getDefault().toObservable(WorkMode.class)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubcribe<WorkMode>() {
+                    @Override
+                    public void onNext(WorkMode event) {
+                        Log.i(TAG, "onNext: " + event.getMode());
+                        if (mGhzChangeHandler != null) {
+                            mGhzChangeHandler.removeCallbacks(mGhzChangeRunable);
+                            MyApplication.setIsDataRun(true);
+                        }
+                        if (isChangeWorkMode) {
+                            Snackbar.make(mEquipment, "切换成功", Snackbar.LENGTH_SHORT).show();
+                            workmode = event.getMode();
+                            workModeText.setText(mWorkMode[event.getMode()]);
+                            isChangeWorkMode = false;
+                            SharedPreferencesUtils.setParam(getActivity(), "workmode", workmode);
+
                         }
                     }
                 });
@@ -235,6 +270,10 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         //隐藏工作模式设置
         mWorkStyleText.setText(mWorkStyles[workstyle]);
         mWorkStyle.setVisibility(View.GONE);
+
+        workmode = (int) SharedPreferencesUtils.getParam(getActivity(), "workmode", 0);
+        workModeText.setText(mWorkMode[workmode]);
+
         mUrl.setText(url + "");
         mSetTrackChannelText.setText(mTrackChannels[trackChannel]);
         mSetSwitchIsRing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -351,7 +390,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     @OnClick({R.id.targetAp, R.id.scanChannel, R.id.workStyle, R.id.url, R.id.set_track_channel,
-            R.id.about, R.id.task})
+            R.id.about, R.id.task, R.id.workMode})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.targetAp:
@@ -380,14 +419,68 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 trackChannelDialog.show();
                 break;
             case R.id.about:
-                 startActivity(new Intent(getActivity(), AboutActivity.class));
+                startActivity(new Intent(getActivity(), AboutActivity.class));
                 break;
             case R.id.task:
                 //进入任务界面
-                 startActivity(new Intent(getActivity(), TaskActivity.class));
+                startActivity(new Intent(getActivity(), TaskActivity.class));
+                break;
+            case R.id.workMode:
+                //采集模式 升级模式切换
+                showWorkModeDialog();
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 显示切换工作模式dialog
+     *
+     * @author lishanhui
+     * created at 2018-06-27 11:24
+     */
+    private void showWorkModeDialog() {
+        AlertDialog workDialog = new AlertDialog.Builder(getContext()).setTitle("工作模式").setSingleChoiceItems(
+                mWorkMode, workmode, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        //默认模式为采集模式，当模式切换时才发送命令，发送命令前判断模式是否切换
+                        changeWorkStyle(i);
+//                           Snackbar.make(mChannelText, "发送命令:"+mWorkStyles[i], Snackbar.LENGTH_SHORT).show();
+                        anInterface.dismiss();
+                    }
+                }
+        ).create();
+        workDialog.show();
+    }
+
+    /**
+     * 切换工作模式
+     *
+     * @param i 0,采集模式  1，升级模式
+     */
+    private void changeWorkStyle(int i) {
+        String workCommand;
+        if (i == 0) {
+            workCommand = "SETMOMODE";
+        } else {
+            workCommand = "SETAPMODE";
+        }
+        if (!isChangeWorkMode) {
+            isChangeWorkMode = true;
+            MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+            event.setData(workCommand);
+            RxBus.getDefault().post(event);
+            RxBus.getDefault().post(new MainServiceEvent(MainServiceEvent.CLEAE_DATA));
+            if (i == 0) {
+                Snackbar.make(mEquipment, R.string.hint_change_workstyle_0, Snackbar.LENGTH_INDEFINITE).show();
+            } else {
+                Snackbar.make(mEquipment, R.string.hint_change_workstyle_1, Snackbar.LENGTH_INDEFINITE).show();
+            }
+            MyApplication.setIsDataRun(false);
+        } else {
+            Snackbar.make(mEquipment, R.string.hint_change_ghz, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -402,8 +495,4 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         Snackbar.make(mEquipment, message, Snackbar.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
 }

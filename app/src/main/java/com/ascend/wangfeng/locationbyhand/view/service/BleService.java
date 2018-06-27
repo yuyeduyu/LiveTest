@@ -35,6 +35,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.MacData;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ScanEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.ble.BluetoothLeClass;
 import com.ascend.wangfeng.locationbyhand.util.ble.Utils;
@@ -299,9 +300,18 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             try {
                 String testdata = new String(characteristic.getValue(), "UTF-8");
                 Log.i(TAG, "formBLE: " + testdata);
+                //返回 1111,SETAPMODE  升级模式  1212,SETMOMODE采集模式  格式不固定，所以单独处理
+                if (testdata.indexOf("SETAPMODE")>-1){
+                    //转换升级模式成功
+                    RxBus.getDefault().post(new WorkMode(WorkMode.SETAPMODE));
+                }else if (testdata.indexOf("SETMOMODE")>-1){
+                    //转换采集模式成功
+                    RxBus.getDefault().post(new WorkMode(WorkMode.SETMOMODE));
+                }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+
             byte[] bytes = characteristic.getValue();
             Byte[] bytes1 = new Byte[bytes.length];
             Log.i(TAG, "onCharacteristicRead: " + mList.toString());
@@ -341,6 +351,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     private void format(String request) {
         Integer a = formatInt(request.substring(0, 1));
         Log.i(TAG, "format: " + a + "\n" + request);
+
+        //1111,SETAPMODE
         switch (a) {
             case 1://sta
                 Log.i(TAG, "case: 1");
@@ -391,7 +403,12 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             case 8:
                 toast(getResources().getString(R.string.delte_password));
                 break;
-
+            case 9:
+                toast(9+"");
+                break;
+            case 10:
+                toast(10+"");
+                break;
         }
     }
 
@@ -542,7 +559,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     }
 
     private void sendData(String value) {
-        Log.i(TAG, "sendData: " + value);
+        Log.e(TAG, "sendData: " + value);
         mStringLinkedBlockingQueue.offer(value);
        /* if (gattCharacteristic != null) {
             gattCharacteristic.setValue(value);

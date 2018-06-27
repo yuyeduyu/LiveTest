@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">无线雷达-C(ble)</string>
+    <string name="app_name" translatable="false">无线雷达-C+</string>
     <string name="open" translatable="false">open</string>
     <string name="close" translatable="false">close</string>
     <string name="main_title_frame_aplist" translatable="false">A P列表</string>
@@ -26,6 +26,8 @@
     <string name="hint_change_ghz">正在切换,请勿重复操作</string>
     <string name="hint_change_58">切换至5.8G,耗时较长,请耐心等待一至两分钟</string>
     <string name="hint_change_24">正在切换至2.4G</string>
+    <string name="hint_change_workstyle_0">切换至采集模式,耗时较长,请耐心等待一到两分钟</string>
+    <string name="hint_change_workstyle_1">切换至升级模式</string>
     <string name="hint_disconnect">连接已断开</string>
     <string name="un_set_password">未设置密码</string>
     <string name="set_passwor_error">密码设置失败</string>

@@ -346,6 +346,7 @@ public class MainService extends Service implements MainServiceContract.View {
                     }
                     // 虚拟身份保存
                     if (mStaVos.get(j).getIdentities()!=null&&mStaVos.get(j).getIdentities().size()>0){
+                        Log.e("虚拟身份保存","------->");
                         staVos.get(i).addIdentities(mStaVos.get(j).getIdentities());
                     }
 

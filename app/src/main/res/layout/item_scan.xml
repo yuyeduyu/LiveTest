@@ -30,15 +30,17 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        tools:text="ASCEND"
                         android:gravity="center_vertical"
                         android:lines="1"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        tools:text="ASCEND" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -49,19 +51,19 @@
 
                         <TextView
                             android:id="@+id/mac"
-                            android:layout_width="100dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:lines="1"/>
+                            android:lines="1" />
 
                         <LinearLayout
                             android:id="@+id/v_id"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
+                            android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:weightSum="5">
-                        </LinearLayout>
+                            android:weightSum="5"></LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
                 <!--right-right-->
@@ -70,28 +72,32 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
                         <TextView
                             android:id="@+id/signal"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:lines="1"
-                            android:gravity="center_vertical|end"
-                            android:textStyle="bold"
                             android:layout_marginRight="16dp"
-                            tools:text="sfsf"
-                            android:textColor="@color/black"/>
+                            android:gravity="center_vertical|end"
+                            android:lines="1"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            tools:text="sfsf" />
+
                         <ImageView
                             android:id="@+id/img_show_password"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_alignParentEnd="true"
-                            android:visibility="gone"
-                            android:src="@drawable/ic_password"/>
+                            android:src="@drawable/ic_password"
+                            android:visibility="gone" />
                     </RelativeLayout>
+
                     <TextView
                         android:id="@+id/time"
                         android:layout_width="match_parent"
@@ -99,7 +105,7 @@
                         android:layout_marginRight="16dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical|end"
-                        android:lines="1"/>
+                        android:lines="1" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

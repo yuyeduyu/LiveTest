@@ -145,7 +145,30 @@
                     android:layout_alignParentBottom="true"
                     android:background="@color/gray"/>
             </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/workMode"
+                style="@style/set_text">
 
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="工作模式"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/workMode_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/set_track_channel"
                 style="@style/set_text">
