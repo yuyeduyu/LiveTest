@@ -488,6 +488,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     public void onDestroy() {
         super.onDestroy();
         if (mGhzRxBus != null) mGhzRxBus.unsubscribe();
+        if (mWorkModeRxBus!=null) mWorkModeRxBus.unsubscribe();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.ascend.wangfeng.locationbyhand.view.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,12 +20,19 @@ import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.MyItemDecoration;
 import com.ascend.wangfeng.locationbyhand.adapter.SwipeAdapter;
+import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.NoteVo;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.contract.TargetContract;
+import com.ascend.wangfeng.locationbyhand.dialog.TargetSetDialog;
+import com.ascend.wangfeng.locationbyhand.event.FastScan;
+import com.ascend.wangfeng.locationbyhand.event.RxBus;
+import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.presenter.TargetPresenterImpl;
 import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -40,6 +48,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * 目标Ap设置界面
@@ -60,11 +71,14 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
     TextView mOrderByMac;
     @BindView(R.id.order_by_note)
     TextView mOrderByNote;
+    @BindView(R.id.btn_fast_scan)
+    FloatingActionButton btnFastScan;
     private ArrayList<NoteDo> mList;
     private SwipeMenuCreator swipeMenuCreator;
     private TargetPresenterImpl mPresenter;
     private AlertDialog addDialog;
     private Comparator<NoteDo> comparator;
+    private Subscription mFastScanRxBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +89,40 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
         initialLisener();
         initialView();
         initDialog();
+
+        initView();
+    }
+
+    private void initView() {
+        //是否有快速侦测
+        String str = (String) SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_on","");
+        if (!str.equals("")){
+            btnFastScan.setVisibility(View.VISIBLE);
+        }
+        mFastScanRxBus = RxBus.getDefault().toObservable(FastScan.class)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubcribe<FastScan>() {
+                    @Override
+                    public void onNext(FastScan event) {
+                        Log.i(TAG, "onNext: " + event.getStatu());
+                        if (event.getStatu() == FastScan.Start) {
+                            //开启快速侦测
+                            MyApplication.setIsDataRun(true);
+                            Snackbar.make(mAppBar, "开启快速侦测", Snackbar.LENGTH_SHORT).show();
+                            SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac_on"
+                                    ,SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac",""));
+                            btnFastScan.setVisibility(View.VISIBLE);
+                        } else if (event.getStatu() == FastScan.Stop) {
+                            //停止快速侦测
+                            btnFastScan.setVisibility(View.GONE);
+                            Snackbar.make(mAppBar, "停止快速侦测", Snackbar.LENGTH_SHORT).show();
+                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac","");
+                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_on","");
+                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_rate","");
+                        }
+                    }
+                });
     }
 
     private void initialLisener() {
@@ -97,9 +145,15 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                         .setText("日志")
                         .setWidth(getResources().getDimensionPixelSize(R.dimen.item_width))
                         .setHeight(getResources().getDimensionPixelSize(R.dimen.item_height));
+                SwipeMenuItem zhence = new SwipeMenuItem(TargetActivity.this)
+                        .setBackgroundColor(R.color.purple)
+                        .setText("快速侦测")
+                        .setWidth(getResources().getDimensionPixelSize(R.dimen.item_width))
+                        .setHeight(getResources().getDimensionPixelSize(R.dimen.item_height));
                 swipeRightMenu.addMenuItem(deleteItem);
                 swipeRightMenu.addMenuItem(changeItem);
                 swipeRightMenu.addMenuItem(logItem);
+                swipeRightMenu.addMenuItem(zhence);
             }
         };
     }
@@ -123,8 +177,8 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                             String macStr = RegularExprssion.macFormat(mac.getText().toString());
                             String noteStr = note.getText().toString() + "";
                             //mPresenter.addMac(macStr, noteStr);
-                            NoteDoDeal deal =new NoteDoDeal(mList);
-                            NoteDo noteDo=new NoteDo();
+                            NoteDoDeal deal = new NoteDoDeal(mList);
+                            NoteDo noteDo = new NoteDo();
                             noteDo.setMac(macStr);
                             noteDo.setNote(noteStr);
                             deal.add(noteDo);
@@ -138,7 +192,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
 
     private void initialData() {
         mPresenter = new TargetPresenterImpl(this);
-        mList =(ArrayList<NoteDo>) MyApplication.getmNoteDos();
+        mList = (ArrayList<NoteDo>) MyApplication.getmNoteDos();
         adapter = new SwipeAdapter(mList);
         comparator = new Comparator<NoteDo>() {
             @Override
@@ -178,7 +232,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                                         @Override
                                         public void onClick(DialogInterface anInterface, int i) {
                                             //mPresenter.delMac(mac);
-                                            NoteDoDeal deal =new NoteDoDeal(mList);
+                                            NoteDoDeal deal = new NoteDoDeal(mList);
                                             deal.delete(adapterPosition);
                                             adapter.notifyDataSetChanged();
                                             show("success");
@@ -202,10 +256,10 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface anInterface, int i) {
-                                         //   mPresenter.update(mac1, macE.getText().toString() + "",noteE.getText().toString() + "");
-                                            NoteDoDeal deal =new NoteDoDeal(mList);
-                                            NoteDo noteDo=mList.get(adapterPosition);
-                                            deal.upDate(noteDo.getMac(),noteE.getText().toString());
+                                            //   mPresenter.update(mac1, macE.getText().toString() + "",noteE.getText().toString() + "");
+                                            NoteDoDeal deal = new NoteDoDeal(mList);
+                                            NoteDo noteDo = mList.get(adapterPosition);
+                                            deal.upDate(noteDo.getMac(), noteE.getText().toString());
                                             adapter.notifyDataSetChanged();
                                             show("success");
                                             anInterface.dismiss();
@@ -217,6 +271,10 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                             Log.i(TAG, "onItemClick: " + mList.get(adapterPosition).getMac());
                             intent.putExtra("mac", mList.get(adapterPosition).getMac());
                             startActivity(intent);
+                            break;
+                        case 3:
+                            //快速侦测
+                            TargetSetDialog.showFastScanDialog(TargetActivity.this, mList.get(adapterPosition).getMac());
                             break;
                         default:
                             break;
@@ -237,16 +295,10 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
 
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     @Override
     public void update(List<NoteVo> noteVos) {
         mList.clear();
-       // mList.addAll(noteVos);
+        // mList.addAll(noteVos);
         Collections.sort(mList, comparator);
         adapter.notifyDataSetChanged();
     }
@@ -285,5 +337,37 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 mOrderByNote.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
                 break;
         }
+    }
+
+    /**
+     * 发送停止快速侦测命令
+     *
+     * @author lishanhui
+     * created at 2018-06-28 13:08
+     */
+    private static void stopZhenCe() {
+        MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+        event.setData("STOPBK");
+        RxBus.getDefault().post(event);
+    }
+
+    @OnClick(R.id.btn_fast_scan)
+    public void onViewClicked() {
+        new AlertDialog.Builder(this)
+                .setTitle("快速侦测")
+                .setMessage("MAC: " + SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_on","")
+                        +"\n频率: "+ SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_rate","10"))
+                .setPositiveButton("停止", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        // 停止侦测
+                        stopZhenCe();
+                    }
+                }).show();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mFastScanRxBus != null) mFastScanRxBus.unsubscribe();
     }
 }

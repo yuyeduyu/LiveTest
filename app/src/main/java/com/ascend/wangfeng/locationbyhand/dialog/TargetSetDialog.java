@@ -1,5 +1,6 @@
 package com.ascend.wangfeng.locationbyhand.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,10 @@ import com.ascend.wangfeng.locationbyhand.bean.NoteVo;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
+import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
+import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
+import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -105,6 +110,21 @@ public class TargetSetDialog {
                 })
                 .create().show();
     }
+
+    /**
+     * 发送侦测命令
+     *
+     * @param mac
+     * @param rate 侦测频率
+     * @author lishanhui
+     * created at 2018-06-28 13:08
+     */
+    private static void setZhenCe(String mac, String rate) {
+        MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+        event.setData("SETBK:" + mac + "," + rate);
+        RxBus.getDefault().post(event);
+    }
+
     private static void addMac(String mac, String note, final IShowView view) {
         NoteDoDeal deal = new NoteDoDeal(MyApplication.getmNoteDos());
         NoteDo noteDo = new NoteDo();
@@ -142,5 +162,34 @@ public class TargetSetDialog {
         noteDo.setMac(mac);
         deal.delete(mac);
         view.show(1, "删除成功");
+    }
+
+    /**
+     * 快速侦测dialog
+     *
+     * @param activity
+     */
+    public static void showFastScanDialog(final Activity activity, String str_mac) {
+        final View layout = activity.getLayoutInflater().inflate(R.layout.dialog_fast_scan
+                , null);
+
+        final EditText mac = (EditText) layout.findViewById(R.id.edit_mac);
+        final EditText rateEdit = (EditText) layout.findViewById(R.id.edit_rate);
+        mac.setText(str_mac);
+        rateEdit.setText("10");
+        new AlertDialog.Builder(activity).setTitle("快速侦测")
+                .setView(layout)
+                .setPositiveButton("开启", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        String macStr = mac.getText().toString() + "";
+                        String rateInt = rateEdit.getText().toString();
+                        SharedPreferencesUtils.setParam(activity,"fast_mac",macStr);
+                        SharedPreferencesUtils.setParam(activity,"fast_mac_rate",rateInt);
+                        setZhenCe(macStr, rateInt);
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .create().show();
     }
 }

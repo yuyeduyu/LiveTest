@@ -256,8 +256,8 @@ public class BluetoothLeClass{
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
     }
 
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic){
-    	 mBluetoothGatt.writeCharacteristic(characteristic);
+    public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic){
+    	 return mBluetoothGatt.writeCharacteristic(characteristic);
     }
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be

@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.WindowManager;
@@ -27,6 +28,7 @@ import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.bean.StaVo;
+import com.ascend.wangfeng.locationbyhand.event.FastScan;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.DeviceEvent;
@@ -37,6 +39,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.ScanEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
+import com.ascend.wangfeng.locationbyhand.util.ble.BLEDataUtil;
 import com.ascend.wangfeng.locationbyhand.util.ble.BluetoothLeClass;
 import com.ascend.wangfeng.locationbyhand.util.ble.Utils;
 
@@ -44,6 +47,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -76,7 +80,10 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     private java.lang.Runnable mConnectRunable;
 
     private LinkedBlockingQueue<String> mStringLinkedBlockingQueue = new LinkedBlockingQueue();
-
+    /**
+     * 是否已经关闭
+     */
+    private volatile boolean mIsShutdown = false;
 
     @Nullable
     @Override
@@ -301,12 +308,16 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 String testdata = new String(characteristic.getValue(), "UTF-8");
                 Log.i(TAG, "formBLE: " + testdata);
                 //返回 1111,SETAPMODE  升级模式  1212,SETMOMODE采集模式  格式不固定，所以单独处理
-                if (testdata.indexOf("SETAPMODE")>-1){
+                //释放布控返回 1010,STOPBK
+                if (testdata.indexOf("SETAPMODE") > -1) {
                     //转换升级模式成功
                     RxBus.getDefault().post(new WorkMode(WorkMode.SETAPMODE));
-                }else if (testdata.indexOf("SETMOMODE")>-1){
+                } else if (testdata.indexOf("SETMOMODE") > -1) {
                     //转换采集模式成功
                     RxBus.getDefault().post(new WorkMode(WorkMode.SETMOMODE));
+                } else if (testdata.indexOf("STOPBK") > -1) {
+                    //停止快速侦测
+                    RxBus.getDefault().post(new FastScan(FastScan.Stop));
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -350,9 +361,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
 
     private void format(String request) {
         Integer a = formatInt(request.substring(0, 1));
-        Log.i(TAG, "format: " + a + "\n" + request);
-
-        //1111,SETAPMODE
+        Log.e(TAG, "format: " + a + "\n" + request);
         switch (a) {
             case 1://sta
                 Log.i(TAG, "case: 1");
@@ -383,19 +392,19 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 }
                 break;
             case 6://set ap's name success
-                if(isApNameSuccess(request)){
+                if (isApNameSuccess(request)) {
                     String password = (String) SharedPreferencesUtils.getParam(MyApplication.mContext,
                             "pa_ap_password", "");
                     sendData("PASSWD:" + password);
-                }else {
+                } else {
                     Config.clearApPassword();
                     toast(getResources().getString(R.string.set_passwor_error));
                 }
                 break;
             case 7: // set ap's password success
-                if(isApPasswordSuccess(request)){
+                if (isApPasswordSuccess(request)) {
                     toast(getResources().getString(R.string.set_password_success));
-                }else {
+                } else {
                     Config.clearApPassword();
                     toast(getResources().getString(R.string.set_password_success));
                 }
@@ -404,20 +413,20 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 toast(getResources().getString(R.string.delte_password));
                 break;
             case 9:
-                toast(9+"");
+                RxBus.getDefault().post(new FastScan(FastScan.Start));
                 break;
             case 10:
-                toast(10+"");
+                toast(10 + "");
                 break;
         }
     }
 
     private boolean isApPasswordSuccess(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
-        if (rows.length>1){
+        if (rows.length > 1) {
             String[] eles = rows[1].split(SEPARATOR_ELEMENT);
             String result = eles[1];
-            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext,"pa_ap_password",""))){
+            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_password", ""))) {
                 return true;
             }
         }
@@ -426,10 +435,10 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
 
     private boolean isApNameSuccess(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
-        if (rows.length>1){
+        if (rows.length > 1) {
             String[] eles = rows[1].split(SEPARATOR_ELEMENT);
             String result = eles[1];
-            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext,"pa_ap_name",""))){
+            if (result.equals(SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_name", ""))) {
                 return true;
             }
         }
@@ -559,12 +568,87 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     }
 
     private void sendData(String value) {
+        //Ble一次性最多发送20个字节
+        if (value.length() > 18) {
+            //分包发送
+            MyApplication.setIsDataRun(false);
+            sendBigData(value);
+        } else {
+            mStringLinkedBlockingQueue.offer(value);
+        }
         Log.e(TAG, "sendData: " + value);
-        mStringLinkedBlockingQueue.offer(value);
        /* if (gattCharacteristic != null) {
             gattCharacteristic.setValue(value);
             mBLE.writeCharacteristic(gattCharacteristic);
         }*/
+    }
+
+    /**
+     * 蓝牙传送大于18个字节数据
+     *
+     * @author lishanhui
+     * created at 2018-06-29 11:12
+     */
+    private void sendBigData(String data) {
+        byte[][] packets = BLEDataUtil.encode(data);
+        int tryCount = 3;//最多重发次数
+        boolean sendSuccess = true;
+        while (--tryCount > 0) {
+            sendSuccess = true;
+            for (int i = 0; i < packets.length; i++) {
+                byte[] bytes = packets[i];
+                int onceTryCount = 3;//单次重发次数
+                boolean onceSendSuccess = true;
+//                BluetoothGattService service = mBLE.getService(UUID.fromString(sServiceUUID));
+                if (mBLE != null) {
+//                    BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(sCharacteristicUUID));
+                    gattCharacteristic.setValue(bytes);
+                    while (--onceTryCount > 0) {
+
+                        if (mIsShutdown) {
+                            break;
+                        }
+
+                        if (mBLE.writeCharacteristic(gattCharacteristic)) {
+                            Log.d("BLE", "Write Success, DATA: " + Arrays.toString(gattCharacteristic.getValue()));
+                            onceSendSuccess = true;
+                            //避免数据发送太快丢失，需要分包延迟发送
+                            SystemClock.sleep(200);
+                            break;
+                        } else {
+                            Log.d("BLE", "Write failed, DATA: " + Arrays.toString(gattCharacteristic.getValue()) + ", and left times = " + onceTryCount);
+                            onceSendSuccess = false;
+                            //避免数据发送太快丢失，需要分包延迟发送
+                            SystemClock.sleep(400);//失败的时候，把时间调大
+                        }
+
+                    }
+
+                }
+
+                if (!onceSendSuccess) {//一次发送，重试三次都未成功则，跳出重发这个数据
+                    sendSuccess = false;
+                    break;
+                }
+
+                //避免数据发送太快丢失，需要分包延迟发送
+                SystemClock.sleep(200);
+            }
+
+            if (sendSuccess) {
+                break;
+            } else {
+                Log.d("BLE", "send msg failed, and try times = " + tryCount);
+            }
+
+            if (mIsShutdown) {
+                Log.d("BLE", "give up for disconnected by user");
+                break;
+            }
+
+            //避免数据发送太快丢失，需要分包延迟发送
+            SystemClock.sleep(200);
+        }
     }
 
     private int formatInt(String value) {
