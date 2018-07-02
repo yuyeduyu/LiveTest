@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ascend.wangfeng.locationbyhand.Config;
+import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
+import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,7 +38,7 @@ public class ApListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
     @Override
     public ApListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_scan, parent, false);
+                .inflate(R.layout.item_ap, parent, false);
         return new ApListViewHolder(itemView, mClickLisener, mLongClickListener);
     }
 
@@ -44,7 +46,12 @@ public class ApListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
     public void onBindViewHolder(ApListViewHolder holder, int position) {
         ApVo data = mData.get(position);
 
-        holder.img.setBackgroundResource(R.drawable.icon_wifi);
+//        holder.img.setBackgroundResource(R.drawable.icon_wifi);
+        if (MyApplication.mGhz == Ghz.G24) {
+            holder.tv_ghz.setText("2.4G");
+        } else {
+            holder.tv_ghz.setText("5.8G");
+        }
         if (data.isTag()) {
             holder.mLayout.setBackgroundResource(R.color.accent);
             holder.name.setText(data.getEssid() + "(" + data.getNote() + ")");

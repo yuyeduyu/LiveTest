@@ -43,4 +43,6 @@
     <color name="ap">#000001</color>
     <color name="target">#fdfd01</color>
     <color name="sta">#a5a5a5</color>
+
+    <color name="text1">#333333</color>
 </resources>

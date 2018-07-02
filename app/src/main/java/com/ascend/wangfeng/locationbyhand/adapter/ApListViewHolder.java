@@ -20,6 +20,7 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
     TextView mac;
     TextView signal;
     TextView time;
+    TextView tv_ghz;
     LinearLayout mLayout;
     LinearLayout mVIdLayout;
     OnItemClickLisener mClickLisener;
@@ -33,6 +34,7 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
         mac = (TextView)itemView.findViewById(R.id.mac);
         signal =(TextView)itemView.findViewById(R.id.signal);
         time =(TextView)itemView.findViewById(R.id.time);
+        tv_ghz =(TextView)itemView.findViewById(R.id.tv_ghz);
         mLayout = (LinearLayout) itemView.findViewById(R.id.item_scan);
         mVIdLayout = (LinearLayout) itemView.findViewById(R.id.v_id);
         mShowPasswordImg = (ImageView) itemView.findViewById(R.id.img_show_password);

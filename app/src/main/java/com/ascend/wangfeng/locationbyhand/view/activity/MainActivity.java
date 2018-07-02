@@ -95,6 +95,8 @@ public class MainActivity extends BaseActivity {
     private void initBleActivity() {
         if (!BleService.mConnected)
             startActivity(new Intent(this, BLEActivity.class));
+        else
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
     }
 
     private void initService() {
