@@ -17,25 +17,74 @@ import java.util.List;
  * email 1040441325@qq.com
  */
 
-public class VirtualIdentityAdapter extends RecyclerView.Adapter<VirtualIdentityAdapter.SubViewHolder>{
+public class VirtualIdentityAdapter extends RecyclerView.Adapter<VirtualIdentityAdapter.SubViewHolder> {
     private List<MapBean> mMapBeans;
+
     public VirtualIdentityAdapter() {
-        mMapBeans=new ArrayList<>();
+        mMapBeans = new ArrayList<>();
     }
-    public void setIdentities(List<MapBean> identities){
+
+    public void setIdentities(List<MapBean> identities) {
         this.mMapBeans.clear();
         mMapBeans.addAll(identities);
         notifyDataSetChanged();
     }
+
     @Override
     public SubViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new SubViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_vid_sub,parent,false));
+                .inflate(R.layout.item_vid_sub, parent, false));
     }
 
     @Override
     public void onBindViewHolder(SubViewHolder holder, int position) {
-        holder.typeTv.setText(mMapBeans.get(position).getKey().toString());
+        try {
+            //根据返回类型，显示虚拟身份
+            switch (Integer.valueOf(mMapBeans.get(position).getKey().toString())) {
+                case 1:
+                    holder.typeTv.setText("phone");
+                    break;
+                case 2:
+                    holder.typeTv.setText("imei");
+                    break;
+                case 3:
+                    holder.typeTv.setText("imsi");
+                    break;
+                case 4:
+                    holder.typeTv.setText("qq");
+                    break;
+                case 5:
+                    holder.typeTv.setText("weixin");
+                    break;
+                case 6:
+                    holder.typeTv.setText("taobao");
+                    break;
+                case 7:
+                    holder.typeTv.setText("weibo");
+                    break;
+                case 8:
+                    holder.typeTv.setText("baidu");
+                    break;
+                case 16:
+                    holder.typeTv.setText("jingdong");
+                    break;
+                case 18:
+                    holder.typeTv.setText("miliao");
+                    break;
+                case 20:
+                    holder.typeTv.setText("momo");
+                    break;
+                case 49:
+                    holder.typeTv.setText("支付宝");
+                    break;
+                case 50:
+                    holder.typeTv.setText("好友qq");
+                    break;
+            }
+        } catch (Exception e) {
+            holder.typeTv.setText(mMapBeans.get(position).getKey().toString());
+        }
+
         holder.valueTv.setText(mMapBeans.get(position).getValue());
     }
 
@@ -47,6 +96,7 @@ public class VirtualIdentityAdapter extends RecyclerView.Adapter<VirtualIdentity
     class SubViewHolder extends RecyclerView.ViewHolder {
         TextView typeTv;
         TextView valueTv;
+
         public SubViewHolder(View itemView) {
             super(itemView);
             typeTv = (TextView) itemView.findViewById(R.id.type);

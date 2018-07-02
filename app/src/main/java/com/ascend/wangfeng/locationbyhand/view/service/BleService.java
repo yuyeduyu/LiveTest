@@ -375,9 +375,14 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 break;
             case 4://编号
                 String num = getNumber(request);
-                MyApplication.mDevicdID = num;
-                //获取编号后,获取频段
-                sendData("GETMOD");
+                if (num == null || num == "") {
+                    //获取编号失败，重新获取
+                    sendData("GETMAC");
+                } else {
+                    MyApplication.mDevicdID = num;
+                    //获取编号后,获取频段
+                    sendData("GETMOD");
+                }
                 Log.i(TAG, "case: 4");
                 break;
             case 5://频段

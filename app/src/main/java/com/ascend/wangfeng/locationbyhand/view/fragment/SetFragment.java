@@ -264,7 +264,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     private void initView() {
-        mEquipmentText.setText(MyApplication.mDevicdID + "");
+        mEquipmentText.setText(MyApplication.mDevicdID==null?"": MyApplication.mDevicdID+ "");
         mTargetCount.setText(MyApplication.getmNoteDos().size() + "");
         mChannelText.setText(mChannelitems[channel]);
         //隐藏工作模式设置

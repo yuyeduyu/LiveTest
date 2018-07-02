@@ -110,29 +110,4 @@ public class BLEDataUtil {
             return false;
         }
     }
-
-	/*public static void main(String[] args) {
-		String data  = "{\"aaaaaaasdasdasdasdasdasdasdas\" : \"bbbbbbbbbbbbbdjashiodhasohdoahsoidhaioshdiuhasda\"}";
-		//String data = "aaaaaa";
-		byte[][] byteData = encode(data);
-		//printData(byteData);
-		byte[] result = null;
-		for(int i=0; i<byteData.length; i++) {
-
-			result = decode(byteData[i], result);
-			if(isEnd(byteData[i])) {
-				if(result != null) {
-
-					try{
-						String str = new String(result);
-						System.out.println("result = " + str);
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-
-				}
-				break;
-			}
-		}
-	}*/
 }

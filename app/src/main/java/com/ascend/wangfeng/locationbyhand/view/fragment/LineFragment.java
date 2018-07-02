@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ascend.wangfeng.locationbyhand.R;
@@ -17,6 +19,7 @@ import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.LineEvent;
 import com.ascend.wangfeng.locationbyhand.presenter.LinePresenterImpl;
 import com.ascend.wangfeng.locationbyhand.util.OuiDatabase;
+import com.ascend.wangfeng.locationbyhand.view.activity.VirtualIdentityActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -31,6 +34,8 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,6 +71,8 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     LineChart mLineChart;
     @BindView(R.id.message)
     TextView mMessage;
+    @BindView(R.id.v_id)
+    LinearLayout mVIdLayout;
     private String mac;
     private Integer type;
     private LinePresenterImpl mPresenter;
@@ -92,7 +99,7 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     }
 
     private void initBle() {
-        lineDataRxbus=RxBus.getDefault().toObservable(LineEvent.class)
+        lineDataRxbus = RxBus.getDefault().toObservable(LineEvent.class)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseSubcribe<LineEvent>() {
@@ -110,7 +117,7 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         Intent intent = getActivity().getIntent();
         mac = intent.getStringExtra("mac");
         type = intent.getIntExtra("type", 0);
-       //mPresenter = new LinePresenterImpl(this);
+        //mPresenter = new LinePresenterImpl(this);
         initMapSeries();
     }
 
@@ -124,8 +131,8 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (lineDataRxbus!=null)lineDataRxbus.unsubscribe();
-       //mPresenter.stop();
+        if (lineDataRxbus != null) lineDataRxbus.unsubscribe();
+        //mPresenter.stop();
     }
 
     /**
@@ -192,14 +199,14 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     @Override
     public void updateAp(ApVo data) {
         //若两次数据是同一时间采集,无需更新
-        if (lastTime==data.getLtime())return;
-        lastTime =data.getLtime();
+        if (lastTime == data.getLtime()) return;
+        lastTime = data.getLtime();
         mTitle.setText(data.getBssid() + (data.isTag() ? "(" + data.getNote() + ")" : ""));
         mApName.setText(data.getEssid() + "");
         mMac.setText(data.getBssid() + "");
         mChannel.setText(data.getChannel() + "");
         mSignal.setText(data.getSignal() + "dBm");
-        SimpleDateFormat format =  new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
         mLtime.setText(time + "");
         update(data.getSignal());
@@ -209,8 +216,8 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     @Override
     public void updateSta(StaVo data) {
         //若两次数据是同一时间采集,无需更新
-        if (lastTime==data.getLtime())return;
-        lastTime =data.getLtime();
+        if (lastTime == data.getLtime()) return;
+        lastTime = data.getLtime();
         mTitle.setText(data.getMac() + (data.isTag() ? "(" + data.getNote() + ")" : ""));
         if ("00:00:00:00:00:00".equals(data.getApmac())) {
             //未连接
@@ -232,13 +239,83 @@ public class LineFragment extends BaseFragment implements LineContract.View {
                 mChannel.setText(data.getChannel() + "");
             }
         }
-
-
+        //显示虚拟身份图标
+        initVirtualIdentity(data);
         mSignal.setText(data.getSignal() + "dBm");
-        SimpleDateFormat format =  new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
         mLtime.setText(time);
         update(data.getSignal());
+    }
+    /**
+     * 显示虚拟身份
+     * @author lishanhui
+     * created at 2018-06-29 15:54
+     * @param data
+     */
+    private void initVirtualIdentity(final StaVo data) {
+        final HashMap<Integer,String> identities = data.getIdentities();
+        mVIdLayout.removeAllViews();
+        if (identities != null&&identities.size() > 0){
+            mVIdLayout.setVisibility(View.VISIBLE);
+            mVIdLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //跳转虚拟身份页面
+                    Intent intent = new Intent( getActivity(),
+                            VirtualIdentityActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("sta",data);
+                    intent.putExtras(bundle);
+                    getActivity().startActivity(intent);
+                }
+            });
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,
+                    ViewGroup.LayoutParams.MATCH_PARENT,1.0f);
+            for (Map.Entry<Integer,String> entry: identities.entrySet()) {
+                ImageView imageView = new ImageView(getActivity());
+                imageView.setLayoutParams(lp);
+                imageView.setPadding(0,0,0,0);
+                switch (entry.getKey()){
+                    case 1:
+                        imageView.setImageResource(R.drawable.phone);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    case 49:
+                        imageView.setImageResource(R.drawable.alipay);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    case 4:
+                        imageView.setImageResource(R.drawable.qq);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    case 5:
+                        imageView.setImageResource(R.drawable.wechat);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    case 6:
+                        imageView.setImageResource(R.drawable.taobao);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    case 3:
+                        imageView.setImageResource(R.drawable.sim_card);
+                        mVIdLayout.addView(imageView);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (mVIdLayout.getChildCount()<identities.size()){
+                ImageView imageView = new ImageView(getActivity());
+                imageView.setLayoutParams(lp);
+                imageView.setPadding(0,0,0,0);
+                imageView.setImageResource(R.drawable.more);
+                mVIdLayout.addView(imageView);
+            }
+        }else {
+            mVIdLayout.setVisibility(View.GONE);
+        }
     }
 
     private void update(int signal) {
@@ -250,4 +327,5 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         mLineChart.invalidate();
         entryCount++;
     }
+
 }

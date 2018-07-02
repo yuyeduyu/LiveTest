@@ -224,6 +224,14 @@
             android:layout_height="1dp"
             android:background="@color/gray"/>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/v_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:visibility="gone"></LinearLayout>
 <com.github.mikephil.charting.charts.LineChart
     android:id="@+id/line_chart"
     android:layout_width="match_parent"
