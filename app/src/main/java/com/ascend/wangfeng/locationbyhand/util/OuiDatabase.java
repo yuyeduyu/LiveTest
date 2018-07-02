@@ -110,7 +110,7 @@ public class OuiDatabase {
             result.append("-");}
 
         }
-        Log.e("test", "formatMac: " + result);
+//        Log.e("test", "formatMac: " + result);
         return String.valueOf(result);
     }
     public static void destroy(){

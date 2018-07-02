@@ -56,7 +56,23 @@ public class FormAdapter extends RecyclerView.Adapter<FormAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         StaVo apBean = mdata.get(position);
-        holder.mImageView.setImageResource(R.drawable.icon_phone);
+        if (apBean.getOui() != null) {
+            if (apBean.getOui().indexOf("Apple") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.ios);
+            } else if (apBean.getOui().indexOf("HUAWEI") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.huawei);
+            } else if (apBean.getOui().indexOf("OPPO") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.oppo);
+            } else if (apBean.getOui().indexOf("SAMSUNG") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.sam);
+            } else if (apBean.getOui().indexOf("Xiaomi") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.xiaomi);
+            } else {
+                holder.mImageView.setBackgroundResource(R.drawable.icon_phone);
+            }
+        } else {
+            holder.mImageView.setBackgroundResource(R.drawable.icon_phone);
+        }
         if (position == 0 && mType == TYPE_STA) {
             holder.mLayout.setBackgroundColor(mContext.getResources().getColor(R.color.selected));
         } else if (apBean.isTag()) {

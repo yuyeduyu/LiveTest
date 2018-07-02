@@ -35,6 +35,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.MacData;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ScanEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
+import com.ascend.wangfeng.locationbyhand.util.OuiDatabase;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.ble.BluetoothLeClass;
 import com.ascend.wangfeng.locationbyhand.util.ble.Utils;
@@ -451,6 +452,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     sta.setApmac(elements[2]);
                     sta.setSignal(formatInt(elements[3]));
                     sta.setLtime(time);
+                    sta.setOui(OuiDatabase.ouiMatch(elements[1]));
                     stas.add(sta);
                     break;
                 case 2://ap

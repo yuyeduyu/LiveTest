@@ -24,6 +24,8 @@ public class StaVo implements Comparable<StaVo>,Serializable{
 
     @SerializedName("mac")
     private String mac;
+    @SerializedName("oui")
+    private String oui;//手机mac对应生产厂商 用于显示手机品牌图标2
     @SerializedName("apmac")
     private String apmac;
     @SerializedName("essid")
@@ -38,6 +40,14 @@ public class StaVo implements Comparable<StaVo>,Serializable{
     private long ltime;
     private boolean tag;
     private String note;
+
+    public String getOui() {
+        return oui;
+    }
+
+    public void setOui(String oui) {
+        this.oui = oui;
+    }
 
     public HashMap<Integer, String> getIdentities() {
         return identities;
