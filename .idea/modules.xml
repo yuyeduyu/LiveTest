@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://E:\workspace\ascend\wxldcplus\wxld\ble_branch.iml" filepath="E:\workspace\ascend\wxldcplus\wxld\ble_branch.iml" />
+      <module fileurl="file://E:\workspace\ascend\wxld\wxld\ble_branch.iml" filepath="E:\workspace\ascend\wxld\wxld\ble_branch.iml" />
       <module fileurl="file://$PROJECT_DIR$/wxld.iml" filepath="$PROJECT_DIR$/wxld.iml" />
     </modules>
   </component>

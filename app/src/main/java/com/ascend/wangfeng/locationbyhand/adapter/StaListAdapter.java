@@ -3,6 +3,7 @@ package com.ascend.wangfeng.locationbyhand.adapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,24 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
     @Override
     public void onBindViewHolder(ApListViewHolder holder, int position) {
         StaVo data = mData.get(position);
-        holder.img.setBackgroundResource(R.drawable.icon_phone);
+        if (data.getOui() != null) {
+            if (data.getOui().indexOf("Apple") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.ios);
+            } else if (data.getOui().indexOf("HUAWEI") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.huawei);
+            } else if (data.getOui().indexOf("OPPO") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.oppo);
+            } else if (data.getOui().indexOf("SAMSUNG") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.sam);
+            } else if (data.getOui().indexOf("Xiaomi") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.xiaomi);
+            } else {
+                holder.img.setBackgroundResource(R.drawable.icon_phone);
+            }
+        } else {
+            holder.img.setBackgroundResource(R.drawable.icon_phone);
+        }
+
         if (data.isTag()) {
             holder.mLayout.setBackgroundResource(R.color.accent);
             holder.name.setText(data.getMac() + "(" + data.getNote() + ")");
@@ -60,46 +78,47 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
             holder.name.setText(data.getMac() + "");
         }
         if (MyApplication.mContext.getResources().getString(R.string.ap_mac_null)
-                .equals(data.getApmac())){
+                .equals(data.getApmac())) {
             holder.mac.setText("未连接");
             holder.mac.setTextColor(MyApplication.mContext.getResources()
                     .getColor(R.color.gray));
-        }else {
+        } else {
             holder.mac.setTextColor(MyApplication.mContext.getResources()
                     .getColor(R.color.secondary_text));
-        holder.mac.setText(data.getEssid() + "");}
+            holder.mac.setText(data.getEssid() + "");
+        }
         holder.signal.setText(data.getSignal() + "dBm");
-        SimpleDateFormat format =  new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
         holder.time.setText(time + "");
         addVId(holder, data);
     }
 
     private void addVId(final ApListViewHolder holder, final StaVo data) {
-        final HashMap<Integer,String> identities = data.getIdentities();
+        final HashMap<Integer, String> identities = data.getIdentities();
         holder.mVIdLayout.removeAllViews();
 
-        if (identities != null&&identities.size() > 0){
+        if (identities != null && identities.size() > 0) {
             holder.mVIdLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //跳转虚拟身份页面
-                    Intent intent = new Intent( holder.itemView.getContext(),
+                    Intent intent = new Intent(holder.itemView.getContext(),
                             VirtualIdentityActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("sta",data);
+                    bundle.putSerializable("sta", data);
                     intent.putExtras(bundle);
                     holder.itemView.getContext().startActivity(intent);
                 }
             });
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,1.0f);
-            for (Map.Entry<Integer,String> entry: identities.entrySet()) {
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+            for (Map.Entry<Integer, String> entry : identities.entrySet()) {
                 ImageView imageView = new ImageView(holder.itemView.getContext());
                 imageView.setLayoutParams(lp);
-                imageView.setPadding(0,0,0,0);
-                switch (entry.getKey()){
+                imageView.setPadding(0, 0, 0, 0);
+                switch (entry.getKey()) {
                     case 1:
                         imageView.setImageResource(R.drawable.phone);
                         holder.mVIdLayout.addView(imageView);
@@ -127,12 +146,12 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
                     default:
                         break;
                 }
-                if (holder.mVIdLayout.getChildCount()>= VIRTURAL_IDENTITY_ICON_COUNT)break;
+                if (holder.mVIdLayout.getChildCount() >= VIRTURAL_IDENTITY_ICON_COUNT) break;
             }
-            if (holder.mVIdLayout.getChildCount()<identities.size()){
+            if (holder.mVIdLayout.getChildCount() < identities.size()) {
                 ImageView imageView = new ImageView(holder.itemView.getContext());
                 imageView.setLayoutParams(lp);
-                imageView.setPadding(0,0,0,0);
+                imageView.setPadding(0, 0, 0, 0);
                 imageView.setImageResource(R.drawable.more);
                 holder.mVIdLayout.addView(imageView);
             }

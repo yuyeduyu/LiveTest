@@ -37,6 +37,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.MacData;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ScanEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
+import com.ascend.wangfeng.locationbyhand.util.OuiDatabase;
 import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.ble.BLEDataUtil;
@@ -482,6 +483,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     sta.setApmac(elements[2]);
                     sta.setSignal(formatInt(elements[3]));
                     sta.setLtime(time);
+                    sta.setOui(OuiDatabase.ouiMatch(elements[1]));
                     stas.add(sta);
                     break;
                 case 2://ap
@@ -588,6 +590,15 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         }*/
     }
 
+    private int formatInt(String value) {
+        int result = 0;
+        try {
+            result = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "formatInt Error: " + value);
+        }
+        return result;
+    }
     /**
      * 蓝牙传送大于18个字节数据
      *
@@ -655,17 +666,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             SystemClock.sleep(200);
         }
     }
-
-    private int formatInt(String value) {
-        int result = 0;
-        try {
-            result = Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "formatInt Error: " + value);
-        }
-        return result;
-    }
-
     @Override
     public void onDestroy() {
         mScanHandle.removeCallbacks(mScanRunable);
