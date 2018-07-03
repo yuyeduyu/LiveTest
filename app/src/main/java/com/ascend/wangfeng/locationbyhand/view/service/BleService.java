@@ -629,7 +629,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                             Log.d("BLE", "Write Success, DATA: " + Arrays.toString(gattCharacteristic.getValue()));
                             onceSendSuccess = true;
                             //避免数据发送太快丢失，需要分包延迟发送
-                            SystemClock.sleep(200);
+                            SystemClock.sleep(5);
                             break;
                         } else {
                             Log.d("BLE", "Write failed, DATA: " + Arrays.toString(gattCharacteristic.getValue()) + ", and left times = " + onceTryCount);
@@ -648,7 +648,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 }
 
                 //避免数据发送太快丢失，需要分包延迟发送
-                SystemClock.sleep(200);
+                SystemClock.sleep(5);
             }
 
             if (sendSuccess) {

@@ -109,14 +109,14 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                         if (event.getStatu() == FastScan.Start) {
                             //开启快速侦测
                             MyApplication.setIsDataRun(true);
-                            Snackbar.make(mAppBar, "开启快速侦测", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mAppBar, "快速侦测开启", Snackbar.LENGTH_SHORT).show();
                             SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac_on"
                                     ,SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac",""));
                             btnFastScan.setVisibility(View.VISIBLE);
                         } else if (event.getStatu() == FastScan.Stop) {
                             //停止快速侦测
                             btnFastScan.setVisibility(View.GONE);
-                            Snackbar.make(mAppBar, "停止快速侦测", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mAppBar, "快速侦测停止", Snackbar.LENGTH_SHORT).show();
                             SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac","");
                             SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_on","");
                             SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_rate","");
