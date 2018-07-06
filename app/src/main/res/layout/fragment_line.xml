@@ -227,8 +227,8 @@
     <LinearLayout
         android:id="@+id/v_id"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_height="28dp"
+        android:layout_marginLeft="16dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:visibility="gone"></LinearLayout>

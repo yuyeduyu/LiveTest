@@ -64,15 +64,44 @@ public class VirtualIdentityAdapter extends RecyclerView.Adapter<VirtualIdentity
                     break;
                 case 8:
                     holder.typeTv.setText("baidu");
+                case 15:
+                    holder.typeTv.setText("dianping");
                     break;
                 case 16:
                     holder.typeTv.setText("jingdong");
                     break;
+                case 17:
+                    holder.typeTv.setText("youku");
+                    break;
                 case 18:
                     holder.typeTv.setText("miliao");
                     break;
+                case 19:
+                    holder.typeTv.setText("xiechen");
+                    break;
                 case 20:
                     holder.typeTv.setText("momo");
+                    break;
+                case 21:
+                    holder.typeTv.setText("changba");
+                    break;
+                case 22:
+                    holder.typeTv.setText("diditaxi");
+                    break;
+                case 23:
+                    holder.typeTv.setText("feixin");
+                    break;
+                case 24:
+                    holder.typeTv.setText("kuaidi");
+                    break;
+                case 25:
+                    holder.typeTv.setText("meituan");
+                    break;
+                case 26:
+                    holder.typeTv.setText("nuomiid");
+                    break;
+                case 27:
+                    holder.typeTv.setText("tudou");
                     break;
                 case 49:
                     holder.typeTv.setText("支付宝");
