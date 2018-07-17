@@ -52,7 +52,7 @@ buildscript {
     }
 }
 greendao {
-    schemaVersion 5
+    schemaVersion 6
     daoPackage 'com.anye.greendao.gen'
     targetGenDir 'src/main/java'
 }

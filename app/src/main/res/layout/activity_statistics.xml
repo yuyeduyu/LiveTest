@@ -6,7 +6,11 @@
     android:orientation="vertical">
 
     <include layout="@layout/custom_toolbar" />
-
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_margin="8dp"
+        android:id="@+id/line_chart"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"></com.github.mikephil.charting.charts.LineChart>
     <LinearLayout
         android:id="@+id/ll_ap"
         android:layout_width="match_parent"
@@ -17,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="当天采集的mac"
+            android:layout_marginLeft="8dp"
             android:textColor="@color/text1"
             android:textStyle="bold" />
 
