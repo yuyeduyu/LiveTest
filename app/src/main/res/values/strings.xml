@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name" translatable="false">无线雷达-C+</string>
-    <string name="open" translatable="false">open</string>
-    <string name="close" translatable="false">close</string>
+    <string name="app_name" translatable="false">无线雷达-C(blue)</string>
+    <string name="app_name_mini" translatable="false">无线雷达-mini</string>
+    <string name="app_name_cplus" translatable="false">无线雷达-C+</string>
     <string name="main_title_frame_aplist" translatable="false">A P列表</string>
     <string name="main_title_frame_maclist" translatable="false">终端列表</string>
     <string name="main_title_frame_set" translatable="false">设  置</string>

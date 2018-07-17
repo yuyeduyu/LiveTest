@@ -131,5 +131,13 @@ public interface WiFiApi {
     @FormUrlEncoded
     @POST("get_sta_associated")
     Observable<StaAssociatedDo> getStaAssociated(@Field("mac")String mac);
+    /**
+     *
+     * @param mac
+     * @return 获取mac oui -->设备厂商
+     */
+    @FormUrlEncoded
+    @POST("get_sta_associated")
+    Observable<String> getOui(@Field("mac")String mac);
 
 }

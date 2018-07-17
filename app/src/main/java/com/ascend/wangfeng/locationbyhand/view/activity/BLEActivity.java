@@ -11,11 +11,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.ascend.wangfeng.locationbyhand.Config;
+import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.BleAdapter;
 import com.ascend.wangfeng.locationbyhand.adapter.MyItemDecoration;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
+import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.DeviceEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.MainServiceEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
@@ -29,6 +32,7 @@ import butterknife.ButterKnife;
 
 public class BLEActivity extends AppCompatActivity {
 
+    private String TAG = getClass().getCanonicalName();
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.list)
@@ -91,9 +95,12 @@ public class BLEActivity extends AppCompatActivity {
             public void onClick(View view, int position) {
                 RxBus.getDefault().post(new MainServiceEvent(MainServiceEvent.CLEAE_DATA));
                 stopService(new Intent(BLEActivity.this, MainService.class));
+//                stopService(new Intent(BLEActivity.this, UploadService.class));
                 MessageEvent event = new MessageEvent(MessageEvent.CONNECT);
                 event.setDevice(mDevices.get(position));
                 RxBus.getDefault().post(event);
+                MyApplication.mDevicdID = mDevices.get(position).getName();
+                setAppVersion(mDevices.get(position).getName());
                 finish();
             }
         });
@@ -106,10 +113,39 @@ public class BLEActivity extends AppCompatActivity {
                 scanDevice();
             }
         });
+
+//        SharedPreferences read = getSharedPreferences("Station",MODE_PRIVATE);
+//        if (read!=null)
+//        MyApplication.connectStation
+
     }
 
     private void scanDevice() {
         RxBus.getDefault().post(new MessageEvent(MessageEvent.SCAN_START));
         mSwipe.setRefreshing(true);
+    }
+
+    /**
+     * 根据设备号，判断app版本
+     * @param num  5开头为nimi版
+     * @author lishanhui
+     * created at 2018-07-09 9:23
+     */
+    private void setAppVersion(String num) {
+        if (num==null)
+            return;
+        int appVersion = Config.C;
+        if (num.startsWith("5")){
+            //mini
+            appVersion = Config.C_MINI;
+
+        }else if (num.startsWith("P")){
+            //cplus
+            appVersion = Config.C_PLUS;
+        }
+//        toast(num+"---->"+appVersion);
+        MyApplication.setAppVersion(appVersion);
+        //通知更改界面aplistFragment stalistFragment
+        RxBus.getDefault().post(new AppVersionEvent(appVersion));
     }
 }

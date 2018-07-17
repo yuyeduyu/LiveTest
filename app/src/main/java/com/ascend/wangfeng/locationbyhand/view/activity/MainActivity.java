@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -26,30 +28,36 @@ import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.SearchEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
 import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
 import com.ascend.wangfeng.locationbyhand.view.service.BleService;
+//import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
+//import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
 import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+//
 public class MainActivity extends BaseActivity {
 
-
+    private String TAG = getClass().getCanonicalName();    //com.ascend.wangfeng.locationbyhand.view.activity;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.viewpager)
     ViewPager mViewpager;
     @BindView(R.id.tab)
     TabLayout mTab;
-    private String TAG = getClass().getCanonicalName();
-    private TabMainAdapter adapter;
+
+    private TabMainAdapter adapter;  //主界面加载fragment的适配器
     private BroadcastReceiver connectionReceiver;
+
+
 
     @Override
     protected int setContentView() {
@@ -57,9 +65,20 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        Log.i(TAG,"保存活动注销时 当前活动的相关状态");
+        //注销活动时 保存当前的连接状态
+//        SharedPreferences.Editor editor = getSharedPreferences("Station" ,MODE_PRIVATE).edit();
+//        editor.putBoolean("station",MyApplication.connectStation);
+    }
+
+    @Override
     protected void initView() {
+
+        Log.i(TAG, "initView: ");
         initService();
-        //initBroadcast();
+        //initBroadcast();              //监听wifi连接情况
         //initConfig();
         listenConnect();
         initData();
@@ -73,8 +92,17 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+    private void initService() {                            //启动服务
+        startService(new Intent(MainActivity.this, BleService.class));
+    }
+
     private void listenConnect() {
-        mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
+        if (MyApplication.connectStation)
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+        else
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
+        //监听连接状态
         RxBus.getDefault().toObservable(ConnectedEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseSubcribe<ConnectedEvent>() {
@@ -87,21 +115,18 @@ public class MainActivity extends BaseActivity {
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
                         }
-
                     }
                 });
     }
 
     private void initBleActivity() {
-        if (!BleService.mConnected)
+        if (!BleService.mConnected)                         //未连接跳转到蓝牙连接页面
             startActivity(new Intent(this, BLEActivity.class));
         else
             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
     }
 
-    private void initService() {
-        startService(new Intent(MainActivity.this, BleService.class));
-    }
+
 
     /**
      * 监听wifi连接情况
@@ -187,8 +212,23 @@ public class MainActivity extends BaseActivity {
             mToolbar.setTitle(R.string.app_name);
         }
         setSupportActionBar(mToolbar);
-       /* getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
+        RxBus.getDefault().toObservable(AppVersionEvent.class)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubcribe<AppVersionEvent>() {
+                    @Override
+                    public void onNext(AppVersionEvent event) {
+                        //更新界面 MIni显示上传按钮
+                        if (mToolbar != null&event.getAppVersion() == Config.C_MINI) {
+                            mToolbar.setTitle(R.string.app_name_mini);
+                        }else if (mToolbar != null&event.getAppVersion() == Config.C_PLUS){
+                            mToolbar.setTitle(R.string.app_name_cplus);
+                        }else if (mToolbar != null){
+                            mToolbar.setTitle(R.string.app_name);
+                        }
+                    }
+                });
     }
 
     @Override

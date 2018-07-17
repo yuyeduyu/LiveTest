@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -39,8 +39,50 @@
                     android:background="@color/gray"
                     />
             </RelativeLayout>
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/collect_radius"
+                style="@style/set_text">
 
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="监测范围"
+                    android:textStyle="bold"/>
 
+                <TextView
+                    android:id="@+id/collect_radius_text"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/rl_log_all"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="监测日志"
+                    android:textStyle="bold"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"
+                    />
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/targetAp"
                 style="@style/set_text">
@@ -146,6 +188,7 @@
                     android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/workMode"
                 style="@style/set_text">
 
@@ -153,8 +196,8 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="工作模式"
-                    android:textStyle="bold"/>
+                    android:text="采集模式"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/workMode_text"
@@ -255,9 +298,94 @@
                     android:layout_marginLeft="100dp"/>
 
                 <View
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/upTime"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="上传时间"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/upTime_text"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="100dp"/>
+                <View
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/upPath"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="上传路径"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:text=""
+                    android:id="@+id/upPath_text"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@null"
+                    android:layout_marginLeft="100dp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/analyse"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="数据分析"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/tongji"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="统计"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:visibility="gone"
                     android:layout_alignParentBottom="true"
                     android:background="@color/gray"/>
             </RelativeLayout>

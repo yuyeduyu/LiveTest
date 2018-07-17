@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.MyItemDecoration;
@@ -89,8 +90,10 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
         initialLisener();
         initialView();
         initDialog();
-
-        initView();
+        //cplus
+        if (MyApplication.AppVersion== Config.C_PLUS){
+            initView();
+        }
     }
 
     private void initView() {
@@ -125,6 +128,19 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 });
     }
 
+    private void initialData() {
+        mPresenter = new TargetPresenterImpl(this);
+        mList =(ArrayList<NoteDo>) MyApplication.getmNoteDos();
+        adapter = new SwipeAdapter(mList);
+        comparator = new Comparator<NoteDo>() {
+            @Override
+            public int compare(NoteDo noteVo, NoteDo t1) {
+                return noteVo.getMac().compareTo(t1.getMac());
+            }
+        };
+        mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
+    }
+
     private void initialLisener() {
         swipeMenuCreator = new SwipeMenuCreator() {
 
@@ -153,7 +169,10 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 swipeRightMenu.addMenuItem(deleteItem);
                 swipeRightMenu.addMenuItem(changeItem);
                 swipeRightMenu.addMenuItem(logItem);
-                swipeRightMenu.addMenuItem(zhence);
+                // cplus
+                if (MyApplication.AppVersion==Config.C_PLUS){
+                    swipeRightMenu.addMenuItem(zhence);
+                }
             }
         };
     }
@@ -188,19 +207,6 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                         }
                     }
                 }).setNegativeButton("取消", null).create();
-    }
-
-    private void initialData() {
-        mPresenter = new TargetPresenterImpl(this);
-        mList = (ArrayList<NoteDo>) MyApplication.getmNoteDos();
-        adapter = new SwipeAdapter(mList);
-        comparator = new Comparator<NoteDo>() {
-            @Override
-            public int compare(NoteDo noteVo, NoteDo t1) {
-                return noteVo.getMac().compareTo(t1.getMac());
-            }
-        };
-        mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
     }
 
     private void initialView() {

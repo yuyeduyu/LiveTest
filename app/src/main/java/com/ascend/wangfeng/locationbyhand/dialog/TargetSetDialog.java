@@ -1,6 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.dialog;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -44,16 +45,17 @@ public class TargetSetDialog {
         mac.setText(noteVo.getMac() + "");
         mac.setEnabled(false);
         final EditText note = (EditText) layout.findViewById(R.id.suspect);
-        new AlertDialog.Builder(activity).setTitle("设置目标")
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("设置目标")
                 .setView(layout)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
 
-                            Log.d(TAG, "onClick: " + mac.getText().toString());
-                            String macStr = mac.getText().toString();
-                            String noteStr = note.getText().toString() + "";
-                            addMac(macStr, noteStr, view);
+                        Log.d(TAG, "onClick: " + mac.getText().toString());
+                        String macStr = mac.getText().toString();
+                        String noteStr = note.getText().toString() + "";
+                        addMac(macStr, noteStr, view);
                     }
                 })
                 .setNegativeButton("删除", new DialogInterface.OnClickListener() {
@@ -62,16 +64,21 @@ public class TargetSetDialog {
                         String macStr = mac.getText().toString() + "";
                         delMac(macStr, view);
                     }
-                })
+                });
+        if (MyApplication.AppVersion != Config.C_MINI) {
+            builder.setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface anInterface, int i) {
+                    showSetPasswordDialog(activity, noteVo, view);
+                }
+            });
+        }
 
-                .setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface anInterface, int i) {
-                        showSetPasswordDialog(activity, noteVo, view);
-                    }
-                })
-                .create().show();
+
+        Dialog dialog = builder.create();
+        dialog.show();
     }
+
     public static void showSetPasswordDialog(final AppCompatActivity activity, NoteVo apVo, final IShowView view) {
         final View layout = activity.getLayoutInflater().inflate(R.layout.dialog_ap_password
                 , null);
@@ -91,7 +98,7 @@ public class TargetSetDialog {
                         String nameStr = name.getText().toString();
                         String macStr = mac.getText().toString() + "";
                         String passwordStr = password.getText().toString();
-                        Config.setApPassword(macStr,nameStr,passwordStr);
+                        Config.setApPassword(macStr, nameStr, passwordStr);
                     }
                 })
                 .setNegativeButton("删除", new DialogInterface.OnClickListener() {
@@ -102,9 +109,9 @@ public class TargetSetDialog {
                             MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
                             event.setData("RMESSID");
                             RxBus.getDefault().post(event);
-                          Config.clearApPassword();
+                            Config.clearApPassword();
                         } else {
-                            view.show(0,activity.getString(R.string.un_set_password));
+                            view.show(0, activity.getString(R.string.un_set_password));
                         }
                     }
                 })
@@ -184,8 +191,8 @@ public class TargetSetDialog {
                     public void onClick(DialogInterface anInterface, int i) {
                         String macStr = mac.getText().toString() + "";
                         String rateInt = rateEdit.getText().toString();
-                        SharedPreferencesUtils.setParam(activity,"fast_mac",macStr);
-                        SharedPreferencesUtils.setParam(activity,"fast_mac_rate",rateInt);
+                        SharedPreferencesUtils.setParam(activity, "fast_mac", macStr);
+                        SharedPreferencesUtils.setParam(activity, "fast_mac_rate", rateInt);
                         setZhenCe(macStr, rateInt);
                     }
                 })

@@ -31,6 +31,8 @@ public class LogDao extends AbstractDao<Log, Long> {
         public final static Property Longitude = new Property(4, double.class, "longitude", false, "LONGITUDE");
         public final static Property Note = new Property(5, String.class, "note", false, "NOTE");
         public final static Property Ltime = new Property(6, long.class, "ltime", false, "LTIME");
+        public final static Property AppVersion = new Property(7, int.class, "appVersion", false, "APP_VERSION");
+        public final static Property Type = new Property(8, int.class, "type", false, "TYPE");
     };
 
 
@@ -52,7 +54,9 @@ public class LogDao extends AbstractDao<Log, Long> {
                 "\"LATITUDE\" REAL NOT NULL ," + // 3: latitude
                 "\"LONGITUDE\" REAL NOT NULL ," + // 4: longitude
                 "\"NOTE\" TEXT," + // 5: note
-                "\"LTIME\" INTEGER NOT NULL );"); // 6: ltime
+                "\"LTIME\" INTEGER NOT NULL ," + // 6: ltime
+                "\"APP_VERSION\" INTEGER NOT NULL ," + // 7: appVersion
+                "\"TYPE\" INTEGER NOT NULL );"); // 8: type
     }
 
     /** Drops the underlying database table. */
@@ -83,6 +87,8 @@ public class LogDao extends AbstractDao<Log, Long> {
             stmt.bindString(6, note);
         }
         stmt.bindLong(7, entity.getLtime());
+        stmt.bindLong(8, entity.getAppVersion());
+        stmt.bindLong(9, entity.getType());
     }
 
     @Override
@@ -107,6 +113,8 @@ public class LogDao extends AbstractDao<Log, Long> {
             stmt.bindString(6, note);
         }
         stmt.bindLong(7, entity.getLtime());
+        stmt.bindLong(8, entity.getAppVersion());
+        stmt.bindLong(9, entity.getType());
     }
 
     @Override
@@ -123,7 +131,9 @@ public class LogDao extends AbstractDao<Log, Long> {
             cursor.getDouble(offset + 3), // latitude
             cursor.getDouble(offset + 4), // longitude
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // note
-            cursor.getLong(offset + 6) // ltime
+            cursor.getLong(offset + 6), // ltime
+            cursor.getInt(offset + 7), // appVersion
+            cursor.getInt(offset + 8) // type
         );
         return entity;
     }
@@ -137,6 +147,8 @@ public class LogDao extends AbstractDao<Log, Long> {
         entity.setLongitude(cursor.getDouble(offset + 4));
         entity.setNote(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setLtime(cursor.getLong(offset + 6));
+        entity.setAppVersion(cursor.getInt(offset + 7));
+        entity.setType(cursor.getInt(offset + 8));
      }
     
     @Override

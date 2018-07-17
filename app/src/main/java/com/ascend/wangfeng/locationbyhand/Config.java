@@ -17,6 +17,10 @@ import rx.schedulers.Schedulers;
 
 public class Config {
     public static String TAG="Config";
+    public static int C = 0;//无线雷达-c
+    public static int C_MINI = 1;//无线雷达-mini
+    public static int C_PLUS = 2;//无线雷达-cplus
+
     private static AlarmMacListDo alarmMacListDo;
 
     public static AlarmMacListDo getAlarmMacListDo() {

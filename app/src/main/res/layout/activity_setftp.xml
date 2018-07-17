@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                style="@style/setText_left"
+                android:text="服务器地址:" />
+
+            <com.ascend.wangfeng.locationbyhand.util.IpEditer
+                android:id="@+id/set_url"
+                style="@style/setEdit"
+                android:imeOptions="actionNext" />
+        </LinearLayout>
+
+        <include layout="@layout/view_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                style="@style/setText_left"
+                android:inputType="number"
+                android:text="端    口    号:" />
+
+            <EditText
+                android:id="@+id/set_port"
+                style="@style/setEdit"
+                android:imeOptions="actionNext"
+                android:inputType="number" />
+        </LinearLayout>
+        <include layout="@layout/view_line" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                style="@style/setText_left"
+                android:text="用            户:" />
+
+            <EditText
+                android:id="@+id/set_user"
+                style="@style/setEdit"
+
+                android:imeOptions="actionNext" />
+        </LinearLayout>
+        <include layout="@layout/view_line" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                style="@style/setText_left"
+                android:text="密            码:" />
+
+            <EditText
+                android:id="@+id/password"
+                style="@style/setEdit"
+                android:inputType="textPassword" />
+        </LinearLayout>
+        <include layout="@layout/view_line" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                style="@style/setText_left"
+                android:text="服务器路径:" />
+
+            <EditText
+                android:id="@+id/set_path"
+                style="@style/setEdit"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+        </LinearLayout>
+        <include layout="@layout/view_line" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/set_submit"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="提交" />
+</LinearLayout>

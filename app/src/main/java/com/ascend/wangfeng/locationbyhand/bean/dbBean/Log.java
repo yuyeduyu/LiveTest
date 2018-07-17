@@ -18,6 +18,11 @@ public class Log {
     private double longitude;
     private String note;//备注
     private long ltime;//最后更新时间
+    private int appVersion;//不同版本区分
+    /**
+     * 0:ap, 1:sta
+     */
+    private int type;
     public long getLtime() {
         return this.ltime;
     }
@@ -60,9 +65,21 @@ public class Log {
     public void setId(Long id) {
         this.id = id;
     }
-    @Generated(hash = 994769403)
+    public int getAppVersion() {
+        return this.appVersion;
+    }
+    public void setAppVersion(int appVersion) {
+        this.appVersion = appVersion;
+    }
+    public int getType() {
+        return this.type;
+    }
+    public void setType(int type) {
+        this.type = type;
+    }
+    @Generated(hash = 1951576328)
     public Log(Long id, String mac, int distance, double latitude,
-            double longitude, String note, long ltime) {
+            double longitude, String note, long ltime, int appVersion, int type) {
         this.id = id;
         this.mac = mac;
         this.distance = distance;
@@ -70,6 +87,8 @@ public class Log {
         this.longitude = longitude;
         this.note = note;
         this.ltime = ltime;
+        this.appVersion = appVersion;
+        this.type = type;
     }
     @Generated(hash = 1364647056)
     public Log() {

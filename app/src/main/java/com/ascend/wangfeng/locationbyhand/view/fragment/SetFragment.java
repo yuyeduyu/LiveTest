@@ -1,9 +1,14 @@
 package com.ascend.wangfeng.locationbyhand.view.fragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -33,6 +38,10 @@ import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.LogAllActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TaskActivity;
 import com.kyleduo.switchbutton.SwitchButton;
@@ -44,11 +53,17 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils.getParam;
+import static com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils.setParam;
+
 /**
  * Created by fengye on 2017/2/7.
  * email 1040441325@qq.com
  */
 public class SetFragment extends BaseFragment implements SetContract.View {
+
+    private static final int UPLOADTIME = 0;
+    private static final int UPLOADPATH = 1;
     @BindView(R.id.targetAp)
     RelativeLayout mTargetAp;
     @BindView(R.id.set_switch_isRing)
@@ -83,12 +98,32 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout mGhz;
     @BindView(R.id.task)
     RelativeLayout mTask;
+    @BindView(R.id.analyse)
+    RelativeLayout analyse;
     @BindView(R.id.workMode)
-    RelativeLayout workMode;
-    @BindView(R.id.about)
-    RelativeLayout about;
+    RelativeLayout Rl_workMode;
     @BindView(R.id.workMode_text)
     TextView workModeText;
+    @BindView(R.id.collect_radius_text)
+    TextView mCollectRadiusText;
+    @BindView(R.id.collect_radius)
+    RelativeLayout mCollectRadius;
+    @BindView(R.id.about)
+    RelativeLayout mAbout;
+    @BindView(R.id.upTime)
+    RelativeLayout mUpTime;
+    @BindView(R.id.upTime_text)
+    TextView mTime;
+    @BindView(R.id.upPath)
+    RelativeLayout mUpPath;
+    @BindView(R.id.upPath_text)
+    TextView mPath;
+    @BindView(R.id.rl_log_all)
+    RelativeLayout rlLogAll;
+    @BindView(R.id.tongji)
+    RelativeLayout tongji;
+
+
     private String TAG = getClass().getCanonicalName();
 
 
@@ -96,11 +131,12 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     String[] mWorkStyles = new String[]{"移动模式", "静止模式"};
     String[] mTrackChannels = new String[]{"非自动锁定模式", "自动锁定模式"};
     String[] mWorkMode = new String[]{"采集模式", "升级模式"};
+    String[] mCollectRadiuses = new String[]{"2米内", "5米内", "无限制"};
 
+    private int workmode;//采集 升级 模式编号
     private int channel;//channel编号
     private int workstyle;//工作模式编号
     private int trackChannel;//信道锁定模式编号
-    private int workmode;//采集 升级 模式编号
     private String url;
     private AlertDialog channelDialog;//扫描信道弹框
     private AlertDialog workDialog;//工作模式
@@ -116,8 +152,15 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     private long CLICK_RATE = 3 * 60 * 1000;
     // is changing GHZ, if true, it can show change success
     private Boolean isChangeGhz = false;
-    private Boolean isChangeWorkMode = false;
+    private AlertDialog collectRadiusDialog;
+    private int mCollectRadiusId;
 
+
+    private Handler guiHandler;
+
+    //判断是否连接成功
+    private boolean isConnect = false;
+    private Boolean isChangeWorkMode = false;
     private Handler mGhzChangeHandler = new Handler();
     private Runnable mGhzChangeRunable = new Runnable() {
         @Override
@@ -144,6 +187,23 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         initData();
         initView();
         initGhz();
+
+        guiHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case UPLOADTIME:
+                        String time = MyApplication.GetUpLoadTime() / (60 * 1000) + "分钟";
+                        mTime.setText(time);
+                        break;
+                    case UPLOADPATH:
+                        mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort + "/" + MyApplication.UpLoadFilePath);
+                        break;
+
+                }
+            }
+        };
     }
 
     private void showGhzChangeDialog() {
@@ -207,12 +267,15 @@ public class SetFragment extends BaseFragment implements SetContract.View {
 
     private void initGhz() {
         setGhzText();
-        mGhz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showGhzChangeDialog();
-            }
-        });
+        if (MyApplication.AppVersion != Config.C_MINI) {
+            mGhz.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showGhzChangeDialog();
+                }
+            });
+        }
+
         mGhzRxBus = RxBus.getDefault().toObservable(GhzEvent.class)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -264,16 +327,12 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     private void initView() {
-        mEquipmentText.setText(MyApplication.mDevicdID==null?"": MyApplication.mDevicdID+ "");
+        mEquipmentText.setText(MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID + "");
         mTargetCount.setText(MyApplication.getmNoteDos().size() + "");
         mChannelText.setText(mChannelitems[channel]);
         //隐藏工作模式设置
         mWorkStyleText.setText(mWorkStyles[workstyle]);
         mWorkStyle.setVisibility(View.GONE);
-
-        workmode = (int) SharedPreferencesUtils.getParam(getActivity(), "workmode", 0);
-        workModeText.setText(mWorkMode[workmode]);
-
         mUrl.setText(url + "");
         mSetTrackChannelText.setText(mTrackChannels[trackChannel]);
         mSetSwitchIsRing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -289,12 +348,44 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         mSetTrackChannel.setVisibility(View.GONE);
         mTask.setVisibility(View.GONE);
         //mGhz.setVisibility(View.GONE);
+        if (MyApplication.AppVersion == Config.C_PLUS) {
+            //采集模式
+            Rl_workMode.setVisibility(View.VISIBLE);
+            workmode = (int) SharedPreferencesUtils.getParam(getActivity(), "workmode", 0);
+            workModeText.setText(mWorkMode[workmode]);
+        }
+        if (MyApplication.AppVersion == Config.C_MINI) {
+            mCollectRadius.setVisibility(View.VISIBLE);
+            mUpTime.setVisibility(View.VISIBLE);
+            mUpPath.setVisibility(View.VISIBLE);
+            rlLogAll.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * 为了得到传回的数据，必须在前面的Activity中（指MainActivity类）重写onActivityResult方法
+     * <p>
+     * requestCode 请求码，即调用startActivityForResult()传递过去的值
+     * resultCode 结果码，结果码用于标识返回数据来自哪个新Activity
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case 1:
+                MyApplication.ftpData();
+                guiHandler.sendEmptyMessage(UPLOADPATH);
+                break;
+        }
     }
 
     private void initData() {
-        //  initGPRS();
-        mSetSwitchIsRing.setChecked((Boolean) SharedPreferencesUtils.getParam(getContext(),
-                "ring", false));
+
+        mSetSwitchIsRing.setChecked((Boolean) getParam(getContext(), "ring", false));
+        mCollectRadiusId = (int) getParam(getContext(), "collectRadius", 2);
+        mCollectRadiusText.setText(mCollectRadiuses[mCollectRadiusId]);
+        mTime.setText((MyApplication.GetUpLoadTime() / (60 * 1000) + "分钟"));
+        mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort + "/" + MyApplication.UpLoadFilePath);
 
         initDialog();
     }
@@ -325,13 +416,22 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     private void initDialog() {
-
         channelDialog = new AlertDialog.Builder(getContext()).setTitle("扫描信道").setSingleChoiceItems(
                 mChannelitems, channel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
                         mChannelText.setText(mChannelitems[i]);
                         mPresenter.setChannel(i);
+                        anInterface.dismiss();
+                    }
+                }
+        ).create();
+        collectRadiusDialog = new AlertDialog.Builder(getContext()).setTitle("检测范围").setSingleChoiceItems(
+                mCollectRadiuses, mCollectRadiusId, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface anInterface, int i) {
+                        mCollectRadiusText.setText(mCollectRadiuses[i]);
+                        setParam(getContext(), "collectRadius", i);
                         anInterface.dismiss();
                     }
                 }
@@ -348,8 +448,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 }
         ).create();
 
-        final View layout = getActivity().getLayoutInflater().inflate(R.layout.dialog_url
-                , null);
+        final View layout = getActivity().getLayoutInflater().inflate(R.layout.dialog_url, null);
         final EditText urlEdit = (EditText) layout.findViewById(R.id.url);
 
         //final EditText caseOverview= (EditText) layout.findViewById(R.id.caseOverview);
@@ -390,17 +489,19 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     @OnClick({R.id.targetAp, R.id.scanChannel, R.id.workStyle, R.id.url, R.id.set_track_channel,
-            R.id.about, R.id.task, R.id.workMode})
+            R.id.about, R.id.task, R.id.analyse, R.id.workMode, R.id.upTime, R.id.upPath,
+            R.id.collect_radius, R.id.rl_log_all, R.id.tongji})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.targetAp:
+            case R.id.targetAp:                 //布控目标
                 startActivity(new Intent(getActivity(), TargetActivity.class));
-                /**
-                 * 输入Ap mac的dialog
-                 */
-
                 break;
-
+            case R.id.collect_radius:
+                collectRadiusDialog.show();
+                break;
+            case R.id.rl_log_all:
+                startActivity(new Intent(getActivity(), LogAllActivity.class));
+                break;
             case R.id.scanChannel:
                 //startActivity(new Intent(getActivity(), ChannelActivity.class));
                 /**
@@ -425,17 +526,61 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 //进入任务界面
                 startActivity(new Intent(getActivity(), TaskActivity.class));
                 break;
+            case R.id.analyse:
+                //进入数据分析界面
+                startActivity(new Intent(getActivity(), AnalyseActivity.class));
+                break;
+            case R.id.tongji:
+                //进入统计界面
+                startActivity(new Intent(getActivity(), StatisticsActivity.class));
+                break;
             case R.id.workMode:
                 //采集模式 升级模式切换
                 showWorkModeDialog();
+                break;
+            case R.id.upTime:
+                //设置上传的时间
+                upLoadTimeDialog();
+                break;
+            case R.id.upPath:
+                //设置上传的文件路径
+                //得到新打开Activity关闭后返回的数据
+                //第二个参数为请求码，可以根据业务需求自己编号
+                startActivityForResult(new Intent(getActivity(), SetftpActivity.class), 1);
                 break;
             default:
                 break;
         }
     }
 
+    //弹窗显示时间间隔显示
+    private void upLoadTimeDialog() {
+        String[] items = new String[]{"1分钟", "2分钟", "5分钟", "10分钟"};
+        int upLoadTime = MyApplication.GetUpLoadTime();                         //得到当前的时间
+//        int upLoadTime = MyApplication.upLoadTime;
+        int position = 0;
+        if (upLoadTime / (60 * 1000) == 1) position = 0;
+        else if (upLoadTime / (60 * 1000) == 2) position = 1;
+        else if (upLoadTime / (60 * 1000) == 5) position = 2;
+        else if (upLoadTime / (60 * 1000) == 10) position = 3;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("上传时间间隔").setSingleChoiceItems(items, position, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface anInterface, int i) {
+                //保存上传时间长度
+                String[] times = new String[]{60 * 1000 + "", 2 * 60 * 1000 + "", 5 * 60 * 1000 + "", 10 * 60 * 1000 + ""};
+                SharedPreferences.Editor editor = getContext().getSharedPreferences("uploadTime", Context.MODE_PRIVATE).edit();
+                editor.putString("time", times[i]);
+                editor.commit();
+                anInterface.cancel();
+                guiHandler.sendEmptyMessage(UPLOADTIME);
+            }
+        });
+        builder.show();
+    }
+
     /**
-     * 显示切换工作模式dialog
+     * 显示切换采集模式dialog
      *
      * @author lishanhui
      * created at 2018-06-27 11:24
@@ -456,7 +601,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     }
 
     /**
-     * 切换工作模式
+     * 切换采集模式
      *
      * @param i 0,采集模式  1，升级模式
      */
@@ -488,7 +633,6 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     public void onDestroy() {
         super.onDestroy();
         if (mGhzRxBus != null) mGhzRxBus.unsubscribe();
-        if (mWorkModeRxBus!=null) mWorkModeRxBus.unsubscribe();
     }
 
     @Override
@@ -496,4 +640,20 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         Snackbar.make(mEquipment, message, Snackbar.LENGTH_SHORT).show();
     }
 
+    /**
+     * 获取版本号
+     *
+     * @return 当前应用的版本号
+     */
+    public String getVersion() {
+        try {
+            PackageManager manager = getContext().getPackageManager();
+            PackageInfo info = manager.getPackageInfo(getContext().getPackageName(), 0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "未知";
+        }
+    }
 }

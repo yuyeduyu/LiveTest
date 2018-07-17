@@ -1,6 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.view.service;
 
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -28,8 +29,15 @@ import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.bean.StaVo;
+import com.ascend.wangfeng.locationbyhand.data.saveData.AllUpLoadData;
+import com.ascend.wangfeng.locationbyhand.data.saveData.ApData;
+import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
+import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
+import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
+import com.ascend.wangfeng.locationbyhand.data.saveData.UpLoadData;
 import com.ascend.wangfeng.locationbyhand.event.FastScan;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
+import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.DeviceEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.GhzEvent;
@@ -43,6 +51,10 @@ import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.ble.BLEDataUtil;
 import com.ascend.wangfeng.locationbyhand.util.ble.BluetoothLeClass;
 import com.ascend.wangfeng.locationbyhand.util.ble.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -85,7 +97,14 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
      * 是否已经关闭
      */
     private volatile boolean mIsShutdown = false;
+    //需要提交的数据
+    List<ApData> aps = new ArrayList<>();
+    List<StaData> stas = new ArrayList<>();
+    List<StaConInfo> staCons = new ArrayList<>();
+    List<LocationData> GpsData = new ArrayList<>();
 
+    private double latitude;        //纬度
+    private double longitude;       //经度
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -95,6 +114,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
     @Override
     public void onCreate() {
         super.onCreate();
+        EventBus.getDefault().register(this);
         initBle();
         initScan();
         initCMD();
@@ -102,7 +122,76 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         //initTest();
         //scanDevice(true);
         //mBLE.connect(address);
+        Notification notification = new Notification.Builder(this.getApplicationContext())
+                .setContentTitle("无线雷达mini")
+                .setContentText("数据获取服务")
+                .setSmallIcon(R.mipmap.upload)
+                .setWhen(System.currentTimeMillis())
+                .build();
+        startForeground(1, notification);
     }
+
+    //获取经纬度信息
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEventLocation(LocationData locationData){
+        this.latitude = locationData.getLatitude();
+        this.longitude = locationData.getLongitude();
+        long nowTime = System.currentTimeMillis()/1000;                             //当前时间
+        if (GpsData.size()==0){
+            GpsData.add(locationData);
+        }else{
+            if (nowTime-GpsData.get(GpsData.size()-1).getTime()>=2) {                   //如果当前时间比记录的最后一条信息时间跨度大于等于2秒，则记录
+                GpsData.add(locationData);
+//                Log.e(TAG,"GPS-->纬度:"+GpsData.get(GpsData.size()-1).getLatitude()+"   经度："+GpsData.get(GpsData.size()-1).getLongitude());
+            }
+        }
+
+    }
+
+    //剔除已经上传的ap数据    从UploadService中发出数据
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onEventAp(AllUpLoadData allUpLoadData){                 //接收上传的ap数据
+        if (aps!=null){
+            for (int i = 0;i<aps.size();i++){
+                for (int j = 0;j<allUpLoadData.getAplist().size();j++){
+                    if (aps.get(i).getApMACStr().equals(allUpLoadData.getAplist().get(j).getApMACStr())
+                            &&(aps.get(i).getfTime() == allUpLoadData.getAplist().get(j).getfTime())){
+                        aps.remove(i);                              //从全部数据中剔除上传的数据
+                        Log.e(TAG,"剔除 {Ap} 数据");
+                        break;
+                    }
+                }
+            }
+        }
+        if (stas!=null){
+            for (int i = 0;i<stas.size();i++){
+                for (int j = 0;j<allUpLoadData.getStalist().size();j++){
+                    if (stas.get(i).getStaMACStr().equals(allUpLoadData.getStalist().get(j).getStaMACStr())
+                            &&(stas.get(i).getApMac().equals(allUpLoadData.getStalist().get(j).getApMac()))
+                            &&(stas.get(i).getfTime()==allUpLoadData.getStalist().get(j).getfTime())){
+                        stas.remove(i);
+                        Log.e(TAG,"剔除 {sta} 数据");
+                        break;
+                    }
+                }
+            }
+        }
+        if (staCons!=null){
+            for (int i = 0;i<staCons.size();i++){
+                for (int j = 0;j<allUpLoadData.getsClist().size();j++){
+                    if (staCons.get(i).getStaMACStr().equals(allUpLoadData.getsClist().get(j).getStaMACStr())
+                            &&staCons.get(i).getApMACStr().equals(allUpLoadData.getsClist().get(j).getApMACStr())
+                            &&staCons.get(i).getfTime() == allUpLoadData.getsClist().get(j).getfTime()){
+                        staCons.remove(i);
+                        Log.e(TAG,"剔除 {连接} 数据");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
 
     // 初始化写线程
     private void initWriteThread() {
@@ -269,6 +358,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         mConnected = true;
         RxBus.getDefault().post(new ConnectedEvent(true));
         mConnectHandler.removeCallbacks(mConnectRunable);
+        MyApplication.connectStation = true;
         toast("连接成功");
     }
 
@@ -291,8 +381,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         // when diconnected, reconnect
         if (adress != null) {
             mBLE.connect(adress);
-            // mConnectHandler.post(mConnectRunable);
         }
+        MyApplication.connectStation = false;
         RxBus.getDefault().post(new ConnectedEvent(false));
     }
 
@@ -301,6 +391,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         displayGattSercices(gatt.getServices());
     }
 
+    //得到蓝牙传输过来的数据
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -323,7 +414,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-
             byte[] bytes = characteristic.getValue();
             Byte[] bytes1 = new Byte[bytes.length];
             Log.i(TAG, "onCharacteristicRead: " + mList.toString());
@@ -362,11 +452,15 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
 
     private void format(String request) {
         Integer a = formatInt(request.substring(0, 1));
-        Log.e(TAG, "format: " + a + "\n" + request);
+        Log.i(TAG, "format: " + a + "\n" + request);
         switch (a) {
             case 1://sta
                 Log.i(TAG, "case: 1");
                 MacData data = collectMac(request);
+                // mini与其他版本区别
+                if (MyApplication.AppVersion==Config.C_MINI){
+                    collectUpLoadData(request);
+                }
                 RxBus.getDefault().post(data);
                 break;
             case 3://电量
@@ -376,14 +470,11 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 break;
             case 4://编号
                 String num = getNumber(request);
-                if (num == null || num == "") {
-                    //获取编号失败，重新获取
-                    sendData("GETMAC");
-                } else {
-                    MyApplication.mDevicdID = num;
-                    //获取编号后,获取频段
-                    sendData("GETMOD");
-                }
+                MyApplication.mDevicdID = num;
+                //判断app版本(-C,-mini,-cplus)
+//                    setAppVersion(num);
+                //获取编号后,获取频段
+                sendData("GETMOD");
                 Log.i(TAG, "case: 4");
                 break;
             case 5://频段
@@ -426,6 +517,27 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 break;
         }
     }
+    /**
+     * 根据设备号，判断app版本
+     * @param num  5开头为nimi版
+     * @author lishanhui
+     * created at 2018-07-09 9:23
+     */
+    private void setAppVersion(String num) {
+        int appVersion = Config.C;
+        if (num.startsWith("5")){
+            //mini
+            appVersion = Config.C_MINI;
+
+        }else if (num.startsWith("P")){
+            //cplus
+            appVersion = Config.C_PLUS;
+        }
+//        toast(num+"---->"+appVersion);
+        MyApplication.setAppVersion(appVersion);
+        //通知更改界面aplistFragment stalistFragment
+        RxBus.getDefault().post(new AppVersionEvent(appVersion));
+    }
 
     private boolean isApPasswordSuccess(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
@@ -458,7 +570,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         String num = elements[1];
         return num;
     }
-
     private Integer getGhz(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
         //第二行数据
@@ -467,6 +578,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         return num;
     }
 
+    //手机数据
     private MacData collectMac(String request) {
         long time = System.currentTimeMillis();
         List<ApVo> aps = new ArrayList<>();
@@ -474,7 +586,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         String[] rows = request.split(SEPARATOR_ROW);
         for (int i = 1; i < rows.length; i++) {
             String row = rows[i];
-            int a = formatInt(row.substring(0, 1));
+            int a = formatInt(row.substring(0, 1));                             //判断是终端还是ap
             String[] elements = row.split(SEPARATOR_ELEMENT);
             switch (a) {
                 case 1://sta
@@ -510,9 +622,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                     break;
             }
         }
-        return new MacData(aps, stas);
+        return new MacData(aps,stas);
     }
-
     public int getVol(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
         //第二行数据
@@ -590,12 +701,12 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         }*/
     }
 
-    private int formatInt(String value) {
+    private int formatInt(String value){
         int result = 0;
         try {
             result = Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "formatInt Error: " + value);
+        }catch (NumberFormatException e){
+            Log.e(TAG, "formatInt Error: "+value);
         }
         return result;
     }
@@ -671,5 +782,178 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         mScanHandle.removeCallbacks(mScanRunable);
         mConnectHandler.removeCallbacks(mConnectRunable);
         super.onDestroy();
+    }
+
+    //收集处理需要上传的数据
+    private void collectUpLoadData(String request) {
+
+        long time = System.currentTimeMillis()/1000;                 //获取当前时间
+        double mLatitude = latitude;
+        double mLongitude = longitude;
+        String[] rows = request.split(SEPARATOR_ROW);
+        for (int i = 0;i<rows.length;i++){
+            String row = rows[i];
+            if (!row.equals("1")) {
+                int a = formatInt(row.substring(0, 1));
+                String[] elements = row.split(SEPARATOR_ELEMENT);
+                if (a == 1) {
+                    StaData sta = new StaData();
+                    sta.setStaMACStr(elements[1]);
+                    sta.setSignal(formatInt(elements[3]));
+                    sta.setScanNum(1);
+                    sta.setApMac(elements[2]);              //连接的apMAC
+//                    Log.e(TAG,"apMac>>"+elements[2]+"  终端Mac>>"+elements[1]);
+                    //默认数据都是第一次出现，所以第一次扫描时间和最后一次扫描时间相同，在筛选数据时再进行更新
+                    sta.setfTime(time);
+                    sta.setlTime(time);
+                    sta.setLatitude(mLatitude);
+                    sta.setLongitude(mLongitude);
+                    filterData(aps, stas, sta, null, 1);
+                } else if (a == 2) {
+                    ApData ap = new ApData();
+                    ap.setApMACStr(elements[2]);
+                    ap.setApName(elements[3]);
+                    ap.setScanNum(1);
+                    ap.setApChannel(formatInt(elements[1]));
+                    ap.setSignal(formatInt(elements[4]));
+                    ap.setfTime(time);
+                    ap.setlTime(time);
+                    ap.setEncrypt(0x00);
+                    ap.setLatitude(mLatitude);
+                    ap.setLongitude(mLongitude);
+                    filterData(aps, stas, null, ap, 2);
+                }
+            }
+        }
+//        return null;
+    }
+
+
+    private boolean isAddSta;
+    private boolean isAddAp;
+
+    /**
+     * 数据过滤
+     * @param aps           ap集合
+     * @param stas          终端集合
+     * @param sta           终端数据
+     * @param ap            ap数据
+     * @param a             处理的对象  1是终端，2是ap
+     */
+    private void filterData(List<ApData> aps, List<StaData> stas, StaData sta,ApData ap,int a) {
+        //终端数据的插入与更新
+        if (a == 1){
+            isAddSta = true;
+            for (int i = 0;i<stas.size();i++){
+                if (stas.get(i).getStaMACStr().equals(sta.getStaMACStr())){
+                    if (stas.get(i).getSignal()<sta.getSignal()) {              //如果新扫描到的数据信号强度更大，更新信号强度+经纬度
+                        stas.get(i).setSignal(sta.getSignal());
+                        stas.get(i).setLatitude(sta.getLatitude());
+                        stas.get(i).setLongitude(sta.getLongitude());
+                    }
+                    stas.get(i).setScanNum(stas.get(i).getScanNum()+1);         //固定更新扫描次数
+                    stas.get(i).setlTime(sta.getlTime());                       //更新最候一次刷新的时间
+                    isAddSta = false;
+                    break;
+                }
+            }
+            if (isAddSta)
+                stas.add(sta);
+        }else if (a == 2){
+            isAddAp = true;
+            for (int i = 0;i<aps.size();i++){
+                if (aps.get(i).getApMACStr().equals(ap.getApMACStr())){
+                    aps.get(i).setScanNum(aps.get(i).getScanNum()+1);
+                    aps.get(i).setSignal(ap.getSignal());
+                    aps.get(i).setlTime(ap.getlTime());
+                    aps.get(i).setLatitude(ap.getLatitude());
+                    aps.get(i).setLongitude(ap.getLongitude());
+                    isAddAp = false;
+                }
+            }
+            if (isAddAp)
+                aps.add(ap);
+        }
+        //终端信息（包含终端连接的ap名称，apMac等信息）
+        stas = StaConnectName(aps,stas);
+
+        //连接信息
+        staCons = StaConInfoData(stas,staCons);         //连接数据的信息
+
+        //发送全部数据
+//        EventBus.getDefault().post(new UpLoadData(aps,stas,staCons,GpsData));
+//        EventBus.getDefault().post(new AllUpLoadData(aps,stas,staCons,GpsData));
+
+        //发送  几分钟 内未更新的过滤后的数据
+        EventBus.getDefault().post(new UpLoadData(aps,stas,staCons,GpsData));               //上传所有数据
+//        EventBus.getDefault().post(sendfilterData(aps,stas,staCons,GpsData));               //UpLooudData
+    }
+
+
+    /**
+     * 获取终端所连接ap的名称,以及ap的MAC
+     * @param aps
+     * @param stas
+     */
+    private boolean isStaName;
+    private List<StaData> StaConnectName(List<ApData> aps, List<StaData> stas) {
+        for (int i = 0;i<stas.size();i++){
+            isStaName = true;
+            for (int j = 0;j<aps.size();j++){
+                if (stas.get(i).getApMac().equals(aps.get(j).getApMACStr())){
+                    stas.get(i).setApName(aps.get(j).getApName());              //设置连接的Ap的名称
+                    stas.get(i).setApMac(aps.get(j).getApMACStr());
+//                    Log.e(TAG,"aaa  ApMac:"+stas.get(i).getApMac()+" 终端MAC： "+stas.get(i).getStaMACStr());
+                    isStaName = false;
+                    break;
+                }
+            }
+            if (isStaName) {
+                stas.get(i).setApName("未连接");
+                stas.get(i).setApMac("");
+            }
+        }
+        return stas;
+    }
+
+    /**
+     * 获取需要上传的连接信息数据
+     * @param aps
+     * @param stas
+     */
+    private boolean isAddStaCon = true;
+    private List<StaConInfo> StaConInfoData(List<StaData> stas,List<StaConInfo> staCons) {
+
+        for (int i = 0;i<stas.size();i++){
+//            Log.e(TAG,"UP>>  1"+stas.get(i).getApName());
+            if (!stas.get(i).getApName().equals("未连接")){        //只记录连接ap的相关数据
+                isAddStaCon = true;
+                for (int j = 0;j<staCons.size();j++){
+                    if (stas.get(i).getStaMACStr().equals(staCons.get(j).getStaMACStr())){
+                        staCons.get(j).setlTime(stas.get(i).getlTime());
+                        staCons.get(j).setLatitude(stas.get(i).getLatitude());
+                        staCons.get(j).setLongitude(stas.get(i).getLongitude());
+                        isAddStaCon = false;
+                        break;
+                    }
+                }
+                if (isAddStaCon) {
+                    StaConInfo staConInfo = new StaConInfo();
+                    staConInfo.setStaMACStr(stas.get(i).getStaMACStr());
+                    staConInfo.setApMACStr(stas.get(i).getApMac());
+//                    Log.e(TAG,"aaaa  ApMac:"+stas.get(i).getApMac()+" 终端MAC： "+stas.get(i).getStaMACStr());
+                    staConInfo.setApName(stas.get(i).getApName());
+                    staConInfo.setStartIp(0);
+                    staConInfo.setEndIp(0);
+                    staConInfo.setStartPort(0);
+                    staConInfo.setEndPort(0);
+                    staConInfo.setfTime(stas.get(i).getfTime());
+                    staConInfo.setlTime(stas.get(i).getlTime());
+                    staCons.add(staConInfo);
+                }
+
+            }
+        }
+        return staCons;
     }
 }

@@ -1,7 +1,9 @@
 package com.ascend.wangfeng.locationbyhand.view.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import com.anye.greendao.gen.ConnectRelationDao;
 import com.anye.greendao.gen.LogDao;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
+import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
@@ -47,15 +50,15 @@ import rx.schedulers.Schedulers;
  * email 1040441325@qq.com
  */
 
-public class MainService extends Service implements MainServiceContract.View {
-    public static final int SAVE_RATE = 60;
+public class MainService extends Service implements MainServiceContract.View, SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final int SAVE_RATE = 30;    // 轮询30次,保存一次 即一分钟保存一次
     public static final int CACHE_TIME = 2 * 60 * 1000;
     private static final String NOMAC = "00:00:00:00:00:00";
     public static final int RING_TIME = 10 * 1000;
     public static final int CHANNEL_RATE = 5;
     public static final int CHANNEL_RATE_5G = 1;
     public static final int DATA_RATE = 2000;
-    public static final int SINGAL = 20;//信号强度差值阈值
+    public int SINGAL = 20;//信号强度差值阈值
     public static final int DEFAULT_SINGAL = -111;// 默认信号强度
     private final String TAG = getClass().getCanonicalName();
     private MainServicePresenterImpl mPresenter;
@@ -71,6 +74,7 @@ public class MainService extends Service implements MainServiceContract.View {
     private Subscription mCommand;
     private Handler mHandler;
     private Runnable mRunable;
+    private int mSingal;
 
     @Nullable
     @Override
@@ -85,6 +89,19 @@ public class MainService extends Service implements MainServiceContract.View {
         // mPresenter.update();
         initData();
         init();//蓝牙
+        Notification notification = new Notification.Builder(this.getApplicationContext())
+                .setContentTitle("无线雷达mini")
+                .setContentText("数据传输服务")
+                .setSmallIcon(R.mipmap.upload)
+                .setWhen(System.currentTimeMillis())
+                .build();
+        startForeground(2, notification);
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        SharedPreferencesUtils.mSp.registerOnSharedPreferenceChangeListener(this);
     }
 
     public void lockChannel(int channel, int type, String mac) {
@@ -110,12 +127,13 @@ public class MainService extends Service implements MainServiceContract.View {
     private void initData() {
         mApVos = new ArrayList<>();
         mStaVos = new ArrayList<>();
+        mSingal = getSingalFromSp();
     }
 
     private void init() {
         //定时向BLE获取数据
-     mHandler = new Handler();
-     mRunable = new Runnable() {
+        mHandler = new Handler();
+        mRunable = new Runnable() {
             @Override
             public void run() {
                 if (MyApplication.getIsDataRun()) {
@@ -140,7 +158,7 @@ public class MainService extends Service implements MainServiceContract.View {
                     }
                     RxBus.getDefault().post(event);
                 }
-                mHandler.postDelayed(this, 2000);
+                mHandler.postDelayed(this, DATA_RATE);
             }
         };
         mHandler.post(mRunable);
@@ -150,26 +168,38 @@ public class MainService extends Service implements MainServiceContract.View {
                     @Override
                     public void onNext(MacData data) {
                         Log.i(TAG, "onNext: macdata");
-                /*        if (saveCount >= SAVE_RATE) {
-                            saveToSqlite(data);
+                        // mini
+                        if (MyApplication.AppVersion==Config.C_MINI){
+                            data = filterData(data);
+                        }
+                        maintainData(data);
+                        if (saveCount >= SAVE_RATE) {
+                            saveToSqlite(mApVos,mStaVos);           //保存数据
                             saveCount = 0;
                         } else {
                             saveCount++;
-                        }*/
+                        }
                         try {
-                            saveToSqlite(data);
-                            maintainData(data);
+//                            maintainData(data);
+//                            saveToSqlite(mApVos, mStaVos);
                             checkRing();
                             //发送数据
                             updateData(mApVos, mStaVos);
                             toLineData();
                             toListData();
-                        }catch (Exception e){
-                            Log.e(TAG, "onNext: "+e.getMessage() );
+                        } catch (Exception e) {
+                            Log.e(TAG, "onNext: " + e.getMessage());
                         }
 
 
-
+/*=======
+                        }
+                        checkRing();
+                        //发送数据
+                        updateData(mApVos, mStaVos);
+                        toLineData();
+                        toListData();
+>>>>>>> wxldMini*/
                     }
                 });
         mCommand = RxBus.getDefault().toObservable(MainServiceEvent.class)
@@ -195,12 +225,30 @@ public class MainService extends Service implements MainServiceContract.View {
                 });
     }
 
+    // 过滤数据
+    private MacData filterData(MacData data) {
+        List<ApVo> apVos = data.getApVos();
+        List<StaVo> staVos = data.getStaVos();
+        for (int i = apVos.size() - 1; i >= 0; i--) {
+            ApVo ap = apVos.get(i);
+            if (ap.getSignal() < mSingal) {
+                apVos.remove(i);
+            }
+        }
+        for (int i = staVos.size() - 1; i >= 0; i--) {
+            StaVo sta = staVos.get(i);
+            if (sta.getSignal() < mSingal) {
+                staVos.remove(i);
+            }
+        }
+        MacData result = new MacData(apVos, staVos);
+        return result;
+    }
+
     /**
      * 保存数据,存储所有 info,布控的 连接关系
      */
-    private void saveToSqlite(MacData data) {
-        ArrayList<ApVo> apVos = (ArrayList<ApVo>) data.getApVos();
-        ArrayList<StaVo> staVos = (ArrayList<StaVo>) data.getStaVos();
+    private void saveToSqlite(List<ApVo> apVos, List<StaVo> staVos) {
         for (ApVo ap : apVos) {
             Log.i(TAG, "saveToSqlite: " + ap.getBssid());
             saveInfo(ap);
@@ -309,10 +357,19 @@ public class MainService extends Service implements MainServiceContract.View {
                 if (apVos.get(i).getBssid().equals(mApVos.get(j).getBssid())) {
                     Log.i(TAG, "maintainData: ap" + apVos.get(i).getBssid());
                     // 信道处理
-                    if (!NumberUtil.muchLarger(apVos.get(i).getSignal(),mApVos.get(j).getSignal(),SINGAL)) {//信号强度差值不大于20
-                        // 使用旧数据的信道
-                        apVos.get(i).setChannel(mApVos.get(j).getChannel());
+                    if (MyApplication.AppVersion==Config.C_MINI){
+                        SINGAL = -60;
+                        if (apVos.get(i).getSignal() < SINGAL) {//信号强度小于60,信道不改变
+                            // 改变 新数据的channel,然后用新数据覆盖旧数据
+                            apVos.get(i).setChannel(mApVos.get(j).getChannel());
+                        }
+                    }else {
+                        if (!NumberUtil.muchLarger(apVos.get(i).getSignal(), mApVos.get(j).getSignal(), SINGAL)) {//信号强度差值不大于20
+                            // 使用旧数据的信道
+                            apVos.get(i).setChannel(mApVos.get(j).getChannel());
+                        }
                     }
+
                     mApVos.set(j, apVos.get(i));
                     apVos.remove(i);
                     break;
@@ -328,7 +385,7 @@ public class MainService extends Service implements MainServiceContract.View {
             }
         }
         //数据处理：排序，添加标记
-        mApVos = DataFormat.makeTagOfAp(mApVos);
+        mApVos = (ArrayList<ApVo>) DataFormat.makeTagOfAp(mApVos);
 /*--------------------------*/
         List<StaVo> staVos = data.getStaVos();
         //新的数据替换旧数据
@@ -336,17 +393,17 @@ public class MainService extends Service implements MainServiceContract.View {
             for (int j = 0; j < mStaVos.size(); j++) {
                 if (staVos.get(i).getMac().equals(mStaVos.get(j).getMac())) {
                     // 信号强度处理
-                    if (staVos.get(i).getSignal() == DEFAULT_SINGAL){
+                    if (staVos.get(i).getSignal() == DEFAULT_SINGAL) {
                         // 若为默认值,则使用上次采集的信号强度
                         staVos.get(i).setSignal(mStaVos.get(j).getSignal());
                     }
                     // 连接关系处理
-                    if (staVos.get(i).getApmac().equals(NOMAC)){
+                    if (staVos.get(i).getApmac().equals(NOMAC)) {
                         staVos.get(i).setApmac(mStaVos.get(j).getApmac());
                     }
                     // 虚拟身份保存
-                    if (mStaVos.get(j).getIdentities()!=null&&mStaVos.get(j).getIdentities().size()>0){
-                        Log.e("虚拟身份保存","------->");
+                    if (mStaVos.get(j).getIdentities() != null && mStaVos.get(j).getIdentities().size() > 0) {
+                        Log.e("虚拟身份保存", "------->");
                         staVos.get(i).addIdentities(mStaVos.get(j).getIdentities());
                     }
 
@@ -364,6 +421,7 @@ public class MainService extends Service implements MainServiceContract.View {
                 mStaVos.remove(i);
             }
         }
+
         // 添加sta连接的Ap名
         for (int i = 0; i < mStaVos.size(); i++) {
             for (int j = 0; j < mApVos.size(); j++) {
@@ -374,7 +432,7 @@ public class MainService extends Service implements MainServiceContract.View {
                 }
             }
         }
-        mStaVos = DataFormat.makeTagOfSta(mStaVos);
+        mStaVos = (ArrayList<StaVo>) DataFormat.makeTagOfSta(mStaVos);
 
     }
 
@@ -388,7 +446,8 @@ public class MainService extends Service implements MainServiceContract.View {
         // mPresenter.stop();
         if (mDataFromBle != null) mDataFromBle.unsubscribe();
         if (mCommand != null) mCommand.unsubscribe();
-        if(mHandler!=null) mHandler.removeCallbacks(mRunable);
+        if (mHandler != null) mHandler.removeCallbacks(mRunable);
+        SharedPreferencesUtils.mSp.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
 
     }
@@ -398,7 +457,7 @@ public class MainService extends Service implements MainServiceContract.View {
         //发送数据
         RxBus.getDefault().post(new ApListEvent(data));
         Log.d(TAG, "updateAp: " + data.get(0).getBssid());
-
+        Log.d(TAG, "updateAp: " + data.get(0).toString());
 
     }
 
@@ -406,6 +465,7 @@ public class MainService extends Service implements MainServiceContract.View {
     public void updateSta(List<StaVo> data) {
         //发送数据
         RxBus.getDefault().post(new StaListEvent(data));
+        Log.d(TAG, "updateSta: " + data.get(0).toString());
     }
 
     @Override
@@ -420,12 +480,6 @@ public class MainService extends Service implements MainServiceContract.View {
         RxBus.getDefault().post(new StaListEvent(stas));
 
         boolean ring = false;
-        boolean isSave = false;
-        saveCount++;
-        if (saveCount == SAVE_RATE) {
-            isSave = true;
-            saveCount = 0;
-        }
         if (Config.getAlarmMacListDo() == null || Config.getAlarmMacListDo().getNoteVos() == null)
             return;
         List<NoteVo> noteVos = Config.getAlarmMacListDo().getNoteVos();
@@ -433,10 +487,6 @@ public class MainService extends Service implements MainServiceContract.View {
             for (NoteVo noteVo : noteVos) {
                 if (MatchMac.isSame(ap.getBssid(), noteVo.getMac())) {
                     ring = true;
-                    if (isSave) {
-                        saveInfo(ap);
-                        saveRelation(ap, stas);
-                    }
                 }
             }
         }
@@ -444,9 +494,6 @@ public class MainService extends Service implements MainServiceContract.View {
             for (NoteVo noteVo : noteVos) {
                 if (MatchMac.isSame(staVo.getMac(), noteVo.getMac())) {
                     ring = true;
-                    if (isSave) {
-                        saveInfo(staVo);
-                    }
                 }
             }
         }
@@ -464,8 +511,9 @@ public class MainService extends Service implements MainServiceContract.View {
         log.setMac(vo.getMac());
         log.setDistance(vo.getSignal());
         log.setLtime(vo.getLtime());
+        log.setType(1);
+        log.setAppVersion(MyApplication.AppVersion);
         dao.insert(log);
-
     }
 
     private void saveInfo(ApVo ap) {
@@ -475,6 +523,8 @@ public class MainService extends Service implements MainServiceContract.View {
         log.setMac(ap.getBssid());
         log.setDistance(ap.getSignal());
         log.setLtime(ap.getLtime());
+        log.setType(0);
+        log.setAppVersion(MyApplication.AppVersion);
         dao.insert(log);
     }
 
@@ -505,4 +555,28 @@ public class MainService extends Service implements MainServiceContract.View {
         }
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String s) {
+        if ("collectRadius".equals(s)) {
+            mSingal = getSingalFromSp();
+        }
+    }
+
+    private int getSingalFromSp() {
+        // 清空数据,防止切换监测范围后,仍显示超出距离的数据,清空前存储数据
+        saveToSqlite(mApVos, mStaVos);
+        mApVos.clear();
+        mStaVos.clear();
+        updateData(mApVos, mStaVos);
+        int i = (int) SharedPreferencesUtils.getParam(getApplicationContext(), "collectRadius", 2);
+        switch (i) {
+            case 0:
+                return -50;
+            case 1:
+                return -60;
+            default:
+                return -200;
+        }
+
+    }
 }

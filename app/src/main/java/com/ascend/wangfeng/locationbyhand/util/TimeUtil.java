@@ -14,4 +14,9 @@ public class TimeUtil {
         Date date = new Date(time);
         return format.format(date);
     }
+    public static String getTime(long time,String style){
+        SimpleDateFormat format = new SimpleDateFormat(style);
+        Date date = new Date(time);
+        return format.format(date);
+    }
 }

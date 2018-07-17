@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <com.ascend.wangfeng.locationbyhand.view.myview.ClearEditText
+            android:id="@+id/filter_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_bar_edit_selector"
+            android:drawableLeft="@mipmap/search"
+            android:gravity="center_vertical"
+            android:hint="请输入要查询的mac"
+            android:singleLine="true"
+            android:textSize="15.0dip" />
+
+        <TextView
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="搜索"
+            android:textColor="@color/text1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/ll_oui"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="厂商信息:"
+                android:textColor="@color/text1"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_oui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:textColor="@color/text1"
+                android:textStyle="bold"
+                tools:text="生产厂商" />
+
+        </LinearLayout>
+
+        <include layout="@layout/view_line"
+            android:visibility="gone"
+            android:id="@+id/line_oui"/>
+
+        <LinearLayout
+            android:id="@+id/ll_adress"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="地        址:"
+                android:textColor="@color/text1"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/longitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/text1"
+                    android:textStyle="bold"
+                    tools:text="经度:" />
+
+                <TextView
+                    android:id="@+id/latitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/text1"
+                    android:textStyle="bold"
+                    tools:text="纬度:" />
+
+                <TextView
+                    android:id="@+id/adress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/text1"
+                    android:textStyle="bold"
+                    tools:text="具体地址:" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <include layout="@layout/view_line"
+            android:visibility="gone"
+            android:id="@+id/line_adress"/>
+
+        <LinearLayout
+            android:id="@+id/ll_ap"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="曾经连接的终端"
+                android:textColor="@color/text1"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:clickable="true"
+                android:fadeScrollbars="true"
+                android:fadingEdge="none"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:overScrollMode="never"
+                android:scrollbarSize="2dp"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
