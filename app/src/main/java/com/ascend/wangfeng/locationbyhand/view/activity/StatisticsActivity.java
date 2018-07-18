@@ -1,8 +1,6 @@
 package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.database.Cursor;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +18,6 @@ import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -36,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * 统计
@@ -57,7 +53,7 @@ public class StatisticsActivity extends BaseActivity {
     private LineData mLineData;
 
     private List<String> xDatas;
-
+    static long oneDay = 24 * 60 * 60 * 1000;
     @Override
     protected int setContentView() {
         return R.layout.activity_statistics;
@@ -78,7 +74,6 @@ public class StatisticsActivity extends BaseActivity {
         xDatas = new ArrayList<>();
         long time = TimeUtil.getTimesmorning();
         LogUtils.e("tiem",time+"");
-        long oneDay = 24 * 60 * 60 * 1000;
         for (int i = 0; i < 7; i++) {
             xDatas.add(TimeUtil.getTime(time - ((6 - i) * oneDay), "MM/dd "));
         }
@@ -118,14 +113,8 @@ public class StatisticsActivity extends BaseActivity {
     //获取当天采集的mac 并根据mac过滤数据库重复的数据 查询语句
     private static final String SQL_DISTINCT_ENAME = "SELECT " + LogDao.Properties.Mac.columnName
             + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
-            + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " >=" + TimeUtil.getTimesmorning()
+            + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " >= " + TimeUtil.getTimesmorning()
             + " GROUP BY " + LogDao.Properties.Mac.columnName;
-
-    //查询最近7天每天采集的mac数
-    private static final String SQL_COUNT_LAST_7 = "SELECT " + LogDao.Properties.Mac.columnName
-            + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
-            + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " >=" + TimeUtil.getLast7morning()
-            + " GROUP BY " + LogDao.Properties.Mac.columnName + " ORDER BY " + LogDao.Properties.Ltime.columnName;
 
     /**
      * 获取当天采集的mac 并根据mac过滤数据库重复的数据
@@ -158,57 +147,26 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-07-17 11:01
      */
-    public static List<Integer> getLast7Data(DaoSession session) {
+    public  List<Integer> getLast7Data(DaoSession session) {
         ArrayList<Integer> result = new ArrayList<>();
-        Cursor c = session.getDatabase().rawQuery(SQL_COUNT_LAST_7, null);
-        int count1 = 0, count2 = 0, count3 = 0, count4 = 0, count5 = 0, count6 = 0, count7 = 0;
-        long time = TimeUtil.getTimesmorning();
-        try {
-            if (c.moveToFirst()) {
-                do {
-//                    Log log = new Log();
-//                    log.setMac(c.getString(0));
-//                    log.setLtime(Long.parseLong(c.getString(1)));
-//                    log.setType(Integer.parseInt(c.getString(2)));
-//                    result.add(log);
-                    //根据时间返回 数据
-                    long oneDay = 24 * 60 * 60 * 1000;
-                    if (Long.parseLong(c.getString(1)) > time) {
-                        count7++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - oneDay)
-                            & Long.parseLong(c.getString(1)) < time) {
-                        count6++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - 2 * oneDay)
-                            & Long.parseLong(c.getString(1)) < time - oneDay) {
-                        count6++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - 3 * oneDay)
-                            & Long.parseLong(c.getString(1)) < time - 2 * oneDay) {
-                        count6++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - 4 * oneDay)
-                            & Long.parseLong(c.getString(1)) < time - 3 * oneDay) {
-                        count6++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - 5 * oneDay)
-                            & Long.parseLong(c.getString(1)) < time - 4 * oneDay) {
-                        count6++;
-                    } else if (Long.parseLong(c.getString(1)) > (time - 6 * oneDay)
-                            & Long.parseLong(c.getString(1)) < time - 5 * oneDay) {
-                        count1++;
-                    }
-                } while (c.moveToNext());
-            }
-            result.add(count1);
-            result.add(count2);
-            result.add(count3);
-            result.add(count4);
-            result.add(count5);
-            result.add(count6);
-            result.add(count7);
-
-        } finally {
-            c.close();
+        Cursor c;
+        for (int i=0;i<6;i++){
+            c = session.getDatabase().rawQuery(getSql(i), null);
+            LogUtils.e("xDatas",c.getCount()+"");
+            result.add(c.getCount());
         }
-
+        result.add(datas.size());
         return result;
+    }
+
+    private static String getSql(int i) {
+        //查询最近7天每天采集的mac数
+         String SQL_COUNT_LAST_7 = "SELECT " + LogDao.Properties.Mac.columnName
+                + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
+                + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " BETWEEN "
+                + (TimeUtil.getLast7morning() + (i * oneDay)) + " AND " + (TimeUtil.getTimesmorning()-((5-i)*oneDay))
+                + " GROUP BY " + LogDao.Properties.Mac.columnName;
+        return SQL_COUNT_LAST_7;
     }
 
     /**
@@ -282,7 +240,7 @@ public class StatisticsActivity extends BaseActivity {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 if (value>10000)
-                    return (int)value/100+"万";
+                    return (int)value/10000+"万";
                 return (int)value+"";
             }
 

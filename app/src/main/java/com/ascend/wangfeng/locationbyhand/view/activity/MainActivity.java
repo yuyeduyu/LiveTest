@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
@@ -39,6 +42,8 @@ import com.ascend.wangfeng.locationbyhand.view.service.BleService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
 //import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
+import java.util.List;
+
 import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -58,7 +63,6 @@ public class MainActivity extends BaseActivity {
     private BroadcastReceiver connectionReceiver;
 
 
-
     @Override
     protected int setContentView() {
         return R.layout.activity_main;
@@ -67,7 +71,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        Log.i(TAG,"保存活动注销时 当前活动的相关状态");
+        Log.i(TAG, "保存活动注销时 当前活动的相关状态");
         //注销活动时 保存当前的连接状态
 //        SharedPreferences.Editor editor = getSharedPreferences("Station" ,MODE_PRIVATE).edit();
 //        editor.putBoolean("station",MyApplication.connectStation);
@@ -89,6 +93,43 @@ public class MainActivity extends BaseActivity {
             checkIsLogin();
         } else {
             initBleActivity();
+        }
+
+        getPermissions();
+    }
+
+    private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.ACCESS_FINE_LOCATION"};
+
+    /**
+     * 获取动态权限
+     *
+     * @author lish
+     * created at 2018-07-18 13:58
+     */
+    private void getPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {//判断当前系统是不是Android6.0
+            requestRuntimePermissions(PERMISSIONS_STORAGE, new PermissionListener() {
+                @Override
+                public void granted() {
+                    //权限申请通过
+                }
+
+                @Override
+                public void denied(List<String> deniedList) {
+                    //权限申请未通过
+                    for (String denied : deniedList) {
+//                        if (denied.equals("android.permission.ACCESS_FINE_LOCATION")) {
+//                            Toast.makeText(MainActivity.this, "定位失败，请检查是否打开定位权限！", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            Toast.makeText(MainActivity.this, denied, Toast.LENGTH_SHORT).show();
+//                        }
+                        Toast.makeText(MainActivity.this, "获取权限失败,部分功能不可使用", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
@@ -127,7 +168,6 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
     /**
      * 监听wifi连接情况
      */
@@ -155,7 +195,7 @@ public class MainActivity extends BaseActivity {
         if (password.equals("null")) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
-        }else {
+        } else {
             initBleActivity();
         }
     }
@@ -220,11 +260,11 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onNext(AppVersionEvent event) {
                         //更新界面 MIni显示上传按钮
-                        if (mToolbar != null&event.getAppVersion() == Config.C_MINI) {
+                        if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
                             mToolbar.setTitle(R.string.app_name_mini);
-                        }else if (mToolbar != null&event.getAppVersion() == Config.C_PLUS){
+                        } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
-                        }else if (mToolbar != null){
+                        } else if (mToolbar != null) {
                             mToolbar.setTitle(R.string.app_name);
                         }
                     }
@@ -235,7 +275,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SetActivity.class));
-        }else if (item.getItemId() ==R.id.action_ble){
+        } else if (item.getItemId() == R.id.action_ble) {
             startActivity(new Intent(this, BLEActivity.class));
         }
         return super.onOptionsItemSelected(item);
