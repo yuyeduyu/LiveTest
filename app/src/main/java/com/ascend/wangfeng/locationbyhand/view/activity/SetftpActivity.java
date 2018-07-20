@@ -115,8 +115,8 @@ public class SetftpActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(setUrl.getText()) ||
                 TextUtils.isEmpty(setPort.getText()) ||
                 TextUtils.isEmpty(setUser.getText()) ||
-                TextUtils.isEmpty(setPassword.getText()) ||
-                TextUtils.isEmpty(setPath.getText())
+                TextUtils.isEmpty(setPassword.getText())
+//                || TextUtils.isEmpty(setPath.getText())
                 ) {
             Toast.makeText(SetftpActivity.this, "请完善信息", Toast.LENGTH_SHORT).show();
             return false;

@@ -181,8 +181,9 @@ public class MyApplication extends Application {
         if (ftpSp.getString("url","")!="" &&
                 ftpSp.getInt("port",-1) != -1 &&
                 ftpSp.getString("user","")!="" &&
-                ftpSp.getString("password","")!="" &&
-                ftpSp.getString("path","")!="") {
+                ftpSp.getString("password","")!=""
+//                && ftpSp.getString("path","")!=""
+                ) {
             UpLoadFtpUrl = ftpSp.getString("url", "");
             UpLoadFtpPort = ftpSp.getInt("port",-1);
             UpLoadFtpUser = ftpSp.getString("user","");

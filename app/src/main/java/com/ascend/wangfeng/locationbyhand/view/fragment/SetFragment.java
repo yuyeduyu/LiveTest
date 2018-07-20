@@ -198,7 +198,11 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                         mTime.setText(time);
                         break;
                     case UPLOADPATH:
-                        mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort + "/" + MyApplication.UpLoadFilePath);
+                        if (MyApplication.UpLoadFilePath.equals(""))
+                            mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort);
+                        else
+                            mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort
+                                    + "/" + MyApplication.UpLoadFilePath);
                         break;
 
                 }
@@ -385,8 +389,11 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         mCollectRadiusId = (int) getParam(getContext(), "collectRadius", 2);
         mCollectRadiusText.setText(mCollectRadiuses[mCollectRadiusId]);
         mTime.setText((MyApplication.GetUpLoadTime() / (60 * 1000) + "分钟"));
-        mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort + "/" + MyApplication.UpLoadFilePath);
-
+        if (MyApplication.UpLoadFilePath.equals(""))
+            mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort);
+        else
+            mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort
+                    + "/" + MyApplication.UpLoadFilePath);
         initDialog();
     }
 

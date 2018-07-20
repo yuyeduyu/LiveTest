@@ -55,9 +55,9 @@ public class UploadService extends Service {
         super.onCreate();
         EventBus.getDefault().register(this);
         //休眠时 唤醒cpu
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, UploadService.class.getName());
-        wakeLock.acquire();
+//        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, UploadService.class.getName());
+//        wakeLock.acquire();
     }
 
     //   获取需要上传的数据
@@ -130,13 +130,13 @@ public class UploadService extends Service {
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
 //        return super.onStartCommand(intent, flags, startId);
 
-        Notification notification = new Notification.Builder(this.getApplicationContext())
+       /* Notification notification = new Notification.Builder(this.getApplicationContext())
                 .setContentTitle("无线雷达mini")
                 .setContentText("数据上传服务")
                 .setSmallIcon(R.mipmap.upload)
                 .setWhen(System.currentTimeMillis())
                 .build();
-        startForeground(3, notification);
+        startForeground(3, notification);*/
         return Service.START_STICKY;
     }
 

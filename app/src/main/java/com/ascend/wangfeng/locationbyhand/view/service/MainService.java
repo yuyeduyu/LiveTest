@@ -89,13 +89,13 @@ public class MainService extends Service implements MainServiceContract.View, Sh
         // mPresenter.update();
         initData();
         init();//蓝牙
-        Notification notification = new Notification.Builder(this.getApplicationContext())
+ /*       Notification notification = new Notification.Builder(this.getApplicationContext())
                 .setContentTitle("无线雷达mini")
                 .setContentText("数据传输服务")
                 .setSmallIcon(R.mipmap.upload)
                 .setWhen(System.currentTimeMillis())
                 .build();
-        startForeground(2, notification);
+        startForeground(2, notification);*/
     }
 
     @Override

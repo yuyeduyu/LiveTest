@@ -22,7 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Context context;
     private Unbinder bind;
     private static PermissionListener mListener;
-    private static Activity activity ;
+    protected static Activity activity ;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

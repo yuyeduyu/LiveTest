@@ -94,8 +94,9 @@ public class MainActivity extends BaseActivity {
         } else {
             initBleActivity();
         }
-
+        //获取动态权限
         getPermissions();
+
     }
 
     private static String[] PERMISSIONS_STORAGE = {

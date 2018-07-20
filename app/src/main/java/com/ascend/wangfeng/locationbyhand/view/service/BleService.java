@@ -122,13 +122,13 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         //initTest();
         //scanDevice(true);
         //mBLE.connect(address);
-        Notification notification = new Notification.Builder(this.getApplicationContext())
+       /* Notification notification = new Notification.Builder(this.getApplicationContext())
                 .setContentTitle("无线雷达mini")
                 .setContentText("数据获取服务")
                 .setSmallIcon(R.mipmap.upload)
                 .setWhen(System.currentTimeMillis())
                 .build();
-        startForeground(1, notification);
+        startForeground(1, notification);*/
     }
 
     //获取经纬度信息
