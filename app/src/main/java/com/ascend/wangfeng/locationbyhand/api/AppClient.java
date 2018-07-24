@@ -78,15 +78,14 @@ public class AppClient {
         return wiFiApi;
     }
 
-    public static AppVersionApi getAppVersionApi(){
-
-
+    public static AppVersionApi getAppVersionApi() {
         AppVersionApi appVesionApi = new Retrofit.Builder()
-                .baseUrl("http://csbianjian.cn/")
+                .baseUrl("http://192.168.5.178:80/")
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(AppVersionApi.class);
         return appVesionApi;
     }
+
 }

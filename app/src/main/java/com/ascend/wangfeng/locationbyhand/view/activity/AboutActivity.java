@@ -12,11 +12,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
+import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +45,10 @@ public class AboutActivity extends AppCompatActivity {
     ImageView mAboutImg;
     @BindView(R.id.about_version)
     TextView mAboutVersion;
+    @BindView(R.id.check_version)
+    LinearLayout checkVersion;
+    @BindView(R.id.update)
+    TextView update;
 
 
     @Override
@@ -64,19 +72,22 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
         mAboutVersion.setText(this.getString(R.string.version) + getVersion().toString());
-        mAboutVersion.setOnClickListener(new View.OnClickListener() {
+        checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkVersion();
             }
         });
+        if ((boolean) SharedPreferencesUtils.getParam(AboutActivity.this, "appVersion", false)) {
+            update.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkVersion() {
-        AppClient.getAppVersionApi().getLatestVersion(APP_ID)
+        AppClient.getAppVersionApi().getAppVersion("wxldCVersion.txt")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Integer>() {
+                .subscribe(new Subscriber<AppVersionBack>() {
                     @Override
                     public void onCompleted() {
 
@@ -84,18 +95,20 @@ public class AboutActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        LogUtils.e("getAppVersion:", e.toString());
                     }
 
                     @Override
-                    public void onNext(Integer integer) {
-                        if (getVersionNo() < integer)
+                    public void onNext(AppVersionBack appVersion) {
+                        LogUtils.e("getAppVersion:", appVersion.getData().getVersionCode() + " " + getVersionNo());
+                        if (getVersionNo() < appVersion.getData().getVersionCode())
                             Snackbar.make(mAppBar, "存在最新版本", Snackbar.LENGTH_INDEFINITE).
                                     setAction("更新", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
                                             //更新软件
-                                            updateApk();
+//                                            updateApk();
+                                            downApk();
                                         }
                                     }).show();
                         else {
@@ -106,22 +119,20 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void updateApk() {
-        AppClient.getAppVersionApi().getApkUrl(APP_ID)
+        AppClient.getAppVersionApi().getApkUrl(2)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseSubcribe<String>() {
                     @Override
                     public void onNext(String s) {
-                        Snackbar.make(mAppBar,"正在更新",Snackbar.LENGTH_INDEFINITE).show();
-                        downApk(s);
+                        Snackbar.make(mAppBar, "正在更新", Snackbar.LENGTH_INDEFINITE).show();
+                        downApk();
                     }
                 });
-
-
-
     }
-    private void downApk(String s) {
-        AppClient.getAppVersionApi().UpdateApk(s)
+
+    private void downApk() {
+        AppClient.getAppVersionApi().updateApp("wxldC.apk")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {
@@ -132,7 +143,7 @@ public class AboutActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Snackbar.make(mAppBar,"更新失败",Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mAppBar, "更新失败", Snackbar.LENGTH_LONG).show();
                     }
 
                     @Override

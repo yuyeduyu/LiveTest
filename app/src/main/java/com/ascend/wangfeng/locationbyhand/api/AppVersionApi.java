@@ -1,5 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.api;
 
+import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -24,4 +26,11 @@ public interface AppVersionApi {
     @GET("apps/{url}")
     Observable<ResponseBody> UpdateApk(@Path("url") String url);
 
+    @FormUrlEncoded
+    @POST("servlet/GetAppVersionServlet")
+    Observable<AppVersionBack> getAppVersion(@Field("filename") String filename);
+
+    @FormUrlEncoded
+    @POST("servlet/DownLoadServlet")
+    Observable<ResponseBody> updateApp(@Field("filename") String filename);
 }

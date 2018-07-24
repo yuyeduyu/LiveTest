@@ -2,12 +2,15 @@ package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -15,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,6 +38,9 @@ import com.ascend.wangfeng.locationbyhand.event.SearchEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
+import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
 import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
@@ -42,9 +49,16 @@ import com.ascend.wangfeng.locationbyhand.view.service.BleService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
 //import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
+import okhttp3.ResponseBody;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -96,7 +110,8 @@ public class MainActivity extends BaseActivity {
         }
         //获取动态权限
         getPermissions();
-
+        //版本更新监测
+        checkVersion();
     }
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -312,5 +327,146 @@ public class MainActivity extends BaseActivity {
         if (connectionReceiver != null) {
             unregisterReceiver(connectionReceiver);
         }
+    }
+
+    /**
+     * 检测app版本是否需要更新
+     *
+     * @author lish
+     * created at 2018-07-24 11:57
+     */
+    private void checkVersion() {
+        AppClient.getAppVersionApi().getAppVersion("wxldCVersion.txt")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AppVersionBack>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.e("getAppVersion:", e.toString());
+                    }
+
+                    @Override
+                    public void onNext(AppVersionBack appVersion) {
+                        if (AppVersionUitls.getVersionNo(MainActivity.this) < appVersion.getData().getVersionCode()){
+                            SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",true);
+                            shownUpdataDialog(appVersion.getData().getDes());
+                        }
+
+                        else SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",false);
+                    }
+                });
+    }
+
+    /**
+     * 更新dialog
+     *
+     * @author lish
+     * created at 2018-07-24 12:35
+     */
+    private void shownUpdataDialog(String des) {
+        final AlertDialog.Builder normalDialog =
+                new AlertDialog.Builder(MainActivity.this);
+        normalDialog.setTitle("版本更新");
+        normalDialog.setMessage(des);
+        normalDialog.setPositiveButton("下载安装",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        downApk();
+                        dialog.dismiss();
+                    }
+                });
+        normalDialog.setNegativeButton("关闭",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        dialog.dismiss();
+                    }
+                });
+        // 显示
+        normalDialog.show();
+    }
+
+    private void downApk() {
+        AppClient.getAppVersionApi().updateApp("wxldC.apk")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(MainActivity.this, "更新失败", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody body) {
+                        Log.i("a", "onNext: ");
+                        try {
+                            // todo change the file location/name according to your needs
+                            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath()
+                                    + "/AscendLog/LocationShow/");
+                            File futureStudioIconFile = new File(dir, "location.apk");
+
+                            InputStream inputStream = null;
+                            OutputStream outputStream = null;
+
+                            try {
+                                byte[] fileReader = new byte[4096];
+
+                                long fileSize = body.contentLength();
+                                long fileSizeDownloaded = 0;
+
+                                inputStream = body.byteStream();
+                                outputStream = new FileOutputStream(futureStudioIconFile);
+
+                                while (true) {
+                                    int read = inputStream.read(fileReader);
+
+                                    if (read == -1) {
+                                        break;
+                                    }
+
+                                    outputStream.write(fileReader, 0, read);
+
+                                    fileSizeDownloaded += read;
+
+                                }
+
+                                outputStream.flush();
+                                Intent intent = new Intent();
+                                //执行动作
+                                intent.setAction(Intent.ACTION_VIEW);
+                                //执行的数据类型
+                                intent.setDataAndType(Uri.fromFile(futureStudioIconFile), "application/vnd.android.package-archive");
+                                startActivity(intent);
+
+                                return;
+                            } catch (IOException e) {
+                                return;
+                            } finally {
+                                if (inputStream != null) {
+                                    inputStream.close();
+                                }
+
+                                if (outputStream != null) {
+                                    outputStream.close();
+                                }
+                            }
+                        } catch (IOException e) {
+                            return;
+                        }
+                    }
+                });
     }
 }

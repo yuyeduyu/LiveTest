@@ -67,7 +67,7 @@ public class BLEActivity extends AppCompatActivity {
                 .subscribe(new BaseSubcribe<DeviceEvent>() {
                     @Override
                     public void onNext(DeviceEvent event) {
-                        if (!mDevices.contains(event.getDevice())){
+                        if (!mDevices.contains(event.getDevice())) {
                             mDevices.add(event.getDevice());
                             adapter.notifyDataSetChanged();
                         }
@@ -100,7 +100,7 @@ public class BLEActivity extends AppCompatActivity {
                 event.setDevice(mDevices.get(position));
                 RxBus.getDefault().post(event);
                 MyApplication.mDevicdID = mDevices.get(position).getName();
-                setAppVersion(mDevices.get(position).getName());
+                setAppVersion(mDevices.get(position).getName().trim());
                 finish();
             }
         });
@@ -127,21 +127,29 @@ public class BLEActivity extends AppCompatActivity {
 
     /**
      * 根据设备号，判断app版本
-     * @param num  5开头为nimi版
+     *
+     * @param num 5开头为nimi版
      * @author lishanhui
      * created at 2018-07-09 9:23
      */
     private void setAppVersion(String num) {
-        if (num==null)
+// p01c对应的编号前几位p01c201，
+// p01cplus对应的编号前几位p01c502,
+// p01cmini对应的编号前几位504
+
+        if (num == null)
             return;
         int appVersion = Config.C;
-        if (num.startsWith("5")){
+        if (num.startsWith("504")) {
             //mini
             appVersion = Config.C_MINI;
 
-        }else if (num.startsWith("P")){
+        } else if (num.startsWith("p01c502")) {
             //cplus
             appVersion = Config.C_PLUS;
+        }else if (num.startsWith("p01c201")){
+            //C
+            appVersion = Config.C;
         }
 //        toast(num+"---->"+appVersion);
         MyApplication.setAppVersion(appVersion);
