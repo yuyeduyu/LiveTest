@@ -118,6 +118,7 @@ public class LoginActivity extends BaseActivity {
                 }
             });
         }
+        else  initData();
     }
     /**
      * 申请权限

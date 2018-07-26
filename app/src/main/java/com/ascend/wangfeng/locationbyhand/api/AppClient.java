@@ -79,10 +79,25 @@ public class AppClient {
     }
 
     public static AppVersionApi getAppVersionApi() {
+        OkHttpClient client=new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(2000, TimeUnit.SECONDS)
+                .writeTimeout(2000, TimeUnit.SECONDS)
+                .addNetworkInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request()
+                                .newBuilder()
+                                .addHeader("Connection", "close")
+                                .build();
+                        return chain.proceed(request);
+                    }
+                }).build();
         AppVersionApi appVesionApi = new Retrofit.Builder()
-                .baseUrl("http://192.168.5.178:80/")
+                .baseUrl("http://123.57.175.155:9120/")
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build()
                 .create(AppVersionApi.class);
         return appVesionApi;

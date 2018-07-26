@@ -373,6 +373,7 @@ public class MainActivity extends BaseActivity {
                 new AlertDialog.Builder(MainActivity.this);
         normalDialog.setTitle("版本更新");
         normalDialog.setMessage(des);
+        normalDialog.setCancelable(false);
         normalDialog.setPositiveButton("下载安装",
                 new DialogInterface.OnClickListener() {
                     @Override

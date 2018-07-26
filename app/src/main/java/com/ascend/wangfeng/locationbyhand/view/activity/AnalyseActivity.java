@@ -16,6 +16,8 @@ import com.ascend.wangfeng.locationbyhand.adapter.AnalyseAdapter;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.HistoryMacBean;
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
+import com.ascend.wangfeng.locationbyhand.resultBack.AdressResult;
 import com.ascend.wangfeng.locationbyhand.util.MacUtils;
 import com.ascend.wangfeng.locationbyhand.util.OuiDatabase;
 import com.ascend.wangfeng.locationbyhand.view.myview.ClearEditText;
@@ -62,7 +64,7 @@ public class AnalyseActivity extends BaseActivity {
     private String mac = "";
     private List<HistoryMacBean> datas;
     private AnalyseAdapter adapter;
-
+    public LoadingDialog loadingDialog; //上传dialog
     @Override
     protected int setContentView() {
         return R.layout.activity_analyse;
@@ -74,7 +76,7 @@ public class AnalyseActivity extends BaseActivity {
         line_oui = findViewById(R.id.line_oui);
         line_adress = findViewById(R.id.line_adress);
         initRecyle();
-
+        loadingDialog = new LoadingDialog(this);
         filterEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -103,7 +105,53 @@ public class AnalyseActivity extends BaseActivity {
 //        latitude.setText("纬度:xxxxxxxxxxxx");
 //        longitude.setText("经度:xxxxxxxxxxxx");
 //        adress.setText("具体地址:xxxxxxxxxxxx");
-//        getOui();
+
+    }
+
+    /**
+     * 根据mac获取经纬度
+     *
+     * @author lishanhui
+     * created at 2018-07-03 15:35
+     * @param mac
+     */
+    private void getAdresss(long mac) {
+        if (!loadingDialog.isShowing()){
+            loadingDialog.show();
+        }
+        AppClient.getAppVersionApi().getAdress(mac).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubcribe<AdressResult>() {
+                    @Override
+                    public void onNext(AdressResult vo) {
+                        if (vo.getCode() == 200 & vo.isFlag()) {
+                            if (vo.getData().getLongitude() != null) {
+                                llAdress.setVisibility(View.VISIBLE);
+                                latitude.setText("纬度:" + vo.getData().getLatitude());
+                                longitude.setText("经度:" + vo.getData().getLongitude());
+                                adress.setText(vo.getData().getAddr());
+                            } else {
+                                llAdress.setVisibility(View.VISIBLE);
+                                longitude.setText("未查询到该经纬度");
+                            }
+
+                        } else {
+                            llAdress.setVisibility(View.VISIBLE);
+                            Toast.makeText(AnalyseActivity.this, "获取经纬度失败", Toast.LENGTH_SHORT).show();
+                        }
+                        if (loadingDialog!=null)
+                            loadingDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        llAdress.setVisibility(View.VISIBLE);
+                        Toast.makeText(AnalyseActivity.this, "获取经纬度失败", Toast.LENGTH_SHORT).show();
+                        if (loadingDialog!=null)
+                            loadingDialog.dismiss();
+                    }
+                });
     }
 
     /**
@@ -161,22 +209,38 @@ public class AnalyseActivity extends BaseActivity {
 
     @OnClick(R.id.search)
     public void onViewClicked() {
+        clearText();
         if (!MacUtils.CheckMac(filterEdit.getText().toString().trim())) {
             Toast.makeText(AnalyseActivity.this, "请输入正确的mac", Toast.LENGTH_SHORT).show();
         } else {
             //请求数据
             //mac格式标准化 00-00-00-00-00-00
-           String mac = MacUtils.formatMac(filterEdit.getText().toString().trim());
-            Log.e("mac_oui",mac);
+            String mac = MacUtils.formatMac(filterEdit.getText().toString().trim());
+            Log.e("mac_oui", mac);
             setOui(mac);
+            //getOui();
+            String addressMac = mac.replaceAll("-", "");
+            getAdresss(Long.parseLong(addressMac,16));
         }
+    }
+    /**
+     * 点击搜索 清空原有数据
+     * @author lish
+     * created at 2018-07-25 10:24
+     */
+    private void clearText() {
+        tvOui.setText("");
+        longitude.setText("");
+        latitude.setText("");
+        adress.setText("");
     }
 
     private void setOui(String mac) {
-        String re = OuiDatabase.ouiMatch(mac.replaceAll("-",":"));
+        Log.e("setOuimac",mac.replaceAll("-", ":"));
+        String re = OuiDatabase.ouiMatch(mac.replaceAll("-", ":"));
         llOui.setVisibility(View.VISIBLE);
         line_oui.setVisibility(View.VISIBLE);
-        tvOui.setText(re==null?"未查询到厂商信息":re);
+        tvOui.setText(re == null ? "未查询到厂商信息" : re);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ascend.wangfeng.locationbyhand.api;
 
+import com.ascend.wangfeng.locationbyhand.resultBack.AdressResult;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
 
 import okhttp3.ResponseBody;
@@ -33,4 +34,8 @@ public interface AppVersionApi {
     @FormUrlEncoded
     @POST("servlet/DownLoadServlet")
     Observable<ResponseBody> updateApp(@Field("filename") String filename);
+
+    @FormUrlEncoded
+    @POST("servlet/GetAdressByMacServlet")
+    Observable<AdressResult> getAdress(@Field("mac") long mac);
 }

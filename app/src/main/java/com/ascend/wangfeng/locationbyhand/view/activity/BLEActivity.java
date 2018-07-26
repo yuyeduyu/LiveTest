@@ -144,10 +144,10 @@ public class BLEActivity extends AppCompatActivity {
             //mini
             appVersion = Config.C_MINI;
 
-        } else if (num.startsWith("p01c502")) {
+        } else if (num.startsWith("P01C502")) {
             //cplus
             appVersion = Config.C_PLUS;
-        }else if (num.startsWith("p01c201")){
+        }else if (num.startsWith("P01C201")||num.startsWith("P01C17")){
             //C
             appVersion = Config.C;
         }

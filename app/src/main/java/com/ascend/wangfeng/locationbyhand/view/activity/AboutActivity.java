@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
@@ -50,14 +51,14 @@ public class AboutActivity extends AppCompatActivity {
     @BindView(R.id.update)
     TextView update;
 
-
+    public LoadingDialog loadingDialog; //上传dialog
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
         initialView();
-
+        loadingDialog = new LoadingDialog(this);
     }
 
     private void initialView() {
@@ -84,6 +85,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void checkVersion() {
+        loadingDialog.show();
         AppClient.getAppVersionApi().getAppVersion("wxldCVersion.txt")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -95,7 +97,9 @@ public class AboutActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtils.e("getAppVersion:", e.toString());
+                        Snackbar.make(mAppBar, "连接服务器失败", Snackbar.LENGTH_SHORT).show();
+                        if (loadingDialog!=null)
+                            loadingDialog.dismiss();
                     }
 
                     @Override
@@ -114,6 +118,8 @@ public class AboutActivity extends AppCompatActivity {
                         else {
                             Snackbar.make(mAppBar, "当前版本已经是最新版本", Snackbar.LENGTH_LONG).show();
                         }
+                        if (loadingDialog!=null)
+                            loadingDialog.dismiss();
                     }
                 });
     }

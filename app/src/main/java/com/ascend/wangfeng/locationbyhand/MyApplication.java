@@ -58,6 +58,9 @@ public class MyApplication extends Application {
     public static void setAppVersion(int AppVersion){
         MyApplication.AppVersion = AppVersion;
     }
+    public static int getAppVersion(){
+        return AppVersion;
+    }
     @Override
     public void onCreate() {
         super.onCreate();

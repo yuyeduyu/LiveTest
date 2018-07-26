@@ -475,7 +475,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
 //                    setAppVersion(num);
                 //获取编号后,获取频段
                 sendData("GETMOD");
-                Log.i(TAG, "case: 4");
                 break;
             case 5://频段
                 Integer ghz = getGhz(request);

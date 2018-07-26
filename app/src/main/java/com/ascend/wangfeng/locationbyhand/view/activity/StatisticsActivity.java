@@ -54,6 +54,7 @@ public class StatisticsActivity extends BaseActivity {
 
     private List<String> xDatas;
     static long oneDay = 24 * 60 * 60 * 1000;
+
     @Override
     protected int setContentView() {
         return R.layout.activity_statistics;
@@ -73,7 +74,7 @@ public class StatisticsActivity extends BaseActivity {
     private void getXDatas() {
         xDatas = new ArrayList<>();
         long time = TimeUtil.getTimesmorning();
-        LogUtils.e("tiem",time+"");
+        LogUtils.e("tiem", time + "");
         for (int i = 0; i < 7; i++) {
             xDatas.add(TimeUtil.getTime(time - ((6 - i) * oneDay), "MM/dd "));
         }
@@ -113,7 +114,9 @@ public class StatisticsActivity extends BaseActivity {
     //获取当天采集的mac 并根据mac过滤数据库重复的数据 查询语句
     private static final String SQL_DISTINCT_ENAME = "SELECT " + LogDao.Properties.Mac.columnName
             + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
-            + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " >= " + TimeUtil.getTimesmorning()
+            + " FROM " + LogDao.TABLENAME
+            + " WHERE " + LogDao.Properties.Ltime.columnName + " >= " + TimeUtil.getTimesmorning()
+            + " AND " + LogDao.Properties.AppVersion.columnName + " = " + MyApplication.getAppVersion()
             + " GROUP BY " + LogDao.Properties.Mac.columnName;
 
     /**
@@ -147,12 +150,12 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-07-17 11:01
      */
-    public  List<Integer> getLast7Data(DaoSession session) {
+    public List<Integer> getLast7Data(DaoSession session) {
         ArrayList<Integer> result = new ArrayList<>();
         Cursor c;
-        for (int i=0;i<6;i++){
+        for (int i = 0; i < 6; i++) {
             c = session.getDatabase().rawQuery(getSql(i), null);
-            LogUtils.e("xDatas",c.getCount()+"");
+            LogUtils.e("xDatas", c.getCount() + "");
             result.add(c.getCount());
         }
         result.add(datas.size());
@@ -161,10 +164,11 @@ public class StatisticsActivity extends BaseActivity {
 
     private static String getSql(int i) {
         //查询最近7天每天采集的mac数
-         String SQL_COUNT_LAST_7 = "SELECT " + LogDao.Properties.Mac.columnName
+        String SQL_COUNT_LAST_7 = "SELECT " + LogDao.Properties.Mac.columnName
                 + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
-                + " FROM " + LogDao.TABLENAME + " WHERE " + LogDao.Properties.Ltime.columnName + " BETWEEN "
-                + (TimeUtil.getLast7morning() + (i * oneDay)) + " AND " + (TimeUtil.getTimesmorning()-((5-i)*oneDay))
+                + " FROM " + LogDao.TABLENAME
+                + " WHERE " + LogDao.Properties.Ltime.columnName + " BETWEEN " + (TimeUtil.getLast7morning() + (i * oneDay)) + " AND " + (TimeUtil.getTimesmorning() - ((5 - i) * oneDay))
+                + " AND " + LogDao.Properties.AppVersion.columnName + " = " + MyApplication.getAppVersion()
                 + " GROUP BY " + LogDao.Properties.Mac.columnName;
         return SQL_COUNT_LAST_7;
     }
@@ -239,9 +243,9 @@ public class StatisticsActivity extends BaseActivity {
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                if (value>10000)
-                    return (int)value/10000+"万";
-                return (int)value+"";
+                if (value > 10000)
+                    return (int) value / 10000 + "万";
+                return (int) value + "";
             }
 
             @Override
