@@ -37,7 +37,8 @@ import rx.schedulers.Schedulers;
 public class TargetSetDialog {
     private static final String TAG = "TargetSetDialog";
 
-    public static void showDialog(final AppCompatActivity activity, final NoteVo noteVo, final IShowView view) {
+    public static void showDialog(final AppCompatActivity activity, final NoteVo noteVo
+            , final IShowView view,boolean shownPassWord) {
         //添加布控目标；
         final View layout = activity.getLayoutInflater().inflate(R.layout.dialog_targetactivity
                 , null);
@@ -65,7 +66,7 @@ public class TargetSetDialog {
                         delMac(macStr, view);
                     }
                 });
-        if (MyApplication.AppVersion != Config.C_MINI) {
+        if (MyApplication.AppVersion == Config.C_PLUS & shownPassWord) {
             builder.setNeutralButton("设置密码", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface anInterface, int i) {

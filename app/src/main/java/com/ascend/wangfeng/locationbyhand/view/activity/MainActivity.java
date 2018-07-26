@@ -264,7 +264,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initTool() {
-        if (mToolbar != null) {
+
+        if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
+            mToolbar.setTitle(R.string.app_name_mini);
+        } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
+            mToolbar.setTitle(R.string.app_name_cplus);
+        } else if (mToolbar != null) {
             mToolbar.setTitle(R.string.app_name);
         }
         setSupportActionBar(mToolbar);

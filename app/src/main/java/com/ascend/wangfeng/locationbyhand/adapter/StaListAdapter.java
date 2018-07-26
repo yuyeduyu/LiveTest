@@ -64,10 +64,10 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
             } else if (data.getOui().indexOf("Xiaomi") > -1) {
                 holder.img.setBackgroundResource(R.mipmap.xiaomi);
             } else {
-                holder.img.setBackgroundResource(R.drawable.icon_phone);
+                holder.img.setBackgroundResource(R.mipmap.phone);
             }
         } else {
-            holder.img.setBackgroundResource(R.drawable.icon_phone);
+            holder.img.setBackgroundResource(R.mipmap.phone);
         }
 
         if (data.isTag()) {

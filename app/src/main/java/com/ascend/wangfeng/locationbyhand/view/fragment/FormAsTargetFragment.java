@@ -97,7 +97,7 @@ public class FormAsTargetFragment extends Fragment implements FormContract.View,
                     noteVo.setMac(mData.get(position).getMac());
                     noteVo.setNote(mData.get(position).getNote() + "");
                     TargetSetDialog.showDialog((AppCompatActivity) getActivity(), noteVo,
-                            FormAsTargetFragment.this);
+                            FormAsTargetFragment.this,false);
                 }
 
             }
@@ -153,7 +153,7 @@ public class FormAsTargetFragment extends Fragment implements FormContract.View,
                     noteVo.setMac(ap.getBssid());
                     noteVo.setNote(ap.getNote() + "");
                     TargetSetDialog.showDialog((AppCompatActivity) getActivity(), noteVo,
-                            FormAsTargetFragment.this);
+                            FormAsTargetFragment.this,false);
                 }
 
                 return false;

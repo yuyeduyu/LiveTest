@@ -68,10 +68,10 @@ public class FormAdapter extends RecyclerView.Adapter<FormAdapter.ViewHolder> {
             } else if (apBean.getOui().indexOf("Xiaomi") > -1) {
                 holder.mImageView.setBackgroundResource(R.mipmap.xiaomi);
             } else {
-                holder.mImageView.setBackgroundResource(R.drawable.icon_phone);
+                holder.mImageView.setBackgroundResource(R.mipmap.phone);
             }
         } else {
-            holder.mImageView.setBackgroundResource(R.drawable.icon_phone);
+            holder.mImageView.setBackgroundResource(R.mipmap.phone);
         }
         if (position == 0 && mType == TYPE_STA) {
             holder.mLayout.setBackgroundColor(mContext.getResources().getColor(R.color.selected));

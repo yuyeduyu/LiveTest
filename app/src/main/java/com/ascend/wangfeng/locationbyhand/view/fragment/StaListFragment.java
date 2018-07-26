@@ -183,7 +183,7 @@ public class StaListFragment extends BaseFragment
                 noteVo.setMac(mData.get(position).getMac());
                 noteVo.setNote(mData.get(position).getNote());
                 TargetSetDialog.showDialog((AppCompatActivity) getActivity(), noteVo,
-                        StaListFragment.this);
+                        StaListFragment.this,false);
             }
         });
 

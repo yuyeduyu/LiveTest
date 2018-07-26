@@ -217,7 +217,7 @@ public class ApListFragment extends BaseFragment implements
                 noteVo.setNote(mData.get(position).getNote());
                 noteVo.setName(mData.get(position).getEssid());
                 TargetSetDialog.showDialog((AppCompatActivity) getActivity(), noteVo,
-                        ApListFragment.this);
+                        ApListFragment.this,true);
             }
         });
 

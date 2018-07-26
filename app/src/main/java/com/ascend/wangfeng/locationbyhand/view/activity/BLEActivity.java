@@ -99,8 +99,10 @@ public class BLEActivity extends AppCompatActivity {
                 MessageEvent event = new MessageEvent(MessageEvent.CONNECT);
                 event.setDevice(mDevices.get(position));
                 RxBus.getDefault().post(event);
-                MyApplication.mDevicdID = mDevices.get(position).getName();
-                setAppVersion(mDevices.get(position).getName().trim());
+                if (mDevices.get(position).getName()!=null){
+                    MyApplication.mDevicdID = mDevices.get(position).getName();
+                    setAppVersion(mDevices.get(position).getName().trim());
+                }
                 finish();
             }
         });
