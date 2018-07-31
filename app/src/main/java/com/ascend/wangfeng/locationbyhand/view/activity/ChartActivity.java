@@ -1,6 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -33,6 +34,8 @@ public class ChartActivity extends BaseActivity {
     FrameLayout mChartFrame;
     private String TAG = getClass().getCanonicalName();
 
+    private boolean Tag;// 是否是布控目标
+    private  Bundle bundle;
     @Override
     protected int setContentView() {
         return R.layout.activity_chart;
@@ -41,8 +44,9 @@ public class ChartActivity extends BaseActivity {
     @Override
     protected void initView() {
         initTool();
-        initFrame();
+
         init();
+        initFrame();
     }
 
     private void init() {
@@ -50,6 +54,9 @@ public class ChartActivity extends BaseActivity {
         String mac = intent.getStringExtra("mac");
         int type = intent.getIntExtra("type", 0);
         int channel = intent.getIntExtra("channel", 0);
+        Tag = intent.getBooleanExtra("tag", false);
+        bundle = new Bundle();
+        bundle.putBoolean("tag", Tag);
         MainServiceEvent event = new MainServiceEvent(MainServiceEvent.LOCK);
         if (MyApplication.mGhz == Ghz.G24) {
             event.setChannel(channel);
@@ -64,6 +71,7 @@ public class ChartActivity extends BaseActivity {
 
     private void initFrame() {
         Fragment fragment = new LineFragment();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.chart_frame, fragment)
                 .commit();
     }
@@ -107,6 +115,7 @@ public class ChartActivity extends BaseActivity {
         switch (i) {
             case 0:
                 fragment = new LineFragment();
+                fragment.setArguments(bundle);
                 break;
 
             case 2:
@@ -114,6 +123,7 @@ public class ChartActivity extends BaseActivity {
                 break;
             default:
                 fragment = new LineFragment();
+                fragment.setArguments(bundle);
                 break;
         }
 

@@ -32,6 +32,7 @@ import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.WorkMode;
 import com.ascend.wangfeng.locationbyhand.presenter.TargetPresenterImpl;
+import com.ascend.wangfeng.locationbyhand.util.DaoUtils;
 import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
@@ -242,6 +243,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                                             deal.delete(adapterPosition);
                                             adapter.notifyDataSetChanged();
                                             show("success");
+                                            DaoUtils.delectTaglog(mac);
                                             anInterface.dismiss();
                                         }
                                     })

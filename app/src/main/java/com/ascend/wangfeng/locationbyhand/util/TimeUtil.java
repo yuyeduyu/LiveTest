@@ -87,5 +87,43 @@ public class TimeUtil {
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis()-(7 * 24 * 60 * 60 * 1000);
     }
-
+    /**
+     * 将数据固定为2位 不足补0
+     * @author lishanhui
+     * created at 2018-04-26 16:19
+     */
+    public static String formatTo2(long s) {
+        String newString = String.format("%02d",s);
+        return newString;
+    }
+    public static String formatToHour(long seconds) {
+        String timeStr = "00:00:" + formatTo2(seconds);
+        if (seconds > 60) {
+            long second = seconds % 60;
+            long min = seconds / 60;
+            timeStr = "00:" + formatTo2(min) + ":" + formatTo2(second);
+            if (min > 60) {
+                min = (seconds / 60) % 60;
+                long hour = (seconds / 60) / 60;
+                timeStr = formatTo2(hour) + ":" + formatTo2(min) + ":" + formatTo2(second);
+                if (hour > 24) {
+                    hour = ((seconds / 60) / 60) % 24;
+                    long day = (((seconds / 60) / 60) / 24);
+                    timeStr = formatTo2(hour) + ":" + formatTo2(min) + ":" + formatTo2(second);
+                }
+            }
+        }
+        return timeStr;
+    }
+    /**
+     * 根据时间戳获取当天时间刻度
+     *
+     * @author lishanhui
+     * created at 2018-04-24 17:43
+     */
+    public static float formatToTime(long timestamp) {
+        Date date = new Date(timestamp);
+//        Log.e("datetime","时："+date.getHours()+"\n"+"分："+date.getMinutes()+"\n秒："+date.getSeconds());
+        return date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
+    }
 }

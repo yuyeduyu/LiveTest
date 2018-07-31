@@ -285,7 +285,9 @@ public class MainActivity extends BaseActivity {
                             mToolbar.setTitle(R.string.app_name_mini);
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
-                        } else if (mToolbar != null) {
+                        } else if (mToolbar!=null & event.getAppVersion() == -1){
+                            mToolbar.setTitle("请连接本app专用设备蓝牙");
+                        }else if (mToolbar != null) {
                             mToolbar.setTitle(R.string.app_name);
                         }
                     }

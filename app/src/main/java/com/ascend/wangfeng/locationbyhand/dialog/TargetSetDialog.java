@@ -20,6 +20,7 @@ import com.ascend.wangfeng.locationbyhand.bean.NoteVo;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
+import com.ascend.wangfeng.locationbyhand.util.DaoUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
@@ -64,6 +65,7 @@ public class TargetSetDialog {
                     public void onClick(DialogInterface anInterface, int i) {
                         String macStr = mac.getText().toString() + "";
                         delMac(macStr, view);
+                        DaoUtils.delectTaglog(macStr);
                     }
                 });
         if (MyApplication.AppVersion == Config.C_PLUS & shownPassWord) {

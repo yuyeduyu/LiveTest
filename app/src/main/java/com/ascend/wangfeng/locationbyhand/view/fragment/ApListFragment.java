@@ -205,6 +205,7 @@ public class ApListFragment extends BaseFragment implements
                 intent.putExtra("mac", mData.get(position).getBssid());              //MAC
                 intent.putExtra("type", 0);                                   //类型
                 intent.putExtra("channel", mData.get(position).getChannel());        //信道
+                intent.putExtra("tag", mData.get(position).isTag());        //是否是布控目标
                 startActivity(intent);
             }
         }, new OnItemClickLisener() {

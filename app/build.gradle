@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 19
-        versionName "3.2.0"
+        versionCode 23
+        versionName "3.3.0"
     }
 
 //签名配置
@@ -52,7 +52,7 @@ buildscript {
     }
 }
 greendao {
-    schemaVersion 6
+    schemaVersion 7
     daoPackage 'com.anye.greendao.gen'
     targetGenDir 'src/main/java'
 }

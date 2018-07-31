@@ -2,6 +2,8 @@ package com.ascend.wangfeng.locationbyhand.util;
 
 import android.util.Log;
 
+import com.anye.greendao.gen.LogDao;
+import com.anye.greendao.gen.TagLogDao;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
@@ -10,6 +12,7 @@ import com.ascend.wangfeng.locationbyhand.bean.NoteVo;
 import com.ascend.wangfeng.locationbyhand.bean.StaAssociatedDo;
 import com.ascend.wangfeng.locationbyhand.bean.StaVo;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
+import com.ascend.wangfeng.locationbyhand.bean.dbBean.TagLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,6 +147,7 @@ public class DataFormat {
                     vo.setTag(true);
                     vo.setNote(noteDo.getNote());
                     tags.add( vo);
+                    saveInfo(vo);
                     break;
                 }
             }
@@ -179,14 +183,13 @@ public class DataFormat {
         List<NoteDo> noteVos = MyApplication.getmNoteDos();
         List<StaVo> staTagVos = new ArrayList<>();
         List<StaVo> staNormalVos = new ArrayList<>();
-        for (StaVo vo :
-                vos) {
-            for (NoteDo noteVo :
-                    noteVos) {
+        for (StaVo vo : vos) {
+            for (NoteDo noteVo : noteVos) {
                 if (vo.getMac().equals(noteVo.getMac())) {
                     vo.setTag(true);
                     vo.setNote(noteVo.getNote());
                     staTagVos.add(vo);
+                    saveInfo(vo);
                     break;
                 }
             }
@@ -215,7 +218,27 @@ public class DataFormat {
         }
         return vo;
     }
+    private static TagLogDao dao = MyApplication.getInstances().getDaoSession().getTagLogDao();
+    private static void saveInfo(StaVo vo) {
 
+        TagLog log = new TagLog();
+        log.setMac(vo.getMac());
+        log.setDistance(vo.getSignal());
+        log.setLtime(vo.getLtime());
+        log.setType(1);
+        log.setAppVersion(MyApplication.AppVersion);
+        dao.insert(log);
+    }
+
+    private static void saveInfo(ApVo ap) {
+        TagLog log = new TagLog();
+        log.setMac(ap.getBssid());
+        log.setDistance(ap.getSignal());
+        log.setLtime(ap.getLtime());
+        log.setType(0);
+        log.setAppVersion(MyApplication.AppVersion);
+        dao.insert(log);
+    }
     public static ArrayList<StaVo> StaAssociatedFormat(String mac,List<StaVo> stas) {
         ArrayList<StaVo> staVos = new ArrayList<>();
         staVos = (ArrayList<StaVo>) makeTagOfSta(stas);

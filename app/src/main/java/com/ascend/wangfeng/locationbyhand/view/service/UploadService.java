@@ -44,7 +44,7 @@ import java.util.List;
 public class UploadService extends Service {
 
     private String TAG = getClass().getCanonicalName();
-
+    private boolean first = true;
     List<ApData> aplist = new ArrayList<>();
     List<StaData> stalist = new ArrayList<>();
     List<StaConInfo> sclist = new ArrayList<>();
@@ -76,48 +76,53 @@ public class UploadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                long time = (System.currentTimeMillis() / 1000);
-                String filePath = "/mnt/sdcard/";
-                String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
-                if (MyApplication.mDevicdID != null && MyApplication.isConnected(getBaseContext())) {                               //连接成功
+        //第一次启动服务 不上传数据
+        if (first){
+            first = false;
+        }else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    long time = (System.currentTimeMillis() / 1000);
+                    String filePath = "/mnt/sdcard/";
+                    String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
+                    if (MyApplication.mDevicdID != null && MyApplication.isConnected(getBaseContext())) {                               //连接成功
 
-                    FTPClientData ftpClientData = new FTPClientData();
+                        FTPClientData ftpClientData = new FTPClientData();
 
-                    FTPClient ftpClient = ftpClientData.ftpConnect();
-                    if (ftpClient ==null){
-                        Looper.prepare();
-                        Toast.makeText(UploadService.this,"连接FTP服务器失败", Toast.LENGTH_SHORT).show();
-                        Looper.loop();
-                        return;
+                        FTPClient ftpClient = ftpClientData.ftpConnect();
+                        if (ftpClient ==null){
+                            Looper.prepare();
+                            Toast.makeText(UploadService.this,"连接FTP服务器失败", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                            return;
+
+                        }
+                        try {
+                            ftpClient.makeDirectory(MyApplication.UpLoadFilePath); //如果FTP上不存在该文件，则创建文件
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        //上传AP数据
+                        FileData fileData = new FileData(getBaseContext(), filePath, fileName, aplist, getVersion().toString());        //将数据写入本地文件中
+                        ftpClientData.ftpUpload(ftpClient, filePath, fileName, "apl");
+                        //上传终端数据
+                        FileData staFile = new FileData(getBaseContext(), filePath, fileName, stalist, getVersion().toString(), 1);
+                        ftpClientData.ftpUpload(ftpClient, filePath, fileName, "log");
+                        //上传连接数据
+                        FileData ScFile = new FileData(getBaseContext(), filePath, fileName, sclist, getVersion().toString(), "1");
+                        ftpClientData.ftpUpload(ftpClient, filePath, fileName, "net");
+                        //发送需要剔除的数据信息
+                        EventBus.getDefault().post(new AllUpLoadData(aplist, stalist, sclist));
+                        //上传GPS轨迹的坐标
+                        FileData GpsFile = new FileData(getBaseContext(), filePath, fileName, gpslist, getVersion().toString(), "", 1);
+                        ftpClientData.ftpUpload(ftpClient, filePath, fileName, "gps");
 
                     }
-                    try {
-                        ftpClient.makeDirectory(MyApplication.UpLoadFilePath); //如果FTP上不存在该文件，则创建文件
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    //上传AP数据
-                    FileData fileData = new FileData(getBaseContext(), filePath, fileName, aplist, getVersion().toString());        //将数据写入本地文件中
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "apl");
-                    //上传终端数据
-                    FileData staFile = new FileData(getBaseContext(), filePath, fileName, stalist, getVersion().toString(), 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "log");
-                    //上传连接数据
-                    FileData ScFile = new FileData(getBaseContext(), filePath, fileName, sclist, getVersion().toString(), "1");
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "net");
-                    //发送需要剔除的数据信息
-                    EventBus.getDefault().post(new AllUpLoadData(aplist, stalist, sclist));
-                    //上传GPS轨迹的坐标
-                    FileData GpsFile = new FileData(getBaseContext(), filePath, fileName, gpslist, getVersion().toString(), "", 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "gps");
-
                 }
-            }
-        }).start();
+            }).start();
+        }
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         // 上传时间间隔（ms）
         int anHour = MyApplication.GetUpLoadTime();
