@@ -8,7 +8,7 @@
 
     <include layout="@layout/custom_toolbar" />
 
-    <LinearLayout
+   <!-- <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal">
@@ -36,6 +36,19 @@
             android:padding="5dp"
             android:text="搜索"
             android:textColor="@color/text1" />
+    </LinearLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/c2"
+        android:orientation="vertical">
+        <include layout="@layout/view_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="10dp"/>
     </LinearLayout>
 
     <LinearLayout

@@ -96,6 +96,7 @@
         <activity android:name=".view.activity.VirtualIdentityActivity" />
         <activity android:name=".view.activity.AnalyseActivity" />
         <activity android:name=".view.activity.LogAllActivity" />
+        <activity android:name=".view.activity.NewLogAllActivity" />
 
         <service android:name=".view.service.LocationService" />
         <service

@@ -40,6 +40,7 @@ import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.LogAllActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
@@ -507,7 +508,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 collectRadiusDialog.show();
                 break;
             case R.id.rl_log_all:
-                startActivity(new Intent(getActivity(), LogAllActivity.class));
+                startActivity(new Intent(getActivity(), NewLogAllActivity.class));
                 break;
             case R.id.scanChannel:
                 //startActivity(new Intent(getActivity(), ChannelActivity.class));

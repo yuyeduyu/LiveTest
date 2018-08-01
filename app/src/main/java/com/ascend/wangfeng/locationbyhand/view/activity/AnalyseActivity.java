@@ -7,6 +7,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,9 +54,9 @@ public class AnalyseActivity extends BaseActivity {
     @BindView(R.id.adress)
     TextView adress;
     @BindView(R.id.filter_edit)
-    ClearEditText filterEdit;
+    EditText filterEdit;
     @BindView(R.id.search)
-    TextView search;
+    ImageView search;
     @BindView(R.id.ll_oui)
     LinearLayout llOui;
     @BindView(R.id.ll_adress)
