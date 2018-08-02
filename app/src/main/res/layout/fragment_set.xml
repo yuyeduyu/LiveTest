@@ -15,6 +15,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/equipment"
                 style="@style/set_text">
 
@@ -84,6 +85,7 @@
                     />
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/targetAp"
                 style="@style/set_text">
 
@@ -281,6 +283,7 @@
                     android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/ghz"
                 style="@style/set_text">
 
@@ -355,6 +358,7 @@
                     android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/analyse"
                 style="@style/set_text">
 
@@ -366,12 +370,14 @@
                     android:textStyle="bold"/>
 
                 <View
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/tongji"
                 style="@style/set_text">
 
@@ -390,11 +396,13 @@
                     android:background="@color/gray"/>
             </RelativeLayout>
             <View
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:background="@color/gray"/>
 
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/about"
                 style="@style/set_text">
 

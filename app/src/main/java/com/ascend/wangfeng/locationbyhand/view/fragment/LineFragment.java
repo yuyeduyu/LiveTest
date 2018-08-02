@@ -10,14 +10,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.anye.greendao.gen.LogDao;
 import com.anye.greendao.gen.TagLogDao;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.ApVo;
 import com.ascend.wangfeng.locationbyhand.bean.StaVo;
-import com.ascend.wangfeng.locationbyhand.bean.dbBean.Log;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.TagLog;
 import com.ascend.wangfeng.locationbyhand.contract.LineContract;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
@@ -29,7 +27,6 @@ import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
 import com.ascend.wangfeng.locationbyhand.util.chart.DayAxisValueFormatter;
 import com.ascend.wangfeng.locationbyhand.util.chart.MyAxisValueFormatter;
 import com.ascend.wangfeng.locationbyhand.view.activity.VirtualIdentityActivity;
-import com.ascend.wangfeng.locationbyhand.view.myview.MyMarkerView;
 import com.ascend.wangfeng.locationbyhand.view.myview.XYMarkerView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -49,7 +46,6 @@ import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -113,6 +109,7 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     private TagLogDao logDao;
     private List<TagLog> logs;
     private boolean isTag;//是否是布控目标
+    ArrayList<BarEntry> barChartData = new ArrayList<BarEntry>();
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -342,23 +339,20 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     private void setData(List<TagLog> logs) {
 
         float start = 1f;
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-
         for (int i = (int) start; i < start + logs.size(); i++) {
 
-            yVals1.add(new BarEntry(TimeUtil.formatToTime(logs.get(i - 1).getLtime() / Multiple), 100 + logs.get(i - 1).getDistance()));
+            barChartData.add(new BarEntry(TimeUtil.formatToTime(logs.get(i - 1).getLtime() / Multiple), 100 + logs.get(i - 1).getDistance()));
         }
         BarDataSet set1;
 
         if (BarChart.getData() != null &&
                 BarChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) BarChart.getData().getDataSetByIndex(0);
-            set1.setValues(yVals1);
+            set1.setValues(barChartData);
             BarChart.getData().notifyDataChanged();
             BarChart.notifyDataSetChanged();
         } else {
-            set1 = new BarDataSet(yVals1, mac + ("(最近一小时采集信号)"));
-
+            set1 = new BarDataSet(barChartData, mac + ("(最近一小时采集信号)"));
 //            set1.setDrawIcons(false);
             int[] MATERIAL_COLORS = {rgb("#e74c3c")};
             set1.setColors(MATERIAL_COLORS);
@@ -510,11 +504,14 @@ public class LineFragment extends BaseFragment implements LineContract.View {
             mLineChart.moveViewToX(entries.get(entries.size() - shownNum).getX());
         }
         mLineChart.setVisibleXRangeMaximum(mLineChart.getData().getXMax());
+        //刷新柱状图
+        barChartData.add(new BarEntry(TimeUtil.formatToTime(lastTime/ Multiple), 100 + signal));
 
-//        mLineChart.setVisibleXRangeMaximum(20);
-//        mLineChart.moveViewToX(mLineData.getXMax());
+        LogUtils.e("mult",TimeUtil.formatToHour((long) TimeUtil.formatToTime(lastTime/ Multiple) * Multiple));
 
-        entryCount++;
+        BarChart.notifyDataSetChanged();
+        BarChart.invalidate();
+        BarChart.setVisibleXRangeMaximum(BarChart.getData().getXMax());
     }
 
 }

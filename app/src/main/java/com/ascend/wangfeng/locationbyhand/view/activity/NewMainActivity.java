@@ -14,7 +14,6 @@ import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -22,9 +21,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ascend.wangfeng.locationbyhand.Config;
@@ -44,10 +46,9 @@ import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
 import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
+import com.ascend.wangfeng.locationbyhand.view.myview.draglayout.DragLayout;
 import com.ascend.wangfeng.locationbyhand.view.service.BleService;
-//import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
-//import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,14 +58,35 @@ import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-//
-public class MainActivity extends BaseActivity {
+//import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
+//import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
+//
+public class NewMainActivity extends BaseActivity {
+
+    @BindView(R.id.dl)
+    DragLayout dl;
+    @BindView(R.id.uesrName)
+    TextView uesrName;
+    @BindView(R.id.ll_log)
+    LinearLayout llLog;
+    @BindView(R.id.ll_bukong)
+    LinearLayout llBukong;
+    @BindView(R.id.ll_fenxi)
+    LinearLayout llFenxi;
+    @BindView(R.id.set)
+    LinearLayout set;
+    @BindView(R.id.about)
+    LinearLayout about;
+    @BindView(R.id.ll_tongji)
+    LinearLayout llTongji;
     private String TAG = getClass().getCanonicalName();    //com.ascend.wangfeng.locationbyhand.view.activity;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -79,7 +101,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected int setContentView() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_new;
     }
 
     @Override
@@ -102,7 +124,7 @@ public class MainActivity extends BaseActivity {
         initData();
         initTool();
         initStart();
-
+        initDragLayout();
         if (!MyApplication.isDev) {
             checkIsLogin();
         } else {
@@ -112,6 +134,28 @@ public class MainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         checkVersion();
+    }
+
+    /**
+     * 初始化侧拉控件
+     */
+    private void initDragLayout() {
+        dl.setDragListener(new DragLayout.DragListener() {
+            @Override
+            public void onOpen() {
+//                lv.smoothScrollToPosition(new Random().nextInt(30));
+            }
+
+            @Override
+            public void onClose() {
+//				shake();
+            }
+
+            @Override
+            public void onDrag(float percent) {
+//                ViewHelper.setAlpha(ivIcon, 1 - percent);
+            }
+        });
     }
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -142,7 +186,7 @@ public class MainActivity extends BaseActivity {
 //                        } else {
 //                            Toast.makeText(MainActivity.this, denied, Toast.LENGTH_SHORT).show();
 //                        }
-                        Toast.makeText(MainActivity.this, "获取权限失败,部分功能不可使用", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewMainActivity.this, "获取权限失败,部分功能不可使用", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -151,7 +195,7 @@ public class MainActivity extends BaseActivity {
 
 
     private void initService() {                            //启动服务
-        startService(new Intent(MainActivity.this, BleService.class));
+        startService(new Intent(NewMainActivity.this, BleService.class));
     }
 
     private void listenConnect() {
@@ -209,7 +253,7 @@ public class MainActivity extends BaseActivity {
         String password = (String) SharedPreferencesUtils
                 .getParam(getBaseContext(), "passwordOfApp", "null");
         if (password.equals("null")) {
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivity(new Intent(NewMainActivity.this, LoginActivity.class));
             finish();
         } else {
             initBleActivity();
@@ -252,6 +296,7 @@ public class MainActivity extends BaseActivity {
 
     private void initStart() {
         mViewpager.setAdapter(adapter);
+        mViewpager.addOnPageChangeListener(adapter);
         mTab.setupWithViewPager(mViewpager);
     }
 
@@ -260,7 +305,7 @@ public class MainActivity extends BaseActivity {
         Fragment[] fragments = new Fragment[]{
                 new ApListFragment(), new StaListFragment()
         };
-//        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments, dl);
     }
 
     private void initTool() {
@@ -272,6 +317,7 @@ public class MainActivity extends BaseActivity {
         } else if (mToolbar != null) {
             mToolbar.setTitle(R.string.app_name);
         }
+        uesrName.setText("设备编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID ));
         setSupportActionBar(mToolbar);
 
         RxBus.getDefault().toObservable(AppVersionEvent.class)
@@ -285,11 +331,12 @@ public class MainActivity extends BaseActivity {
                             mToolbar.setTitle(R.string.app_name_mini);
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
-                        } else if (mToolbar!=null & event.getAppVersion() == -1){
+                        } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
-                        }else if (mToolbar != null) {
+                        } else if (mToolbar != null) {
                             mToolbar.setTitle(R.string.app_name);
                         }
+                        uesrName.setText("设备编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID ));
                     }
                 });
     }
@@ -297,7 +344,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this, SetActivity.class));
+            startActivity(new Intent(NewMainActivity.this, SetActivity.class));
         } else if (item.getItemId() == R.id.action_ble) {
             startActivity(new Intent(this, BLEActivity.class));
         }
@@ -359,12 +406,11 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onNext(AppVersionBack appVersion) {
-                        if (AppVersionUitls.getVersionNo(MainActivity.this) < appVersion.getData().getVersionCode()){
-                            SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",true);
+                        if (AppVersionUitls.getVersionNo(NewMainActivity.this) < appVersion.getData().getVersionCode()) {
+                            SharedPreferencesUtils.setParam(NewMainActivity.this, "appVersion", true);
                             shownUpdataDialog(appVersion.getData().getDes());
-                        }
-
-                        else SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",false);
+                        } else
+                            SharedPreferencesUtils.setParam(NewMainActivity.this, "appVersion", false);
                     }
                 });
     }
@@ -377,7 +423,7 @@ public class MainActivity extends BaseActivity {
      */
     private void shownUpdataDialog(String des) {
         final AlertDialog.Builder normalDialog =
-                new AlertDialog.Builder(MainActivity.this);
+                new AlertDialog.Builder(NewMainActivity.this);
         normalDialog.setTitle("版本更新");
         normalDialog.setMessage(des);
         normalDialog.setCancelable(false);
@@ -414,7 +460,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MainActivity.this, "更新失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(NewMainActivity.this, "更新失败", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -476,5 +522,64 @@ public class MainActivity extends BaseActivity {
                         }
                     }
                 });
+    }
+
+    @OnClick({R.id.ll_log, R.id.ll_bukong, R.id.ll_fenxi, R.id.set, R.id.about,R.id.ll_tongji})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.ll_log:
+                //监测日志
+                startActivity(new Intent(NewMainActivity.this, NewLogAllActivity.class));
+//                dl.close();
+                break;
+            case R.id.ll_bukong:
+                //布控目标
+                startActivity(new Intent(NewMainActivity.this, TargetActivity.class));
+//                dl.close();
+                break;
+            case R.id.ll_fenxi:
+                //数据分析
+                startActivity(new Intent(NewMainActivity.this, AnalyseActivity.class));
+//                dl.close();
+                break;
+                case R.id.ll_tongji:
+                //统计
+                startActivity(new Intent(NewMainActivity.this, StatisticsActivity.class));
+//                dl.close();
+                break;
+            case R.id.set:
+                //设置
+                startActivity(new Intent(NewMainActivity.this, SetActivity.class));
+//                dl.close();
+                break;
+            case R.id.about:
+                //关于
+                startActivity(new Intent(NewMainActivity.this, AboutActivity.class));
+//                dl.close();
+                break;
+        }
+    }
+
+    //记录用户首次点击返回键的时间
+    private long firstTime = 0;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (dl.getStatus().equals(DragLayout.Status.Open)) {
+                //如果侧拉界面打开，点击返回则收起侧拉界面
+                dl.close();
+                return true;
+            }
+            if (System.currentTimeMillis() - firstTime > 2000) {
+                Toast.makeText(NewMainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                firstTime = System.currentTimeMillis();
+            } else {
+                finish();
+//                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

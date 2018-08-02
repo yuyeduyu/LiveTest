@@ -25,6 +25,7 @@ import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.NewMainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
 
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class LoginActivity extends BaseActivity {
             if (mLoginEdit.getText().toString().equals(password)) {
                 SharedPreferencesUtils.setParam(getBaseContext(),"passwordOfApp",password);
                 //验证成功，跳转指定页面；
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
                 finish();
 
             } else {

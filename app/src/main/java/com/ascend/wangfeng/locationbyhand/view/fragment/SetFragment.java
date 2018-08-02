@@ -363,8 +363,10 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             mCollectRadius.setVisibility(View.VISIBLE);
             mUpTime.setVisibility(View.VISIBLE);
             mUpPath.setVisibility(View.VISIBLE);
-            rlLogAll.setVisibility(View.VISIBLE);
+//            rlLogAll.setVisibility(View.VISIBLE);
         }
+        if (MyApplication.AppVersion!=Config.C_MINI)
+            mGhz.setVisibility(View.VISIBLE);
     }
 
     /**

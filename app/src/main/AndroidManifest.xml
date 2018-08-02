@@ -48,7 +48,7 @@
             android:value="K1MSrOIiglfTa21gGx6VLzXsncGb19XX" />
 
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name=".view.activity.NewMainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>

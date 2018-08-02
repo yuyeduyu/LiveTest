@@ -17,6 +17,7 @@
         android:icon="@mipmap/blue"
         app:showAsAction="ifRoom"/>
     <item
+        android:visible="false"
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="action_set"

@@ -46,10 +46,7 @@ public class AllLogAdapter extends RecyclerView.Adapter<AllLogAdapter.Holder> {
         if (MyApplication.getAppVersion() == Config.C_MINI){
             holder.dbm.setText(format(datas.get(position).getDistance()));
             holder.image.setImageResource(getResourceID(datas.get(position).getDistance()));
-        }
-
-
-        else
+        }else
             holder.dbm.setText(datas.get(position).getDistance() + "");
     }
 
