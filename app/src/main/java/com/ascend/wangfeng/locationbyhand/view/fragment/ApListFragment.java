@@ -42,6 +42,7 @@ import com.ascend.wangfeng.locationbyhand.dialog.IShowView;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.dialog.TargetSetDialog;
 import com.ascend.wangfeng.locationbyhand.event.ApListEvent;
+import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.SearchEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
@@ -253,8 +254,6 @@ public class ApListFragment extends BaseFragment implements
                         //更新界面 MIni显示上传按钮
                         if (event.getAppVersion() == Config.C_MINI) {
                             btnUpload.setVisibility(View.VISIBLE);
-                            getActivity().startService(new Intent(getActivity(), UploadService.class));
-                            getActivity().startService(new Intent(getActivity(), LocationService.class));
                         }
                     }
                 });
@@ -327,6 +326,7 @@ public class ApListFragment extends BaseFragment implements
 
                     FTPClient ftpClient = ftpClientData.ftpConnect();
                     if (ftpClient ==null){
+                        EventBus.getDefault().post(new FTPEvent(false));
                         ((Activity) getActivity()).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -337,7 +337,7 @@ public class ApListFragment extends BaseFragment implements
                             }
                         });
                         return;
-                    }
+                    }else  EventBus.getDefault().post(new FTPEvent(true));
                     try {
                         ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
                     } catch (IOException e) {

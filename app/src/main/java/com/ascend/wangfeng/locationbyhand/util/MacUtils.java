@@ -40,6 +40,7 @@ public class MacUtils {
 
     /**
      * 将mac格式标准化00-00-00-00-00-00
+     *
      * @author lishanhui
      * created at 2018-07-04 10:23
      */
@@ -49,9 +50,32 @@ public class MacUtils {
         }
         if (mac.length() == 12) {
             String regex = "(.{2})";
-            mac = mac.replaceAll(regex,  "$1-");
-            mac = mac.substring(0,mac.length()-1);
+            mac = mac.replaceAll(regex, "$1-");
+            mac = mac.substring(0, mac.length() - 1);
         }
+        return mac;
+    }
+
+    /**
+     * 根据mac长度，将mac格式标准化00-00-00-00-00-00
+     * 为根据mac模糊查询服务
+     *
+     * @author lishanhui
+     * created at 2018-07-04 10:23
+     */
+    public static String formatMacForLike(String mac) {
+        if (mac.contains(":")) {
+            mac = mac.replace(":", "");
+        }
+        if (mac.contains("-")) {
+            mac = mac.replace("-", "");
+        }
+
+        String regex = "(.{2})";
+        mac = mac.replaceAll(regex, "$1-");
+        if (mac.endsWith("-"))
+            mac = mac.substring(0, mac.length() - 1);
+
         return mac;
     }
 }

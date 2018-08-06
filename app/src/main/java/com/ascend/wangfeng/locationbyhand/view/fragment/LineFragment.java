@@ -332,17 +332,17 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         XYMarkerView mv = new XYMarkerView(getActivity(), xAxisFormatter, 1);
         mv.setChartView(BarChart); // For bounds control
         BarChart.setMarker(mv); // Set the marker to the chart
-
-        setData(logs);
-    }
-
-    private void setData(List<TagLog> logs) {
-
         float start = 1f;
         for (int i = (int) start; i < start + logs.size(); i++) {
 
             barChartData.add(new BarEntry(TimeUtil.formatToTime(logs.get(i - 1).getLtime() / Multiple), 100 + logs.get(i - 1).getDistance()));
         }
+        setData(barChartData);
+    }
+
+    private void setData(ArrayList<BarEntry> logs) {
+
+
         BarDataSet set1;
 
         if (BarChart.getData() != null &&
@@ -509,9 +509,10 @@ public class LineFragment extends BaseFragment implements LineContract.View {
 
         LogUtils.e("mult",TimeUtil.formatToHour((long) TimeUtil.formatToTime(lastTime/ Multiple) * Multiple));
 
-        BarChart.notifyDataSetChanged();
+        setData(barChartData);
+//        BarChart.notifyDataSetChanged();
         BarChart.invalidate();
-        BarChart.setVisibleXRangeMaximum(BarChart.getData().getXMax());
+//        BarChart.setVisibleXRangeMaximum(BarChart.getData().getXMax());
     }
 
 }

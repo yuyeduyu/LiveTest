@@ -21,12 +21,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
+import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewMainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
+import com.ascend.wxldcmenu.MenuMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +74,30 @@ public class LoginActivity extends BaseActivity {
 
     protected void initView() {
         getPermissions();
+        if (MyApplication.isDev) {
+            //测试版本，跳过登录
+            if (AppVersionConfig.VERSION == AppVersionConfig.WXLDMENU) {
+                //便携式车载采集系统
+                startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+            } else
+                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
+            finish();
+        }else {
+            checkIsLogin();
+        }
+    }
+
+    private void checkIsLogin() {
+        String password = (String) SharedPreferencesUtils
+                .getParam(getBaseContext(), "passwordOfApp", "null");
+        if (!password.equals("null")) {
+            if (AppVersionConfig.VERSION == AppVersionConfig.WXLDMENU) {
+                //便携式车载采集系统
+                startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+            } else
+                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
+            finish();
+        }
     }
 
     @OnClick(R.id.login_submit)
@@ -83,9 +110,13 @@ public class LoginActivity extends BaseActivity {
             String password = new Tea().createKey(imei);
             Log.i("tag", "onClick: " + password);
             if (mLoginEdit.getText().toString().equals(password)) {
-                SharedPreferencesUtils.setParam(getBaseContext(),"passwordOfApp",password);
+                SharedPreferencesUtils.setParam(getBaseContext(), "passwordOfApp", password);
                 //验证成功，跳转指定页面；
-                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
+                if (AppVersionConfig.VERSION == AppVersionConfig.WXLDMENU) {
+                    //便携式车载采集系统
+                    startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+                } else
+                    startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
                 finish();
 
             } else {
@@ -93,8 +124,10 @@ public class LoginActivity extends BaseActivity {
             }
         }
     }
+
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_PHONE_STATE"};
+
     /**
      * 获取动态权限
      *
@@ -118,9 +151,9 @@ public class LoginActivity extends BaseActivity {
                     }
                 }
             });
-        }
-        else  initData();
+        } else initData();
     }
+
     /**
      * 申请权限
      */

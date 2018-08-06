@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
@@ -39,7 +40,6 @@ import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
-import com.ascend.wangfeng.locationbyhand.view.activity.LogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
@@ -123,6 +123,8 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout rlLogAll;
     @BindView(R.id.tongji)
     RelativeLayout tongji;
+    @BindView(R.id.view)
+    View view;
 
 
     private String TAG = getClass().getCanonicalName();
@@ -365,8 +367,14 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             mUpPath.setVisibility(View.VISIBLE);
 //            rlLogAll.setVisibility(View.VISIBLE);
         }
-        if (MyApplication.AppVersion!=Config.C_MINI)
+        if (MyApplication.AppVersion != Config.C_MINI)
             mGhz.setVisibility(View.VISIBLE);
+
+        if (AppVersionConfig.VERSION == AppVersionConfig.WXLDMENU){
+            //便携式车载采集app 设置界面显示 关于
+            mAbout.setVisibility(View.VISIBLE);
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
     /**

@@ -159,19 +159,19 @@ public class NewLogAllActivity extends AppCompatActivity {
     private void getLogByMac() {
         pager = 1;
         mLogs.clear();
-        if (!MacUtils.CheckMac(filterEdit.getText().toString().trim())) {
-            Toast.makeText(NewLogAllActivity.this, "请输入正确的mac", Toast.LENGTH_SHORT).show();
-        } else {
+//        if (!MacUtils.CheckMac(filterEdit.getText().toString().trim())) {
+//            Toast.makeText(NewLogAllActivity.this, "请输入正确的mac", Toast.LENGTH_SHORT).show();
+//        } else {
             //请求数据
             //mac格式标准化 00-00-00-00-00-00
-            String mac = MacUtils.formatMac(filterEdit.getText().toString().trim());
+            String mac = MacUtils.formatMacForLike(filterEdit.getText().toString().trim());
             android.util.Log.e("mac_oui", mac);
             String addressMac = mac.replaceAll("-", ":");
             addressMac=addressMac.toUpperCase();
             LogUtils.e("addressMac",addressMac);
             List<Log> Logs = (ArrayList<Log>) logDao.queryBuilder()
                     .where(LogDao.Properties.AppVersion.eq(MyApplication.getAppVersion())
-                            , LogDao.Properties.Mac.eq(addressMac))
+                            , LogDao.Properties.Mac.like("%"+addressMac+"%"))
                     .orderDesc(LogDao.Properties.Ltime)
                     .list();          //1:sta  0:ap
             mLogs.addAll(Logs);
@@ -181,7 +181,7 @@ public class NewLogAllActivity extends AppCompatActivity {
             }else {
                 Toast.makeText(NewLogAllActivity.this, "没有该MAC的日志", Toast.LENGTH_SHORT).show();
             }
-        }
+//        }
         adapter.notifyDataSetChanged();
         storeHousePtrFrame.refreshComplete();
     }

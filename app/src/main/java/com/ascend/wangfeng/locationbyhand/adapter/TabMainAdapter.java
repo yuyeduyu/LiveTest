@@ -57,10 +57,10 @@ public class TabMainAdapter extends FragmentPagerAdapter implements ViewPager.On
 
     @Override
     public void onPageSelected(int position) {
-        if (0 == position) {
+        if (0 == position & null!=dl) {
             dl.setDrag(true);
 //                alphaIndicator.getTabView(0).showNumber(alphaIndicator.getTabView(0).getBadgeNumber() - 1);
-        } else if (1 == position) {
+        } else if (1 == position & null!=dl) {
             dl.setDrag(false);
         }
     }

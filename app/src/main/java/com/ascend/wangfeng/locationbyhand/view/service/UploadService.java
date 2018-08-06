@@ -25,6 +25,7 @@ import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.UpLoadData;
+import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.view.receiver.AlarmReceiver;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -42,7 +43,7 @@ import java.util.List;
 
 
 public class UploadService extends Service {
-
+    public static UploadService uploadService;
     private String TAG = getClass().getCanonicalName();
     private boolean first = true;
     List<ApData> aplist = new ArrayList<>();
@@ -54,12 +55,15 @@ public class UploadService extends Service {
     public void onCreate() {
         super.onCreate();
         EventBus.getDefault().register(this);
+        uploadService = this;
         //休眠时 唤醒cpu
 //        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 //        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, UploadService.class.getName());
 //        wakeLock.acquire();
     }
-
+    public static UploadService getUploadService(){
+        return uploadService;
+    }
     //   获取需要上传的数据
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onEvent(UpLoadData upLoadData_) {                            //-->UpLoadData upLoadData
@@ -77,9 +81,9 @@ public class UploadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //第一次启动服务 不上传数据
-        if (first){
-            first = false;
-        }else {
+//        if (first){
+//            first = false;
+//        }else {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -92,12 +96,13 @@ public class UploadService extends Service {
 
                         FTPClient ftpClient = ftpClientData.ftpConnect();
                         if (ftpClient ==null){
+                            EventBus.getDefault().post(new FTPEvent(false));
                             Looper.prepare();
                             Toast.makeText(UploadService.this,"连接FTP服务器失败", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                             return;
 
-                        }
+                        }else  EventBus.getDefault().post(new FTPEvent(true));
                         try {
                             ftpClient.makeDirectory(MyApplication.UpLoadFilePath); //如果FTP上不存在该文件，则创建文件
                         } catch (IOException e) {
@@ -122,7 +127,7 @@ public class UploadService extends Service {
                     }
                 }
             }).start();
-        }
+//        }
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         // 上传时间间隔（ms）
         int anHour = MyApplication.GetUpLoadTime();
@@ -133,7 +138,6 @@ public class UploadService extends Service {
         Intent i = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
-//        return super.onStartCommand(intent, flags, startId);
 
        /* Notification notification = new Notification.Builder(this.getApplicationContext())
                 .setContentTitle("无线雷达mini")

@@ -1,6 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -40,6 +42,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
 import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
+import com.ascend.wangfeng.locationbyhand.util.GetSystemUtils;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
@@ -112,6 +115,8 @@ public class MainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         checkVersion();
+        //打开系统设置，手动将app加入白名单
+//        GetSystemUtils.openStart(MainActivity.this);
     }
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -260,7 +265,7 @@ public class MainActivity extends BaseActivity {
         Fragment[] fragments = new Fragment[]{
                 new ApListFragment(), new StaListFragment()
         };
-//        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments,null);
     }
 
     private void initTool() {
@@ -477,4 +482,5 @@ public class MainActivity extends BaseActivity {
                     }
                 });
     }
+
 }

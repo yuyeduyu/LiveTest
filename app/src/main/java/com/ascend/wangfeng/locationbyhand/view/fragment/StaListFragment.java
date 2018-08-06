@@ -39,6 +39,7 @@ import com.ascend.wangfeng.locationbyhand.data.saveData.UpLoadData;
 import com.ascend.wangfeng.locationbyhand.dialog.IShowView;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.dialog.TargetSetDialog;
+import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.SearchEvent;
 import com.ascend.wangfeng.locationbyhand.event.StaListEvent;
@@ -287,6 +288,7 @@ public class StaListFragment extends BaseFragment
 
                     FTPClient ftpClient = ftpClientData.ftpConnect();
                     if (ftpClient == null) {
+                        EventBus.getDefault().post(new FTPEvent(false));
                         ((Activity) getActivity()).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -298,7 +300,7 @@ public class StaListFragment extends BaseFragment
                         });
                         return;
 
-                    }
+                    }else  EventBus.getDefault().post(new FTPEvent(true));
                     try {
                         ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
                     } catch (IOException e) {

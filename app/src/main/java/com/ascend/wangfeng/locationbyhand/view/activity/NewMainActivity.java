@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
@@ -39,6 +40,7 @@ import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.SearchEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
+import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
 import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
@@ -48,7 +50,10 @@ import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
 import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
 import com.ascend.wangfeng.locationbyhand.view.myview.draglayout.DragLayout;
 import com.ascend.wangfeng.locationbyhand.view.service.BleService;
+import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
+import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
+import com.ascend.wxldcmenu.MenuMainActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,17 +63,12 @@ import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-//import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
-//import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
-
-//
 public class NewMainActivity extends BaseActivity {
 
     @BindView(R.id.dl)
@@ -116,7 +116,7 @@ public class NewMainActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        Log.i(TAG, "initView: ");
+        //无线雷达C系列
         initService();
         //initBroadcast();              //监听wifi连接情况
         //initConfig();
@@ -133,7 +133,24 @@ public class NewMainActivity extends BaseActivity {
         //获取动态权限
         getPermissions();
         //版本更新监测
-        checkVersion();
+        AppVersionUitls.checkVersion(this,AppVersionConfig.WXLDCVERSIONTXT
+                ,AppVersionConfig.WXLDCAPPNAME, null);
+        //打开系统设置，手动将app加入白名单
+//        GetSystemUtils.openStart(NewMainActivity.this);
+
+//        final ScreenManager screenManager = ScreenManager.getInstance(NewMainActivity.this);
+//        ScreenBroadcastListener listener = new ScreenBroadcastListener(this);
+//        listener.registerListener(new ScreenBroadcastListener.ScreenStateListener() {
+//            @Override
+//            public void onScreenOn() {
+//                screenManager.finishActivity();
+//            }
+//
+//            @Override
+//            public void onScreenOff() {
+//                screenManager.startActivity();
+//            }
+//        });
     }
 
     /**
@@ -329,6 +346,10 @@ public class NewMainActivity extends BaseActivity {
                         //更新界面 MIni显示上传按钮
                         if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
                             mToolbar.setTitle(R.string.app_name_mini);
+                            //保活线程
+                            LiveService.toLiveService(NewMainActivity.this);
+                            startService(new Intent(NewMainActivity.this, UploadService.class));
+                            startService(new Intent(NewMainActivity.this, LocationService.class));
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
@@ -390,7 +411,7 @@ public class NewMainActivity extends BaseActivity {
      * created at 2018-07-24 11:57
      */
     private void checkVersion() {
-        AppClient.getAppVersionApi().getAppVersion("wxldCVersion.txt")
+        AppClient.getAppVersionApi().getAppVersion(AppVersionConfig.WXLDCVERSIONTXT)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AppVersionBack>() {
@@ -449,7 +470,7 @@ public class NewMainActivity extends BaseActivity {
     }
 
     private void downApk() {
-        AppClient.getAppVersionApi().updateApp("wxldC.apk")
+        AppClient.getAppVersionApi().updateApp(AppVersionConfig.WXLDCAPPNAME)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ResponseBody>() {

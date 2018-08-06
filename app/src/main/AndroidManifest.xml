@@ -48,7 +48,7 @@
             android:value="K1MSrOIiglfTa21gGx6VLzXsncGb19XX" />
 
         <activity
-            android:name=".view.activity.NewMainActivity"
+            android:name=".login.LoginActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -57,6 +57,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.MainActivity"/>
+        <activity android:name=".view.activity.NewMainActivity"/>
         <activity
             android:name=".view.activity.ChartActivity"
             android:screenOrientation="portrait" />
@@ -68,9 +70,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.activity.SetActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".login.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.activity.LogActivity"
@@ -111,7 +110,14 @@
         <receiver android:name=".view.receiver.AlarmReceiver" />
 
         <activity android:name=".view.activity.SetftpActivity" />
-        <activity android:name=".view.activity.StatisticsActivity"></activity>
+        <activity android:name=".view.activity.StatisticsActivity" />
+        <activity
+            android:name=".keeplive.LiveActivity"
+            android:theme="@style/LiveStyle" />
+
+        <service android:name=".keeplive.LiveService" />
+
+        <activity android:name="com.ascend.wxldcmenu.MenuMainActivity"></activity>
     </application>
 
 </manifest>

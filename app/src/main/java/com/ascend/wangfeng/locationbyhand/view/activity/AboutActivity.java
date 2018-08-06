@@ -15,11 +15,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 
@@ -76,7 +78,13 @@ public class AboutActivity extends AppCompatActivity {
         checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkVersion();
+//                checkVersion();
+                loadingDialog.show();
+                if (AppVersionConfig.VERSION == AppVersionConfig.WXLDC)
+                    AppVersionUitls.checkVersion(AboutActivity.this
+                            ,AppVersionConfig.WXLDCVERSIONTXT,AppVersionConfig.WXLDCAPPNAME,loadingDialog);
+                else  AppVersionUitls.checkVersion(AboutActivity.this
+                        ,AppVersionConfig.WXLDMENUVERSIONTXT,AppVersionConfig.WXLDMENUAPPNAME,loadingDialog);
             }
         });
         if ((boolean) SharedPreferencesUtils.getParam(AboutActivity.this, "appVersion", false)) {
