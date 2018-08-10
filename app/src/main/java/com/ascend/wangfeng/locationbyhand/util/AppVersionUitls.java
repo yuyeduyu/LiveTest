@@ -51,7 +51,8 @@ public class AppVersionUitls {
      * @author lish
      * created at 2018-07-24 11:57
      */
-    public static void checkVersion(final Context context, String appVersionTxt, final String appName, final LoadingDialog loadingDialog) {
+    public static void checkVersion(final Context context, String appVersionTxt
+            , final String appName, final LoadingDialog loadingDialog) {
         AppClient.getAppVersionApi().getAppVersion(appVersionTxt)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,8 +74,10 @@ public class AppVersionUitls {
                         if (AppVersionUitls.getVersionNo(context) < appVersion.getData().getVersionCode()) {
                             SharedPreferencesUtils.setParam(context, "appVersion", true);
                             shownUpdataDialog(context,appVersion.getData().getDes(),appName);
-                        } else
+                        } else{
                             SharedPreferencesUtils.setParam(context, "appVersion", false);
+                            Toast.makeText(context, "当前为最新版本", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
     }

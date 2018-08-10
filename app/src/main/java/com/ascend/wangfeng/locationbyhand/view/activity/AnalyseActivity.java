@@ -136,7 +136,6 @@ public class AnalyseActivity extends BaseActivity {
                                 llAdress.setVisibility(View.VISIBLE);
                                 longitude.setText("未查询到该经纬度");
                             }
-
                         } else {
                             llAdress.setVisibility(View.VISIBLE);
                             Toast.makeText(AnalyseActivity.this, "获取经纬度失败", Toast.LENGTH_SHORT).show();

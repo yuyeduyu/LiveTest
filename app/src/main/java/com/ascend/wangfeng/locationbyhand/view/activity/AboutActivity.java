@@ -54,6 +54,7 @@ public class AboutActivity extends AppCompatActivity {
     TextView update;
 
     public LoadingDialog loadingDialog; //上传dialog
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,13 +79,9 @@ public class AboutActivity extends AppCompatActivity {
         checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                checkVersion();
                 loadingDialog.show();
-                if (AppVersionConfig.VERSION == AppVersionConfig.WXLDC)
-                    AppVersionUitls.checkVersion(AboutActivity.this
-                            ,AppVersionConfig.WXLDCVERSIONTXT,AppVersionConfig.WXLDCAPPNAME,loadingDialog);
-                else  AppVersionUitls.checkVersion(AboutActivity.this
-                        ,AppVersionConfig.WXLDMENUVERSIONTXT,AppVersionConfig.WXLDMENUAPPNAME,loadingDialog);
+                AppVersionUitls.checkVersion(AboutActivity.this
+                        , AppVersionConfig.appVersion, AppVersionConfig.appName, loadingDialog);
             }
         });
         if ((boolean) SharedPreferencesUtils.getParam(AboutActivity.this, "appVersion", false)) {
@@ -106,7 +103,7 @@ public class AboutActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         Snackbar.make(mAppBar, "连接服务器失败", Snackbar.LENGTH_SHORT).show();
-                        if (loadingDialog!=null)
+                        if (loadingDialog != null)
                             loadingDialog.dismiss();
                     }
 
@@ -126,7 +123,7 @@ public class AboutActivity extends AppCompatActivity {
                         else {
                             Snackbar.make(mAppBar, "当前版本已经是最新版本", Snackbar.LENGTH_LONG).show();
                         }
-                        if (loadingDialog!=null)
+                        if (loadingDialog != null)
                             loadingDialog.dismiss();
                     }
                 });

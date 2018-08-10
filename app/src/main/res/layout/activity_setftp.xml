@@ -78,7 +78,7 @@
             <EditText
                 android:id="@+id/password"
                 style="@style/setEdit"
-                android:inputType="textPassword" />
+                android:imeOptions="actionNext" />
         </LinearLayout>
         <include layout="@layout/view_line" />
         <LinearLayout

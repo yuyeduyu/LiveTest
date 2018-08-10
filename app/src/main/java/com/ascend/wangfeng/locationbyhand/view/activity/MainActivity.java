@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
@@ -98,25 +99,11 @@ public class MainActivity extends BaseActivity {
     protected void initView() {
 
         Log.i(TAG, "initView: ");
-        initService();
-        //initBroadcast();              //监听wifi连接情况
-        //initConfig();
-        listenConnect();
+//        listenConnect();
         initData();
         initTool();
         initStart();
-
-        if (!MyApplication.isDev) {
-            checkIsLogin();
-        } else {
-            initBleActivity();
-        }
-        //获取动态权限
-        getPermissions();
-        //版本更新监测
-        checkVersion();
-        //打开系统设置，手动将app加入白名单
-//        GetSystemUtils.openStart(MainActivity.this);
+        initBleActivity();
     }
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -124,40 +111,6 @@ public class MainActivity extends BaseActivity {
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.ACCESS_FINE_LOCATION"};
 
-    /**
-     * 获取动态权限
-     *
-     * @author lish
-     * created at 2018-07-18 13:58
-     */
-    private void getPermissions() {
-        if (Build.VERSION.SDK_INT >= 23) {//判断当前系统是不是Android6.0
-            requestRuntimePermissions(PERMISSIONS_STORAGE, new PermissionListener() {
-                @Override
-                public void granted() {
-                    //权限申请通过
-                }
-
-                @Override
-                public void denied(List<String> deniedList) {
-                    //权限申请未通过
-                    for (String denied : deniedList) {
-//                        if (denied.equals("android.permission.ACCESS_FINE_LOCATION")) {
-//                            Toast.makeText(MainActivity.this, "定位失败，请检查是否打开定位权限！", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            Toast.makeText(MainActivity.this, denied, Toast.LENGTH_SHORT).show();
-//                        }
-                        Toast.makeText(MainActivity.this, "获取权限失败,部分功能不可使用", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-    }
-
-
-    private void initService() {                            //启动服务
-        startService(new Intent(MainActivity.this, BleService.class));
-    }
 
     private void listenConnect() {
         if (MyApplication.connectStation)
@@ -265,20 +218,28 @@ public class MainActivity extends BaseActivity {
         Fragment[] fragments = new Fragment[]{
                 new ApListFragment(), new StaListFragment()
         };
-        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments,null);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments, null);
     }
 
     private void initTool() {
 
         if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
-            mToolbar.setTitle(R.string.app_name_mini);
+            mToolbar.setTitle(AppVersionConfig.appTitle);
         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
             mToolbar.setTitle(R.string.app_name_cplus);
-        } else if (mToolbar != null) {
-            mToolbar.setTitle(R.string.app_name);
+        }else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
+            mToolbar.setTitle(R.string.app_name_c);
+        }else if (mToolbar != null) {
+            mToolbar.setTitle(AppVersionConfig.title);
         }
         setSupportActionBar(mToolbar);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         RxBus.getDefault().toObservable(AppVersionEvent.class)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -287,13 +248,15 @@ public class MainActivity extends BaseActivity {
                     public void onNext(AppVersionEvent event) {
                         //更新界面 MIni显示上传按钮
                         if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
-                            mToolbar.setTitle(R.string.app_name_mini);
+                            mToolbar.setTitle(AppVersionConfig.appTitle);
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
-                        } else if (mToolbar!=null & event.getAppVersion() == -1){
+                        } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
+                        } else if (mToolbar != null & event.getAppVersion() == Config.C) {
+                            mToolbar.setTitle(R.string.app_name_c);
                         }else if (mToolbar != null) {
-                            mToolbar.setTitle(R.string.app_name);
+                            mToolbar.setTitle(AppVersionConfig.title);
                         }
                     }
                 });
@@ -364,12 +327,11 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onNext(AppVersionBack appVersion) {
-                        if (AppVersionUitls.getVersionNo(MainActivity.this) < appVersion.getData().getVersionCode()){
-                            SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",true);
+                        if (AppVersionUitls.getVersionNo(MainActivity.this) < appVersion.getData().getVersionCode()) {
+                            SharedPreferencesUtils.setParam(MainActivity.this, "appVersion", true);
                             shownUpdataDialog(appVersion.getData().getDes());
-                        }
-
-                        else SharedPreferencesUtils.setParam(MainActivity.this,"appVersion",false);
+                        } else
+                            SharedPreferencesUtils.setParam(MainActivity.this, "appVersion", false);
                     }
                 });
     }

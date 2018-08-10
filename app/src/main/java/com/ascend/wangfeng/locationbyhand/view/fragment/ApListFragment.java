@@ -51,8 +51,6 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.view.activity.ChartActivity;
-import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
-import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;

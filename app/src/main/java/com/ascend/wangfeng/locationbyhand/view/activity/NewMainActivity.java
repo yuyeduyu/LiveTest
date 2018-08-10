@@ -133,8 +133,8 @@ public class NewMainActivity extends BaseActivity {
         //获取动态权限
         getPermissions();
         //版本更新监测
-        AppVersionUitls.checkVersion(this,AppVersionConfig.WXLDCVERSIONTXT
-                ,AppVersionConfig.WXLDCAPPNAME, null);
+        AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
+                ,AppVersionConfig.appName, null);
         //打开系统设置，手动将app加入白名单
 //        GetSystemUtils.openStart(NewMainActivity.this);
 
@@ -402,147 +402,6 @@ public class NewMainActivity extends BaseActivity {
         if (connectionReceiver != null) {
             unregisterReceiver(connectionReceiver);
         }
-    }
-
-    /**
-     * 检测app版本是否需要更新
-     *
-     * @author lish
-     * created at 2018-07-24 11:57
-     */
-    private void checkVersion() {
-        AppClient.getAppVersionApi().getAppVersion(AppVersionConfig.WXLDCVERSIONTXT)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<AppVersionBack>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtils.e("getAppVersion:", e.toString());
-                    }
-
-                    @Override
-                    public void onNext(AppVersionBack appVersion) {
-                        if (AppVersionUitls.getVersionNo(NewMainActivity.this) < appVersion.getData().getVersionCode()) {
-                            SharedPreferencesUtils.setParam(NewMainActivity.this, "appVersion", true);
-                            shownUpdataDialog(appVersion.getData().getDes());
-                        } else
-                            SharedPreferencesUtils.setParam(NewMainActivity.this, "appVersion", false);
-                    }
-                });
-    }
-
-    /**
-     * 更新dialog
-     *
-     * @author lish
-     * created at 2018-07-24 12:35
-     */
-    private void shownUpdataDialog(String des) {
-        final AlertDialog.Builder normalDialog =
-                new AlertDialog.Builder(NewMainActivity.this);
-        normalDialog.setTitle("版本更新");
-        normalDialog.setMessage(des);
-        normalDialog.setCancelable(false);
-        normalDialog.setPositiveButton("下载安装",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        downApk();
-                        dialog.dismiss();
-                    }
-                });
-        normalDialog.setNegativeButton("关闭",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        dialog.dismiss();
-                    }
-                });
-        // 显示
-        normalDialog.show();
-    }
-
-    private void downApk() {
-        AppClient.getAppVersionApi().updateApp(AppVersionConfig.WXLDCAPPNAME)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ResponseBody>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(NewMainActivity.this, "更新失败", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody body) {
-                        Log.i("a", "onNext: ");
-                        try {
-                            // todo change the file location/name according to your needs
-                            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath()
-                                    + "/AscendLog/LocationShow/");
-                            File futureStudioIconFile = new File(dir, "location.apk");
-
-                            InputStream inputStream = null;
-                            OutputStream outputStream = null;
-
-                            try {
-                                byte[] fileReader = new byte[4096];
-
-                                long fileSize = body.contentLength();
-                                long fileSizeDownloaded = 0;
-
-                                inputStream = body.byteStream();
-                                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                                while (true) {
-                                    int read = inputStream.read(fileReader);
-
-                                    if (read == -1) {
-                                        break;
-                                    }
-
-                                    outputStream.write(fileReader, 0, read);
-
-                                    fileSizeDownloaded += read;
-
-                                }
-
-                                outputStream.flush();
-                                Intent intent = new Intent();
-                                //执行动作
-                                intent.setAction(Intent.ACTION_VIEW);
-                                //执行的数据类型
-                                intent.setDataAndType(Uri.fromFile(futureStudioIconFile), "application/vnd.android.package-archive");
-                                startActivity(intent);
-
-                                return;
-                            } catch (IOException e) {
-                                return;
-                            } finally {
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
-
-                                if (outputStream != null) {
-                                    outputStream.close();
-                                }
-                            }
-                        } catch (IOException e) {
-                            return;
-                        }
-                    }
-                });
     }
 
     @OnClick({R.id.ll_log, R.id.ll_bukong, R.id.ll_fenxi, R.id.set, R.id.about,R.id.ll_tongji})

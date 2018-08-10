@@ -36,12 +36,13 @@ public class MyApplication extends Application {
     public static MyApplication instances;
 
     public static String mDevicdID;//设备编号
+    public static String mDevicdMac;//设备mac
     private static List<NoteDo> mNoteDos;//目标列表
     public static Ghz mGhz = Ghz.G24;//0为2.4,1为5
 
     public static boolean connectStation = false;         //连接状态
 
-    public static int AppVersion = Config.C;//app版本  -C,-Cmini，-Cplus  默认版本C
+    public static int AppVersion = -2;//app版本  -C,-Cmini，-Cplus
     /**
      * 获取数据的请求是否发送
      */

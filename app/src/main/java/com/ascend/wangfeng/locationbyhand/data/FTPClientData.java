@@ -100,6 +100,9 @@ public class FTPClientData {
             }else if (type.equals("gps")){
                 String remoteFileName = fileName + ".cargps";
                 ftpClient.storeFile(remoteFileName, fis);
+            }else if (type.equals("carsite")){
+                String remoteFileName = fileName + ".carsite";
+                ftpClient.storeFile(remoteFileName, fis);
             }else{
                 String remoteFileName = fileName ;
 

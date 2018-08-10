@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 23
-        versionName "3.3.0"
+        versionCode 27   //根据这个值 判断版本升级
+        versionName "3.6.0"
     }
 
 //签名配置
@@ -19,7 +19,7 @@ android {
         releaseConfig {                        //发布版本签名配置
             keyAlias 'feng'
             keyPassword 'wf1314'
-            storeFile file('E:/androidwork/wxld/output/locationbyhand.jks')
+            storeFile file('E:/androidStoreKey/locationbyhand.jks')
             storePassword 'wf1314'
         }
     }
@@ -37,7 +37,25 @@ android {
         }
 
     }
-
+//配置多版本的apk
+    productFlavors {
+        wxld {
+            applicationId "com.ascend.wangfeng.wxld"
+            manifestPlaceholders = [app_name: "无线雷达"]
+            buildConfigField "String", "appTitle", "\"无线雷达-MINI\""
+            buildConfigField "String", "title", "\"无线雷达\""
+            buildConfigField "String", "appVersion", "\"wxldCVersion.txt\""
+            buildConfigField "String", "appName", "\"app-wxld-release.apk\""
+        }
+        menu {
+            applicationId "com.ascend.wangfeng.wxld.menu"
+            manifestPlaceholders = [app_name: "便携式移动采集"]
+            buildConfigField "String", "appTitle", "\"便携式移动采集\""
+            buildConfigField "String", "title", "\"便携式移动采集\""
+            buildConfigField "String", "appVersion", "\"wxldMenuVersion.txt\""
+            buildConfigField "String", "appName", "\"app-menu-release.apk\""
+        }
+    }
 //源文件目录设置
     sourceSets {
         main {

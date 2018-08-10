@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.data.FTPClientData;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -50,14 +51,26 @@ public class SetftpActivity extends AppCompatActivity {
     private String user;
     private String password;
     private String path;
-
+    private int from;// 1.为开站界面跳转
+    private SharedPreferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setftp);
         ButterKnife.bind(this);
+        from = getIntent().getIntExtra("from",-1);
+        preferences = SetftpActivity.this.getSharedPreferences("ftpData",
+                Context.MODE_PRIVATE);
         initView();
         initData();
+        if (from==1){
+            setSubmit.setText("下一步");
+            //设置过IP 则直接跳到 开站界面
+            if (!preferences.getString("url", "").equals("")){
+                startActivity(new Intent(SetftpActivity.this,KaiZhanActivity.class));
+                finish();
+            }
+        }
     }
 
 
@@ -69,36 +82,45 @@ public class SetftpActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //数据是使用Intent返回
-                Intent intent = new Intent();
-                //把返回数据存入Intent
-                intent.putExtra("result", "My name is linjiqin");
-                SetftpActivity.this.setResult(1, intent);
+//                back();
                 finish();
             }
         });
     }
 
+    private void back() {
+        if (from==1){
+            //开站
+            MyApplication.ftpData(); //更新服务器地址
+            startActivity(new Intent(SetftpActivity.this,KaiZhanActivity.class));
+        }else {
+            //设置服务器地址
+            Intent intent = new Intent();
+            SetftpActivity.this.setResult(1, intent);
+        }
+        finish();
+    }
+
 
     private void initData() {
-        SharedPreferences preferences = SetftpActivity.this.getSharedPreferences("ftpData",
-                Context.MODE_PRIVATE);
-        if (preferences.getString("url", "") != "" ||
-                preferences.getString("user", "") != "" ||
-                preferences.getString("password", "") != "" ||
-                preferences.getString("path", "") != "") {
+
+//        if (preferences.getString("url", "") != "" ||
+//                preferences.getString("user", "") != "" ||
+//                preferences.getString("password", "") != "" ||
+//                preferences.getString("path", "") != "") {
+//            setUrl.setText(preferences.getString("url", ""));
+//            setPort.setText(preferences.getInt("port", -1) + "");
+//            setUser.setText(preferences.getString("user", ""));
+//            setPassword.setText(preferences.getString("password", ""));
+//            setPath.setText(preferences.getString("path", ""));
+//        } else {
             setUrl.setText(preferences.getString("url", ""));
-            setPort.setText(preferences.getInt("port", -1) + "");
+            setPort.setText(preferences.getInt("port", -1)==-1
+                    ?"":preferences.getInt("port", -1) + "");
             setUser.setText(preferences.getString("user", ""));
             setPassword.setText(preferences.getString("password", ""));
             setPath.setText(preferences.getString("path", ""));
-        } else {
-            setUrl.setText(preferences.getString("url", ""));
-            setPort.setText("");
-            setUser.setText(preferences.getString("user", ""));
-            setPassword.setText(preferences.getString("password", ""));
-            setPath.setText(preferences.getString("path", ""));
-        }
+//        }
     }
 
     @OnClick(R.id.set_submit)
@@ -152,9 +174,7 @@ public class SetftpActivity extends AppCompatActivity {
                     editor.putString("path", path);
                     editor.commit();
                     Toast.makeText(SetftpActivity.this, "ftp服务器配置成功", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    setResult(1,intent);
-                    finish();
+                    back();
                 } else {
                     //上传失败，信息有问题
                     Toast.makeText(SetftpActivity.this, "ftp服务器配置信息有误，请重新配置", Toast.LENGTH_SHORT).show();
@@ -164,4 +184,5 @@ public class SetftpActivity extends AppCompatActivity {
             }
         }).start();
     }
+
 }

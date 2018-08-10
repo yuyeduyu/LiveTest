@@ -34,7 +34,15 @@ public class FileData {
     private Context mContext;
 
     public FileData(){}
+    //写入开站数据
+    public FileData(Context mContext, String filePath, String fileName,StringBuffer cont){
+        this.mContext = mContext;
 
+        this.filePath = filePath;
+        this.fileName = fileName;
+        makeFilePath(filePath,fileName,false);                //生成文件夹之后，再生成文件，不然会出错
+        writeTxtToFile(cont.toString());       // 将字符串写入到文本文件中
+    }
     //写入ap数据
     public FileData(Context mContext, String filePath, String fileName, List<ApData> aplist, String version){
         this.mContext = mContext;
@@ -42,7 +50,7 @@ public class FileData {
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(aplist);       // 将字符串写入到文本文件中
     }
     //写入终端数据
@@ -52,7 +60,7 @@ public class FileData {
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(stalist,a);       // 将字符串写入到文本文件中
     }
     //写入连接信息
@@ -62,7 +70,7 @@ public class FileData {
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(sclist,b);       // 将字符串写入到文本文件中
     }
 
@@ -72,14 +80,14 @@ public class FileData {
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(gpslist,b,a);
     }
 
 
 
     // 生成文件并写入开头首行内容
-    private File makeFilePath(String filePath, String fileName) {
+    private File makeFilePath(String filePath, String fileName,boolean haveTitle) {
         makeRootDirectory(filePath);                    //生产文件夹
         try {
             file = new File(filePath + fileName);
@@ -91,18 +99,32 @@ public class FileData {
             }
             raf = new RandomAccessFile(file, "rwd");           //对文件内容进行操作
 
-            strContent = "asd_iwm_02," + getMobileMAC() + "," + version+ ","+ MyApplication.mDevicdID+","+"211.211.211.211," + "\n";
+            if (haveTitle){
+                strContent = "asd_iwm_02," + getMobileMAC() + "," + version+ ","+ MyApplication.mDevicdID+","+"211.211.211.211," + "\n";
 //            Log.e(TAG,"头行信息:"+strContent+"    手机MAC地址："+getLocalMacAddressFromIp());
-
-            raf.seek(file.length());
-            raf.write(strContent.getBytes());
+                raf.seek(file.length());
+                raf.write(strContent.getBytes());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
 
+    // 字符串写入到文本文件中
 
+    private void writeTxtToFile(String cont) {
+        try {
+
+                raf.seek(file.length());
+                raf.write(cont.getBytes());
+
+
+            raf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     // 将ap字符串写入到文本文件中
 
     private void writeTxtToFile(List<ApData> aplist) {

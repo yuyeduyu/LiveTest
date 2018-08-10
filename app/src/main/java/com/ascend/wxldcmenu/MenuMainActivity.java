@@ -18,11 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
+import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
+import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
@@ -32,15 +34,18 @@ import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
 import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.BLEActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.KaiZhanActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.service.BleService;
@@ -127,8 +132,8 @@ public class MenuMainActivity extends BaseActivity {
         //获取动态权限
         getPermissions();
         //版本更新监测
-         AppVersionUitls.checkVersion(this,AppVersionConfig.WXLDMENUVERSIONTXT
-                 ,AppVersionConfig.WXLDMENUAPPNAME, null);
+         AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
+                 ,AppVersionConfig.appName, null);
     }
 
     private void checkIsLogin() {
@@ -207,11 +212,13 @@ public class MenuMainActivity extends BaseActivity {
     private void initTool() {
 
         if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
-            mToolbar.setTitle(R.string.app_name_mini);
+            mToolbar.setTitle(BuildConfig.appTitle);
         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
             mToolbar.setTitle(R.string.app_name_cplus);
-        } else if (mToolbar != null) {
-            mToolbar.setTitle(R.string.app_name);
+        } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
+            mToolbar.setTitle(R.string.app_name_c);
+        }else if (mToolbar !=null){
+            mToolbar.setTitle(AppVersionConfig.title);
         }
         devText.setText("编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
         if (UploadService.getUploadService()!=null)
@@ -232,21 +239,52 @@ public class MenuMainActivity extends BaseActivity {
                     public void onNext(AppVersionEvent event) {
                         //更新界面 MIni显示上传按钮
                         if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
-                            mToolbar.setTitle(R.string.app_name_mini);
+                            mToolbar.setTitle(BuildConfig.appTitle);
                             //保活线程
                             LiveService.toLiveService(MenuMainActivity.this);
-                            startService(new Intent(MenuMainActivity.this, UploadService.class));
                             startService(new Intent(MenuMainActivity.this, LocationService.class));
+                            startService(new Intent(MenuMainActivity.this, UploadService.class));
+                            if (AppVersionConfig.appTitle.equals("便携式移动采集")){
+                                //便携式移动采集
+                                isKaiZhan();
+                            }
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
-                        } else if (mToolbar != null) {
-                            mToolbar.setTitle(R.string.app_name);
+                        }  else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
+                            mToolbar.setTitle(R.string.app_name_c);
+                        }else if (mToolbar != null) {
+                            mToolbar.setTitle(AppVersionConfig.title);
                         }
                         devText.setText("编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
                     }
                 });
+    }
+/**
+ * 如果设备没有开站信息 则跳转开站界面
+ * @author lish
+ * created at 2018-08-10 11:52
+ */
+    private void isKaiZhan() {
+        List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this
+                ,"kaizhan");
+        if (devs == null)
+            //跳转开站界面
+            startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
+                    .putExtra("from",1));
+        else {
+            boolean isKaiZhan = false;
+            for (KaiZhanBean dev :devs){
+                if (dev.getMac().equals(MyApplication.mDevicdMac))
+                    isKaiZhan = true;
+            }
+            if (!isKaiZhan){
+                //跳转开站界面
+                startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
+                        .putExtra("from",1));
+            }
+        }
     }
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -282,147 +320,6 @@ public class MenuMainActivity extends BaseActivity {
                 }
             });
         }
-    }
-
-    /**
-     * 检测app版本是否需要更新
-     *
-     * @author lish
-     * created at 2018-07-24 11:57
-     */
-    private void checkVersion() {
-        AppClient.getAppVersionApi().getAppVersion(AppVersionConfig.WXLDMENUVERSIONTXT)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<AppVersionBack>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtils.e("getAppVersion:", e.toString());
-                    }
-
-                    @Override
-                    public void onNext(AppVersionBack appVersion) {
-                        if (AppVersionUitls.getVersionNo(MenuMainActivity.this) < appVersion.getData().getVersionCode()) {
-                            SharedPreferencesUtils.setParam(MenuMainActivity.this, "appVersion", true);
-                            shownUpdataDialog(appVersion.getData().getDes());
-                        } else
-                            SharedPreferencesUtils.setParam(MenuMainActivity.this, "appVersion", false);
-                    }
-                });
-    }
-
-    /**
-     * 更新dialog
-     *
-     * @author lish
-     * created at 2018-07-24 12:35
-     */
-    private void shownUpdataDialog(String des) {
-        final AlertDialog.Builder normalDialog =
-                new AlertDialog.Builder(MenuMainActivity.this);
-        normalDialog.setTitle("版本更新");
-        normalDialog.setMessage(des);
-        normalDialog.setCancelable(false);
-        normalDialog.setPositiveButton("下载安装",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        downApk();
-                        dialog.dismiss();
-                    }
-                });
-        normalDialog.setNegativeButton("关闭",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        dialog.dismiss();
-                    }
-                });
-        // 显示
-        normalDialog.show();
-    }
-
-    private void downApk() {
-        AppClient.getAppVersionApi().updateApp(AppVersionConfig.WXLDMENUAPPNAME)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ResponseBody>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(MenuMainActivity.this, "更新失败", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody body) {
-                        Log.i("a", "onNext: ");
-                        try {
-                            // todo change the file location/name according to your needs
-                            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath()
-                                    + "/AscendLog/LocationShow/");
-                            File futureStudioIconFile = new File(dir, "location.apk");
-
-                            InputStream inputStream = null;
-                            OutputStream outputStream = null;
-
-                            try {
-                                byte[] fileReader = new byte[4096];
-
-                                long fileSize = body.contentLength();
-                                long fileSizeDownloaded = 0;
-
-                                inputStream = body.byteStream();
-                                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                                while (true) {
-                                    int read = inputStream.read(fileReader);
-
-                                    if (read == -1) {
-                                        break;
-                                    }
-
-                                    outputStream.write(fileReader, 0, read);
-
-                                    fileSizeDownloaded += read;
-
-                                }
-
-                                outputStream.flush();
-                                Intent intent = new Intent();
-                                //执行动作
-                                intent.setAction(Intent.ACTION_VIEW);
-                                //执行的数据类型
-                                intent.setDataAndType(Uri.fromFile(futureStudioIconFile), "application/vnd.android.package-archive");
-                                startActivity(intent);
-
-                                return;
-                            } catch (IOException e) {
-                                return;
-                            } finally {
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
-
-                                if (outputStream != null) {
-                                    outputStream.close();
-                                }
-                            }
-                        } catch (IOException e) {
-                            return;
-                        }
-                    }
-                });
     }
 
     @OnClick({R.id.layout_main, R.id.ll_log, R.id.ll_bukong, R.id.ll_fenxi, R.id.ll_tongji

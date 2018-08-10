@@ -6,13 +6,10 @@ package com.ascend.wangfeng.locationbyhand;
  */
 
 public class AppVersionConfig {
-    public static int WXLDC = 1;//无线雷达C
-    public static int WXLDMENU = 2;//无线雷达-便携式车载采集
-//        public static int VERSION = WXLDMENU;
-    public static int VERSION = WXLDC;
+    public static String appVersion = BuildConfig.appVersion;
+    public static String appName = BuildConfig.appName;
+    public static String appTitle = BuildConfig.appTitle;
+    //默认标题栏名称
+    public static String title = BuildConfig.title;
 
-    public static String WXLDCVERSIONTXT = "wxldCVersion.txt";
-    public static String WXLDCAPPNAME = "wxldC.apk";
-    public static String WXLDMENUVERSIONTXT = "wxldMenuVersion.txt";
-    public static String WXLDMENUAPPNAME = "wxldMenu.apk";
 }

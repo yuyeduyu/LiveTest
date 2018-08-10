@@ -45,6 +45,7 @@ import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TaskActivity;
+import com.ascend.wxldcmenu.MenuMainActivity;
 import com.kyleduo.switchbutton.SwitchButton;
 
 import butterknife.BindView;
@@ -125,6 +126,8 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout tongji;
     @BindView(R.id.view)
     View view;
+    @BindView(R.id.kaizhan)
+    RelativeLayout kaizhan;
 
 
     private String TAG = getClass().getCanonicalName();
@@ -370,10 +373,9 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         if (MyApplication.AppVersion != Config.C_MINI)
             mGhz.setVisibility(View.VISIBLE);
 
-        if (AppVersionConfig.VERSION == AppVersionConfig.WXLDMENU){
-            //便携式车载采集app 设置界面显示 关于
-            mAbout.setVisibility(View.VISIBLE);
-            view.setVisibility(View.VISIBLE);
+        if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+            //便携式车载采集app 设置界面显示 开站信息
+            kaizhan.setVisibility(View.VISIBLE);
         }
     }
 
@@ -673,5 +675,12 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             e.printStackTrace();
             return "未知";
         }
+    }
+
+
+    @OnClick(R.id.kaizhan)
+    public void onViewClicked() {
+        startActivity(new Intent(getActivity(), SetftpActivity.class)
+                .putExtra("from",1));
     }
 }

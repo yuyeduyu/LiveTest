@@ -101,6 +101,7 @@ public class BLEActivity extends AppCompatActivity {
                 RxBus.getDefault().post(event);
                 if (mDevices.get(position).getName()!=null){
                     MyApplication.mDevicdID = mDevices.get(position).getName();
+                    MyApplication.mDevicdMac = mDevices.get(position).getAddress();
                     setAppVersion(mDevices.get(position).getName().trim());
                 }else {
                     RxBus.getDefault().post(new AppVersionEvent(-1));
