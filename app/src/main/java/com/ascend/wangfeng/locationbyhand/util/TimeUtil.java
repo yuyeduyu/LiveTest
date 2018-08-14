@@ -78,14 +78,19 @@ public class TimeUtil {
         return (int) (cal.getTimeInMillis());
     }
 
-    //获得7天前0点时间戳
-    public static long getLast7morning(){
+    /**
+     * 获得N天前0点时间戳
+     * @param i 距离今天I天
+     * @author lish
+     * created at 2018-08-13 16:24
+     */
+    public static long getLastmorning(int i){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTimeInMillis()-(7 * 24 * 60 * 60 * 1000);
+        return cal.getTimeInMillis()-(i * 24 * 60 * 60 * 1000);
     }
     /**
      * 将数据固定为2位 不足补0

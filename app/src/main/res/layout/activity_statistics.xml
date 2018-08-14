@@ -2,28 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/bg_gray"
     android:orientation="vertical">
 
     <include layout="@layout/custom_toolbar" />
+
     <com.github.mikephil.charting.charts.LineChart
-        android:layout_margin="8dp"
         android:id="@+id/line_chart"
         android:layout_width="match_parent"
-        android:layout_height="150dp"></com.github.mikephil.charting.charts.LineChart>
+        android:layout_height="150dp"
+        android:layout_margin="8dp"
+        android:visibility="gone"></com.github.mikephil.charting.charts.LineChart>
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bar_chart"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="8dp" />
+
     <LinearLayout
         android:id="@+id/ll_ap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="当天采集的mac"
-            android:layout_marginLeft="8dp"
-            android:textColor="@color/text1"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAC采集数  时间段:"
+                android:textColor="@color/text1"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                tools:text="08/10 - 08/17"
+                android:textColor="@color/text1"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler"

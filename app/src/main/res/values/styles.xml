@@ -155,4 +155,14 @@
         <item name="android:textColor">#333333</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <!--时间选择工具需要样式-->
+    <style name="time_dialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
 </resources>

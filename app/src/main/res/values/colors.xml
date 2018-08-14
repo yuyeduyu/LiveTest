@@ -50,4 +50,6 @@
     <color name="c3">#eeeeee</color>
     <color name="c2">#f2f2f2</color>
     <color name="c1">#f8f8f8</color>
+
+    <color name="timeTitle">#59B29C</color>
 </resources>

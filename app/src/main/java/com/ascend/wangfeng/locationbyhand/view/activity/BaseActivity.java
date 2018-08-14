@@ -8,6 +8,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +25,32 @@ public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder bind;
     private static PermissionListener mListener;
     protected static Activity activity ;
+    public BaseActivity mBaseActivity;
+    public LoadingDialog loadingDialog; //上传dialog
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = this;
         activity = this ;
+        mBaseActivity = this;
         /** 注意：setContentView 必需在 bind 之前 */
         setContentView(setContentView());
         bind = ButterKnife.bind(this);
+        loadingDialog = new LoadingDialog( this );
+        loadingDialog.setCanceledOnTouchOutside( false );
         initView();
 
 
     }
-
+    public void showDialog(boolean show) {
+        if (loadingDialog != null) {
+            if (show && !loadingDialog.isShowing())
+                loadingDialog.show();
+            else if (!show && loadingDialog.isShowing())
+                loadingDialog.dismiss();
+        }
+    }
     /** 子类设置界面 */
     protected abstract int setContentView();
 
@@ -46,6 +60,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         bind.unbind();
+        if (loadingDialog != null) {
+            if (loadingDialog.isShowing())
+                loadingDialog.dismiss();
+            loadingDialog = null;
+        }
     }
 
     /**

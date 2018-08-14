@@ -24,16 +24,14 @@ import java.text.DecimalFormat;
 public class XYMarkerView extends MarkerView {
 
     private TextView tvContent;
-    private IAxisValueFormatter xAxisValueFormatter;
 
     private DecimalFormat format;
 
     private int style;//0 折线图  1 柱状图(柱状图 y轴经过处理，与折线图数据不一致，所以要区分)
 
-    public XYMarkerView(Context context, IAxisValueFormatter xAxisValueFormatter, int style) {
+    public XYMarkerView(Context context, int style) {
         super(context, R.layout.custom_marker_view);
 
-        this.xAxisValueFormatter = xAxisValueFormatter;
         this.style = style;
         tvContent = (TextView) findViewById(R.id.tvContent);
         format = new DecimalFormat("###");

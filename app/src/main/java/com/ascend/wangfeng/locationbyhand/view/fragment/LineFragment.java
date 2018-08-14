@@ -24,7 +24,6 @@ import com.ascend.wangfeng.locationbyhand.presenter.LinePresenterImpl;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.OuiDatabase;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
-import com.ascend.wangfeng.locationbyhand.util.chart.DayAxisValueFormatter;
 import com.ascend.wangfeng.locationbyhand.util.chart.MyAxisValueFormatter;
 import com.ascend.wangfeng.locationbyhand.view.activity.VirtualIdentityActivity;
 import com.ascend.wangfeng.locationbyhand.view.myview.XYMarkerView;
@@ -221,8 +220,7 @@ public class LineFragment extends BaseFragment implements LineContract.View {
 //        mChart.setScaleEnabled(true);
         mLineChart.setScaleXEnabled(true);
         mLineChart.setScaleYEnabled(false);
-        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mLineChart);
-        XYMarkerView mv = new XYMarkerView(getActivity(), xAxisFormatter, 0);
+        XYMarkerView mv = new XYMarkerView(getActivity(), 0);
         mv.setChartView(mLineChart); // For bounds control
         mLineChart.setMarker(mv); // Set the marker to the chart
         //设置网格线显示
@@ -286,8 +284,6 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         BarChart.setDrawGridBackground(false);
         // mChart.setDrawYLabels(false);
 
-        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(BarChart);
-
         XAxis xAxis = BarChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 //        xAxis.setTypeface(mTfLight);
@@ -329,12 +325,11 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
 
-        XYMarkerView mv = new XYMarkerView(getActivity(), xAxisFormatter, 1);
+        XYMarkerView mv = new XYMarkerView(getActivity(), 1);
         mv.setChartView(BarChart); // For bounds control
         BarChart.setMarker(mv); // Set the marker to the chart
         float start = 1f;
         for (int i = (int) start; i < start + logs.size(); i++) {
-
             barChartData.add(new BarEntry(TimeUtil.formatToTime(logs.get(i - 1).getLtime() / Multiple), 100 + logs.get(i - 1).getDistance()));
         }
         setData(barChartData);
