@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.Log;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
@@ -48,7 +49,7 @@ public class StatisticBySelectAdapter extends RecyclerView.Adapter<StatisticBySe
             holder.id.setText(String.valueOf(position));
             holder.ap.setText(data.get("ap"));
             holder.sta.setText(data.get("sta"));
-            holder.time.setText(TimeUtil.getTime(Long.parseLong(data.get("time")), "yyyy/MM//dd"));
+            holder.time.setText(TimeUtil.getTime(Long.parseLong(data.get("time")), Config.timeTypeByYear));
         }
     }
 

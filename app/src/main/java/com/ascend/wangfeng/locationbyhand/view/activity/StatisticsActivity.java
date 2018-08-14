@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.anye.greendao.gen.DaoSession;
 import com.anye.greendao.gen.LogDao;
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.StatisticAdapter;
@@ -78,14 +79,12 @@ public class StatisticsActivity extends BaseActivity {
 
     private List<String> xDatas;
     static long oneDay = 24 * 60 * 60 * 1000;
-    ArrayList<BarEntry> barChartData = new ArrayList<BarEntry>();
 
     private String startTime = "";
     private String endTime = "";
     private CustomDatePicker startTimePicker, endTimePicker;
 
     private DaoSession daoSession;
-    private String timeType = "yyyy-MM-dd";
 
     private boolean isFirst = true;//为true则设置柱状图数据
 
@@ -109,7 +108,6 @@ public class StatisticsActivity extends BaseActivity {
         //柱状图显示最近7天统计
         initBarChart();
         searchMacData(startTime, endTime);
-
     }
 
     @Override
@@ -554,7 +552,7 @@ public class StatisticsActivity extends BaseActivity {
     private void searchMacData(final String startTime, final String endTime) {
         mBaseActivity.showDialog(true);
         //开始 结束时间差，同一天 则 diffDays = 0;
-        final int diffDays = GetDataUtils.differentDaysByMillisecond(startTime, endTime, timeType);
+        final int diffDays = GetDataUtils.differentDaysByMillisecond(startTime, endTime, Config.timeTypeByYear);
         if (diffDays == -1) {
             Toast.makeText(this, "计算时间差错误,请重新选择时间", Toast.LENGTH_SHORT).show();
             return;
@@ -569,23 +567,6 @@ public class StatisticsActivity extends BaseActivity {
                 getByTimeData(daoSession, startTime, endTime, diffDays + 1);
             }
         }).start();
-
-       /* if (isUi) {
-            selectAdapter.notifyDataSetChanged();
-            mBaseActivity.showDialog(false);
-        } else {
-            //子线程中查询数据，则跳转到UI线程刷新界面
-            mBaseActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    selectAdapter.notifyDataSetChanged();
-                    setData(counts);
-                    barChart.invalidate();
-                    mBaseActivity.showDialog(false);
-                }
-            });
-        }*/
-
     }
 
     /**
@@ -598,8 +579,8 @@ public class StatisticsActivity extends BaseActivity {
         counts = new ArrayList<>();
         Cursor c;
         //查询条件 开始 结束的0点时间戳
-        long startLongTime = GetDataUtils.getLongTimeByDay(startTime, timeType);
-        long endLongTime = GetDataUtils.getLongTimeByDay(endTime, timeType);
+        long startLongTime = GetDataUtils.getLongTimeByDay(startTime, Config.timeTypeByYear);
+        long endLongTime = GetDataUtils.getLongTimeByDay(endTime, Config.timeTypeByYear);
         for (int i = 0; i < diffDays; i++) {
             Map<String, String> map = new HashMap<>();
             c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 0), null);

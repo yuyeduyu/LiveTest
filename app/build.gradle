@@ -56,6 +56,9 @@ android {
             buildConfigField "String", "appName", "\"app-menu-release.apk\""
         }
     }
+
+    //打包命令:gradlew assemble
+
 //源文件目录设置
     sourceSets {
         main {
@@ -78,7 +81,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.2'
     compile 'com.android.support:design:+'
     /*smartTable  1.7.1*/
     compile 'com.github.huangyanbin:SmartTable:1.6'

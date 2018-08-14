@@ -90,14 +90,13 @@ public class LocationService extends Service {
                 mLatitude = new BigDecimal(WGS84[0]).setScale(5, RoundingMode.UP).doubleValue();
 //                mLongitude = (double)Math.round(WGS84[1]*100000)/100000;
                 mLongitude = new BigDecimal(WGS84[1]).setScale(5, RoundingMode.UP).doubleValue();
-                if (mLatitude<0){
+                if (mLatitude<=0){
                     mLatitude = lastmLatitude;
                 }
-                if (mLongitude < 0){
+                if (mLongitude <= 0){
                     mLongitude = lastmLongitude;
                 }
                 lastmLatitude = mLatitude;
-
                 lastmLongitude = mLongitude;
                 gpsTime = System.currentTimeMillis()/1000;
                 EventBus.getDefault().post(new LocationData(mLatitude,mLongitude,gpsTime));

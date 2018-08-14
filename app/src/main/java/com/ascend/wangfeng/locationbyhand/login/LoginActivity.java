@@ -1,42 +1,28 @@
 package com.ascend.wangfeng.locationbyhand.login;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.util.ImeiUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
-import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
-import com.ascend.wangfeng.locationbyhand.view.activity.NewMainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
 import com.ascend.wxldcmenu.MenuMainActivity;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity {
@@ -67,11 +53,11 @@ public class LoginActivity extends BaseActivity {
         getPermissions();
         if (MyApplication.isDev) {
             //测试版本，跳过登录
-            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+//            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
                 //便携式车载采集系统
                 startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
-            } else
-                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
+//            } else
+//                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
             finish();
         }else {
             checkIsLogin();
@@ -82,11 +68,11 @@ public class LoginActivity extends BaseActivity {
         String password = (String) SharedPreferencesUtils
                 .getParam(getBaseContext(), "passwordOfApp", "null");
         if (!password.equals("null")) {
-            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+//            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
                 //便携式车载采集系统
                 startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
-            } else
-                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
+//            } else
+//                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
             finish();
         }
     }

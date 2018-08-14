@@ -142,7 +142,8 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         }else{
             if (nowTime-GpsData.get(GpsData.size()-1).getTime()>=2) {                   //如果当前时间比记录的最后一条信息时间跨度大于等于2秒，则记录
                 GpsData.add(locationData);
-//                Log.e(TAG,"GPS-->纬度:"+GpsData.get(GpsData.size()-1).getLatitude()+"   经度："+GpsData.get(GpsData.size()-1).getLongitude());
+//                Log.e(TAG,"GPS-->纬度:"+GpsData.get(GpsData.size()-1).getLatitude()
+//                        +"   经度："+GpsData.get(GpsData.size()-1).getLongitude());
             }
         }
 

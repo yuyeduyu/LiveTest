@@ -21,6 +21,8 @@ public class Config {
     public static int C_MINI = 1;//无线雷达-mini
     public static int C_PLUS = 2;//无线雷达-cplus
 
+    public static String timeTypeByYear = "yyyy-MM-dd";
+
     private static AlarmMacListDo alarmMacListDo;
 
     public static AlarmMacListDo getAlarmMacListDo() {
