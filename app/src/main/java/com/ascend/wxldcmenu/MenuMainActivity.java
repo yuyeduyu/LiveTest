@@ -1,15 +1,10 @@
 package com.ascend.wxldcmenu;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,7 +17,6 @@ import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
-import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
@@ -31,16 +25,13 @@ import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
-import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
-import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.BLEActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
-import com.ascend.wangfeng.locationbyhand.view.activity.KaiZhanActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
@@ -56,17 +47,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -133,7 +117,7 @@ public class MenuMainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
          AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
-                 ,AppVersionConfig.appName, null);
+                 ,AppVersionConfig.appName, null,MenuMainActivity.class);
     }
 
     private void checkIsLogin() {

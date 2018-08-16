@@ -102,5 +102,12 @@ public class AppClient {
                 .create(AppVersionApi.class);
         return appVesionApi;
     }
-
+    public static OkHttpClient getOkhttpClient(){
+         OkHttpClient client=new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(2000, TimeUnit.SECONDS)
+                .writeTimeout(2000, TimeUnit.SECONDS)
+                .build();
+         return client;
+    }
 }

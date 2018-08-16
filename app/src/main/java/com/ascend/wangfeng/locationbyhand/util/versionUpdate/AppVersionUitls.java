@@ -1,4 +1,4 @@
-package com.ascend.wangfeng.locationbyhand.util;
+package com.ascend.wangfeng.locationbyhand.util.versionUpdate;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,9 +11,12 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,7 +55,7 @@ public class AppVersionUitls {
      * created at 2018-07-24 11:57
      */
     public static void checkVersion(final Context context, String appVersionTxt
-            , final String appName, final LoadingDialog loadingDialog) {
+            , final String appName, final LoadingDialog loadingDialog, final Class<?> cls) {
         AppClient.getAppVersionApi().getAppVersion(appVersionTxt)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,7 +76,7 @@ public class AppVersionUitls {
                         if (loadingDialog!=null) loadingDialog.dismiss();
                         if (AppVersionUitls.getVersionNo(context) < appVersion.getData().getVersionCode()) {
                             SharedPreferencesUtils.setParam(context, "appVersion", true);
-                            shownUpdataDialog(context,appVersion.getData().getDes(),appName);
+                            shownUpdataDialog(context,appVersion.getData().getDes(),appName,cls);
                         } else{
                             SharedPreferencesUtils.setParam(context, "appVersion", false);
                             Toast.makeText(context, "当前为最新版本", Toast.LENGTH_LONG).show();
@@ -88,7 +91,7 @@ public class AppVersionUitls {
      * @author lish
      * created at 2018-07-24 12:35
      */
-    public static void shownUpdataDialog(final Context context, String des, final String appName) {
+    public static void shownUpdataDialog(final Context context, String des, final String appName, final Class<?> cls) {
         final AlertDialog.Builder normalDialog =
                 new AlertDialog.Builder(context);
         normalDialog.setTitle("版本更新");
@@ -99,7 +102,8 @@ public class AppVersionUitls {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //...To-do
-                        downApk(context,appName);
+//                        downApk(context,appName);
+                        VersionUpdateService.beginUpdate(context,appName, R.drawable.ic_my_launcher,cls);
                         dialog.dismiss();
                     }
                 });
@@ -115,7 +119,7 @@ public class AppVersionUitls {
         normalDialog.show();
     }
 
-    public static void downApk(final Context context,String appName) {
+    public static void downApk(final Context context, final String appName) {
         AppClient.getAppVersionApi().updateApp(appName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -137,7 +141,7 @@ public class AppVersionUitls {
                             // todo change the file location/name according to your needs
                             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath()
                                     + "/AscendLog/LocationShow/");
-                            File futureStudioIconFile = new File(dir, "location.apk");
+                            File futureStudioIconFile = new File(dir, appName);
 
                             InputStream inputStream = null;
                             OutputStream outputStream = null;

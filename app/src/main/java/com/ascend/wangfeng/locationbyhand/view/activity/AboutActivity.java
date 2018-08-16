@@ -21,7 +21,7 @@ import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
-import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
+import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 
@@ -54,6 +54,8 @@ public class AboutActivity extends AppCompatActivity {
     TextView update;
 
     public LoadingDialog loadingDialog; //上传dialog
+    @BindView(R.id.appname)
+    TextView appname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +77,14 @@ public class AboutActivity extends AppCompatActivity {
                 finish();
             }
         });
+        appname.setText(AppVersionConfig.AppName);
         mAboutVersion.setText(this.getString(R.string.version) + getVersion().toString());
         checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadingDialog.show();
                 AppVersionUitls.checkVersion(AboutActivity.this
-                        , AppVersionConfig.appVersion, AppVersionConfig.appName, loadingDialog);
+                        , AppVersionConfig.appVersion, AppVersionConfig.appName, loadingDialog,AboutActivity.class);
             }
         });
         if ((boolean) SharedPreferencesUtils.getParam(AboutActivity.this, "appVersion", false)) {

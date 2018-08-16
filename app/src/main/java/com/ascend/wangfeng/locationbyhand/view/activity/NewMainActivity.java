@@ -2,22 +2,18 @@ package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -42,9 +38,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
-import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
-import com.ascend.wangfeng.locationbyhand.util.AppVersionUitls;
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
 import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
@@ -53,19 +47,11 @@ import com.ascend.wangfeng.locationbyhand.view.service.BleService;
 import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import com.ascend.wangfeng.locationbyhand.view.service.RestartUtil;
 import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
-import com.ascend.wxldcmenu.MenuMainActivity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -134,7 +120,7 @@ public class NewMainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
-                ,AppVersionConfig.appName, null);
+                ,AppVersionConfig.appName, null,NewMainActivity.class);
         //打开系统设置，手动将app加入白名单
 //        GetSystemUtils.openStart(NewMainActivity.this);
 

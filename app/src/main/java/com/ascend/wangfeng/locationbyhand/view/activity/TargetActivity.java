@@ -139,7 +139,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 return noteVo.getMac().compareTo(t1.getMac());
             }
         };
-        mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
+        mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.primary));
     }
 
     private void initialLisener() {
@@ -328,7 +328,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 };
                 Collections.sort(mList, comparator);
                 adapter.notifyDataSetChanged();
-                mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
+                mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.primary));
                 mOrderByNote.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.secondary_text));
 
                 break;
@@ -342,7 +342,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                 Collections.sort(mList, comparator);
                 adapter.notifyDataSetChanged();
                 mOrderByMac.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.secondary_text));
-                mOrderByNote.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.accent));
+                mOrderByNote.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.primary));
                 break;
         }
     }

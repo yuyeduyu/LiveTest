@@ -8,6 +8,7 @@ package com.ascend.wangfeng.locationbyhand;
 public class AppVersionConfig {
     public static String appVersion = BuildConfig.appVersion;
     public static String appName = BuildConfig.appName;
+    public static String AppName = BuildConfig.AppName;
     public static String appTitle = BuildConfig.appTitle;
     //默认标题栏名称
     public static String title = BuildConfig.title;

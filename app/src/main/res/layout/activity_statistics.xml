@@ -36,16 +36,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MAC采集数  时间段:"
+                android:text="MAC采集数"
+                android:layout_weight="1"
                 android:textColor="@color/text1"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_time"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                tools:text="08/10 - 08/17"
+                tools:text="时间段:08/10 - 08/17"
                 android:textColor="@color/text1"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -504,14 +504,14 @@ public class StatisticsActivity extends BaseActivity {
         String now = sdf.format(new Date());
         startTime = GetDataUtils.getDateStrByDay(now, -6);
         endTime = now.split(" ")[0];
-        tvTime.setText(startTime + " 至 " + endTime);
+        tvTime.setText("时间段:"+startTime + " 至 " + endTime);
         startData = GetDataUtils.getDateStrByMint(now, -30);
         lastData = GetDataUtils.getDateStrByMint(now, 0);
         startTimePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
                 startTime = time.split(" ")[0];
-                tvTime.setText(startTime + " 至 ");
+                tvTime.setText("时间段:"+startTime + " 至 ");
                 showEndTimePicker();
             }
         }, "2018-01-01 00:00", lastData); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
@@ -530,7 +530,7 @@ public class StatisticsActivity extends BaseActivity {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
                 endTime = time.split(" ")[0];
-                tvTime.setText(startTime + " 至 " + endTime);
+                tvTime.setText("时间段:"+startTime + " 至 " + endTime);
                 searchMacData(startTime, endTime);
             }
         }, startTime + " 00:00", lastData); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行

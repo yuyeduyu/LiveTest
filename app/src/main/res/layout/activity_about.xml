@@ -27,11 +27,12 @@
         android:background="@color/white">
 
         <TextView
+            android:id="@+id/appname"
             android:layout_marginLeft="16dp"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center_vertical"
-            android:text="无线雷达 -C"
+            tools:text="无线雷达 -C"
             android:textSize="14sp" />
 
         <View
