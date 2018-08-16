@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +52,9 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.view.activity.ChartActivity;
+import com.ascend.wangfeng.locationbyhand.view.service.UpLoadUtils;
+import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
+import com.ascend.wxldcmenu.MenuMainActivity;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
@@ -141,11 +145,11 @@ public class ApListFragment extends BaseFragment implements
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.e(TAG,"UP>>-->点击电量  aplist-->"+aplist.size()+"   stalist:"+stalist.size()+"  sclist:"+sclist.size()+"   gpslist:"+gpslist.size());
                 if (MyApplication.mDevicdID != null) {
                     if (MyApplication.isConnected(getContext())){
                         loadingDialog.show();
-                        UpLoad(aplist, stalist, sclist, gpslist);
+                        UpLoadUtils upLoadUtils = new UpLoadUtils();
+                        upLoadUtils.UpLoad(getActivity(),aplist, stalist, sclist, gpslist);
                     }
                     else
                         show(null, "请先连接网络");
@@ -280,6 +284,7 @@ public class ApListFragment extends BaseFragment implements
         if (rxSubFromSearch != null)
             rxSubFromSearch.unsubscribe();
         if (mVolRxBus != null) mVolRxBus.unsubscribe();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -309,82 +314,18 @@ public class ApListFragment extends BaseFragment implements
         this.gpslist = upLoadData.getGpslist();
     }
 
-    //点击上传文件
-    private void UpLoad(final List<ApData> aplist, final List<StaData> stalist, final List<StaConInfo> sclist, final List<LocationData> gpslist) {
-        if (MyApplication.mDevicdID != null) {                               //连接成功
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    long time = (System.currentTimeMillis() / 1000);
-//                Log.e(TAG,"启动服务时间:"+time);
-                    String filePath = "/mnt/sdcard/";
-                    String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
-
-                    FTPClientData ftpClientData = new FTPClientData();
-
-                    FTPClient ftpClient = ftpClientData.ftpConnect();
-                    if (ftpClient ==null){
-                        EventBus.getDefault().post(new FTPEvent(false));
-                        ((Activity) getActivity()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // 在这里执行你要想的操作 比如直接在这里更新ui或者调用回调在 在回调中更新ui
-                                if (loadingDialog != null)
-                                    loadingDialog.dismiss();
-                                Toast.makeText(getActivity(), "连接FTP服务器失败", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        return;
-                    }else  EventBus.getDefault().post(new FTPEvent(true));
-                    try {
-                        ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    //上传AP数据
-                    FileData fileData = new FileData(getContext(), filePath, fileName, aplist, getVersion().toString());
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "apl");
-                    //上传终端数据
-                    FileData staFile = new FileData(getContext(), filePath, fileName, stalist, getVersion().toString(), 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "log");
-                    //上传连接数据
-                    FileData ScFile = new FileData(getContext(), filePath, fileName, sclist, getVersion().toString(), "1");
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "net");
-                    //上传GPS轨迹的坐标
-                    FileData GpsFile = new FileData(getContext(), filePath, fileName, gpslist, getVersion().toString(), "", 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "gps");
-                    show(null, "上传成功");
-                    ((Activity) getActivity()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 在这里执行你要想的操作 比如直接在这里更新ui或者调用回调在 在回调中更新ui
-                            loadingDialog.dismiss();
-                        }
-                    });
-
-                }
-
-            }).start();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void FTPEvent(FTPEvent event) {
+        if (loadingDialog!=null){
+            if (event.isContent()) {
+                show(null, "上传成功");
+            } else {
+                show(null, "上传失败");
+            }
+            loadingDialog.dismiss();
         }
-    }
 
-    /**
-     * 获取版本号
-     *
-     * @return 当前应用的版本号
-     */
-    public String getVersion() {
-        try {
-            PackageManager manager = getContext().getPackageManager();
-            PackageInfo info = manager.getPackageInfo(getContext().getPackageName(), 0);
-            String version = info.versionName;
-            return version;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "未知";
-        }
     }
-
 
     @OnClick(R.id.btn_upload)
     public void onViewClicked() {

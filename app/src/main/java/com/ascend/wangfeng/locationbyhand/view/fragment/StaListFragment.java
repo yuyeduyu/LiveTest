@@ -48,6 +48,7 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.view.activity.ChartActivity;
+import com.ascend.wangfeng.locationbyhand.view.service.UpLoadUtils;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
@@ -132,7 +133,8 @@ public class StaListFragment extends BaseFragment
                 if (MyApplication.mDevicdID != null) {
                     if (MyApplication.isConnected(getContext())) {
                         loadingDialog.show();
-                        UpLoad(aplist, stalist, sclist, gpslist);
+                        UpLoadUtils upLoadUtils = new UpLoadUtils();
+                        upLoadUtils.UpLoad(getActivity(),aplist, stalist, sclist, gpslist);
                     } else
                         show(null, "请先连接网络");
                 } else {
@@ -273,156 +275,21 @@ public class StaListFragment extends BaseFragment
 //        Log.e(TAG,"UP>>-->点击Sta  aplist-->"+aplist.size()+"   stalist:"+stalist.size()+"  sclist:"+sclist.size()+"   gpslist:"+gpslist.size());
     }
 
-    //点击上传文件
-    private void UpLoad(final List<ApData> aplist, final List<StaData> stalist, final List<StaConInfo> sclist, final List<LocationData> gpslist) {
-        if (MyApplication.mDevicdID != null) {                               //连接成功
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    long time = (System.currentTimeMillis() / 1000);
-//                Log.e(TAG,"启动服务时间:"+time);
-                    String filePath = "/mnt/sdcard/";
-                    String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
-
-                    FTPClientData ftpClientData = new FTPClientData();
-
-                    FTPClient ftpClient = ftpClientData.ftpConnect();
-                    if (ftpClient == null) {
-                        EventBus.getDefault().post(new FTPEvent(false));
-                        ((Activity) getActivity()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // 在这里执行你要想的操作 比如直接在这里更新ui或者调用回调在 在回调中更新ui
-                                if (loadingDialog != null)
-                                    loadingDialog.dismiss();
-                                Toast.makeText(getActivity(), "连接FTP服务器失败", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        return;
-
-                    }else  EventBus.getDefault().post(new FTPEvent(true));
-                    try {
-                        ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    //上传AP数据
-                    FileData fileData = new FileData(getContext(), filePath, fileName, aplist, getVersion().toString());
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "apl");
-
-                    //上传终端数据
-                    FileData staFile = new FileData(getContext(), filePath, fileName, stalist, getVersion().toString(), 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "log");
-
-                    //上传连接数据
-                    FileData ScFile = new FileData(getContext(), filePath, fileName, sclist, getVersion().toString(), "1");
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "net");
-
-                    //上传GPS轨迹的坐标
-                    FileData GpsFile = new FileData(getContext(), filePath, fileName, gpslist, getVersion().toString(), "", 1);
-                    ftpClientData.ftpUpload(ftpClient, filePath, fileName, "gps");
-//                    Log.e(TAG,"UP>>-->点击数据Sta  aplist-->"+aplist.size()+"   stalist:"+stalist.size()+"  sclist:"+sclist.size()+"   gpslist:"+gpslist.size());
-                    show(null, "上传成功");
-                    ((Activity) getActivity()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 在这里执行你要想的操作 比如直接在这里更新ui或者调用回调在 在回调中更新ui
-                            if (loadingDialog != null)
-                                loadingDialog.dismiss();
-                        }
-                    });
-                }
-
-            }).start();
-        }
-    }
-
-    /**
-     * 获取版本号
-     *
-     * @return 当前应用的版本号
-     */
-    public String getVersion() {
-        try {
-            PackageManager manager = getContext().getPackageManager();
-            PackageInfo info = manager.getPackageInfo(getContext().getPackageName(), 0);
-            String version = info.versionName;
-            return version;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "未知";
-        }
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
-
-    //处理需要保存 上传到服务器的终端数据
-//    private void saveStaData(List<StaVo> mList) {
-//        initStaConInfo(mList);
-//        boolean addData;
-//        for (int i = 0;i<mList.size();i++){
-//            addData = true;
-//            StaData staData = new StaData();
-//            for (int j = 0;j<slist.size();j++){
-//                if (slist.get(j).getStaMACStr().equals(mList.get(i).getMac())){                     //如果slist中已经有了该数据
-//                    slist.get(j).setlTime(mList.get(i).getLtime());                                 //刷新数据最后采集时间
-//                    slist.get(j).setSignal(mList.get(i).getSignal());                               //刷新信号轻度
-//                    slist.get(j).setScanNum(mList.get(i).getNum());
-//                    slist.get(j).setLatitude(myLatitude);            //纬度                             //刷新纬度
-//                    slist.get(j).setLongitude(myLongitude);           //经度                             //刷新经度
-//                    addData = false;
-//                    break;
-//                }
-//            }
-//            if (addData){
-//                staData.setStaMACStr(mList.get(i).getMac());    //终端MAC
-//                staData.setSignal(mList.get(i).getSignal());    //信号强度
-//                staData.setScanNum(mList.get(i).getNum());      //扫描次数
-//                staData.setfTime(mList.get(i).getLtime());      //第一次扫描时间
-//                staData.setlTime(mList.get(i).getLtime());      //最后一次扫描时间
-//                staData.setLatitude(myLatitude);                //纬度
-//                staData.setLongitude(myLongitude);              //经度
-//                slist.add(staData);
-//            }
-//        }
-////        Log.e(TAG,"slist.size():"+slist.size());
-//        for (int i = 0;i<slist.size();i++){
-//            EventBus.getDefault().post(slist.get(i));
-//        }
-//    }
-//
-//    //连接信息
-//    private void initStaConInfo(List<StaVo> mList) {
-//        boolean addData;
-//        for (int i = 0;i<mList.size();i++){
-//            addData = true;
-//            StaConInfo staConInfo = new StaConInfo();
-//            for (int j = 0;j<sclist.size();j++){
-//                if (sclist.get(j).getStaMACStr().equals(mList.get(i).getMac())){                     //如果slist中已经有了该数据
-//                    sclist.get(j).setlTime(mList.get(i).getLtime());
-//                    sclist.get(j).setLatitude(myLatitude);            //纬度                             //刷新纬度
-//                    sclist.get(j).setLongitude(myLongitude);           //经度                             //刷新经度
-//                    addData = false;
-//                    break;
-//                }
-//            }
-//            if (addData){
-//                staConInfo.setStaMACStr(mList.get(i).getMac());    //终端MAC
-//                staConInfo.setApName(mList.get(i).getEssid());
-//                staConInfo.setfTime(mList.get(i).getLtime());      //第一次扫描时间
-//                staConInfo.setlTime(mList.get(i).getLtime());      //最后一次扫描时间
-//                staConInfo.setLatitude(myLatitude);                //纬度
-//                staConInfo.setLongitude(myLongitude);              //经度
-//                sclist.add(staConInfo);
-//            }
-//        }
-////        Log.e(TAG,"sclist.size():"+sclist.size());
-//        for (int i = 0;i<sclist.size();i++){
-//            EventBus.getDefault().post(sclist.get(i));
-//        }
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void FTPEvent(FTPEvent event) {
+        if (loadingDialog!=null){
+            if (event.isContent()) {
+                show(null, "上传成功");
+            } else {
+                show(null, "上传失败");
+            }
+            loadingDialog.dismiss();
+        }
+    }
 
 }

@@ -196,12 +196,6 @@ public class MyApplication extends Application {
             Log.e("FTP","存在SharePreferences-->"+UpLoadFtpUrl+">>"+UpLoadFtpPort+">>"+UpLoadFtpUser+">>"+UpLoadFtpPass+">>"+UpLoadFilePath);
         }else{
             Log.e("FTP","bu存在SharePreferences");
-//            UpLoadFtpUrl = "123.57.175.155";                   //上传的地址
-//            UpLoadFtpPort = 21;                                   //端口号
-//            UpLoadFtpUser = "test123";                         //上传的地址
-//            UpLoadFtpPass = "test123";                         //上传的地址
-//            UpLoadFilePath = "wificartest";                        //文件名
-
         }
 
     }

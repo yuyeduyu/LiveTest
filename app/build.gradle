@@ -10,7 +10,7 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 28  //根据这个值 判断版本升级
+        versionCode 29  //根据这个值 判断版本升级
         versionName "3.6.1"
     }
 

@@ -202,8 +202,8 @@ public class KaiZhanActivity extends AppCompatActivity {
                     content.append("," + tvImei.getText().toString().trim());
                     content.append("," + longitude);
                     content.append("," + latitude);
-                    FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName, content);
-                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName, "carsite");
+                    FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName+".carsite", content);
+                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName+".carsite");
 
                     (KaiZhanActivity.this).runOnUiThread(new Runnable() {
                         @Override

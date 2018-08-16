@@ -21,6 +21,7 @@ import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.resultBack.AppVersionBack;
+import com.ascend.wangfeng.locationbyhand.util.VersionUtils;
 import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
@@ -78,7 +79,7 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
         appname.setText(AppVersionConfig.AppName);
-        mAboutVersion.setText(this.getString(R.string.version) + getVersion().toString());
+        mAboutVersion.setText(this.getString(R.string.version) + VersionUtils.getVersion(this).toString());
         checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,20 +236,5 @@ public class AboutActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 获取版本号
-     *
-     * @return 当前应用的版本号
-     */
-    public String getVersion() {
-        try {
-            PackageManager manager = this.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-            String version = info.versionName;
-            return version;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return this.getString(R.string.version_name);
-        }
-    }
+
 }

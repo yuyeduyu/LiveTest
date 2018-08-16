@@ -82,6 +82,8 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
     private Comparator<NoteDo> comparator;
     private Subscription mFastScanRxBus;
 
+    private boolean isZhence;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,15 +94,15 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
         initialView();
         initDialog();
         //cplus
-        if (MyApplication.AppVersion== Config.C_PLUS){
+        if (MyApplication.AppVersion == Config.C_PLUS) {
             initView();
         }
     }
 
     private void initView() {
         //是否有快速侦测
-        String str = (String) SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_on","");
-        if (!str.equals("")){
+        String str = (String) SharedPreferencesUtils.getParam(TargetActivity.this, "fast_mac_on", "");
+        if (!str.equals("")) {
             btnFastScan.setVisibility(View.VISIBLE);
         }
         mFastScanRxBus = RxBus.getDefault().toObservable(FastScan.class)
@@ -115,15 +117,15 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                             MyApplication.setIsDataRun(true);
                             Snackbar.make(mAppBar, "快速侦测开启", Snackbar.LENGTH_SHORT).show();
                             SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac_on"
-                                    ,SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac",""));
+                                    , SharedPreferencesUtils.getParam(TargetActivity.this, "fast_mac", ""));
                             btnFastScan.setVisibility(View.VISIBLE);
                         } else if (event.getStatu() == FastScan.Stop) {
                             //停止快速侦测
                             btnFastScan.setVisibility(View.GONE);
                             Snackbar.make(mAppBar, "快速侦测停止", Snackbar.LENGTH_SHORT).show();
-                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac","");
-                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_on","");
-                            SharedPreferencesUtils.setParam(TargetActivity.this,"fast_mac_rate","");
+                            SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac", "");
+                            SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac_on", "");
+                            SharedPreferencesUtils.setParam(TargetActivity.this, "fast_mac_rate", "");
                         }
                     }
                 });
@@ -131,7 +133,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
 
     private void initialData() {
         mPresenter = new TargetPresenterImpl(this);
-        mList =(ArrayList<NoteDo>) MyApplication.getmNoteDos();
+        mList = (ArrayList<NoteDo>) MyApplication.getmNoteDos();
         adapter = new SwipeAdapter(mList);
         comparator = new Comparator<NoteDo>() {
             @Override
@@ -167,13 +169,22 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                         .setText("快速侦测")
                         .setWidth(getResources().getDimensionPixelSize(R.dimen.item_width))
                         .setHeight(getResources().getDimensionPixelSize(R.dimen.item_height));
+                SwipeMenuItem dingwei = new SwipeMenuItem(TargetActivity.this)
+                        .setBackgroundColor(R.color.purple)
+                        .setText("自动定位")
+                        .setWidth(getResources().getDimensionPixelSize(R.dimen.item_width))
+                        .setHeight(getResources().getDimensionPixelSize(R.dimen.item_height));
                 swipeRightMenu.addMenuItem(deleteItem);
                 swipeRightMenu.addMenuItem(changeItem);
                 swipeRightMenu.addMenuItem(logItem);
                 // cplus
-                if (MyApplication.AppVersion==Config.C_PLUS){
+                if (MyApplication.AppVersion == Config.C_PLUS) {
                     swipeRightMenu.addMenuItem(zhence);
                 }
+                if (MyApplication.isDev)
+                    swipeRightMenu.addMenuItem(dingwei);
+                if (swipeRightMenu.getMenuItem(3).getText().equals("快速侦测"))
+                    isZhence = true;
             }
         };
     }
@@ -281,8 +292,13 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                             startActivity(intent);
                             break;
                         case 3:
-                            //快速侦测
-                            TargetSetDialog.showFastScanDialog(TargetActivity.this, mList.get(adapterPosition).getMac());
+                            if (isZhence)
+                                //快速侦测
+                                TargetSetDialog.showFastScanDialog(TargetActivity.this, mList.get(adapterPosition).getMac());
+                            else
+                                //定位
+                                startActivity(new Intent(TargetActivity.this, SelectPositionActivity.class)
+                                .putExtra("mac",mList.get(adapterPosition).getMac()));
                             break;
                         default:
                             break;
@@ -363,8 +379,8 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
     public void onViewClicked() {
         new AlertDialog.Builder(this)
                 .setTitle("快速侦测")
-                .setMessage("MAC: " + SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_on","")
-                        +"\n频率: "+ SharedPreferencesUtils.getParam(TargetActivity.this,"fast_mac_rate","10"))
+                .setMessage("MAC: " + SharedPreferencesUtils.getParam(TargetActivity.this, "fast_mac_on", "")
+                        + "\n频率: " + SharedPreferencesUtils.getParam(TargetActivity.this, "fast_mac_rate", "10"))
                 .setPositiveButton("停止", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
@@ -373,6 +389,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
                     }
                 }).show();
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

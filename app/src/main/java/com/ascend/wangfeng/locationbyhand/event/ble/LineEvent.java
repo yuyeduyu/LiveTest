@@ -11,6 +11,15 @@ import com.ascend.wangfeng.locationbyhand.bean.StaVo;
 public class LineEvent {
     private ApVo mApVo;
     private StaVo mStaVo;
+    private int type;//0:ap,1:终端
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public ApVo getApVo() {
         return mApVo;
@@ -30,10 +39,11 @@ public class LineEvent {
 
     public LineEvent(StaVo staVo) {
         mStaVo = staVo;
+        type =1;
     }
 
     public LineEvent(ApVo apVo) {
-
+        type =0;
         mApVo = apVo;
     }
 }

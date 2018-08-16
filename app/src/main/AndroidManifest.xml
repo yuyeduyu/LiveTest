@@ -116,9 +116,11 @@
             android:theme="@style/LiveStyle" />
 
         <service android:name=".keeplive.LiveService" />
-        <service android:name=".util.versionUpdate.VersionUpdateService"/>
+        <service android:name=".util.versionUpdate.VersionUpdateService" />
+
         <activity android:name="com.ascend.wxldcmenu.MenuMainActivity" />
-        <activity android:name=".view.activity.KaiZhanActivity"></activity>
+        <activity android:name=".view.activity.KaiZhanActivity" />
+        <activity android:name=".view.activity.SelectPositionActivity"></activity>
     </application>
 
 </manifest>
