@@ -41,6 +41,7 @@ public class MyApplication extends Application {
     public static Ghz mGhz = Ghz.G24;//0为2.4,1为5
 
     public static boolean connectStation = false;         //连接状态
+    public static boolean ftpConnect = false;         //ftp 服务器连接状态
 
     public static int AppVersion = -2;//app版本  -C,-Cmini，-Cplus
     /**

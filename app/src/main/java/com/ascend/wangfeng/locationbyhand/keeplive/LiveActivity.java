@@ -19,14 +19,12 @@ public class LiveActivity extends Activity {
     public static void actionToLiveActivity(Context pContext) {
         Intent intent = new Intent(pContext, LiveActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        LogUtils.e("screen","LiveActivity---------->开启activity");
         pContext.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(TAG, "onCreate");
         setContentView(R.layout.activity_live);
 
         Window window = getWindow();
@@ -43,20 +41,10 @@ public class LiveActivity extends Activity {
 
         ScreenManager.getInstance(this).setActivity(this);
 
-       /* while (1==1){
-            try {
-                Log.e("time","------>");
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "onDestroy");
     }
 }

@@ -316,7 +316,7 @@ public class ApListFragment extends BaseFragment implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void FTPEvent(FTPEvent event) {
-        if (loadingDialog!=null){
+        if (loadingDialog!=null&loadingDialog.isShowing()){
             if (event.isContent()) {
                 show(null, "上传成功");
             } else {

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/c4"
     tools:context="com.ascend.wangfeng.locationbyhand.view.activity.LogAllActivity">
 
     <include layout="@layout/custom_toolbar" />
@@ -12,7 +13,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
         android:orientation="horizontal">
 
         <include layout="@layout/view_search"

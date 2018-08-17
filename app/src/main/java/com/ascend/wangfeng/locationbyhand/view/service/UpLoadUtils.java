@@ -48,6 +48,7 @@ public class UpLoadUtils {
                     FTPClient otherFtpClient = otherFtpClientData.ftpConnect();
                     if (otherFtpClient == null) {
                         EventBus.getDefault().post(new FTPEvent(false));
+                        MyApplication.ftpConnect = false;
                         return;
                     }
                     try {
@@ -68,7 +69,7 @@ public class UpLoadUtils {
                     FileData GpsFile = new FileData(context, filePath, fileName + ".gps", gpslist, version, "", 1);
                     boolean otherLoad4 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".gps");
                     EventBus.getDefault().post(new FTPEvent(true));
-
+                    MyApplication.ftpConnect = true;
 
                     FTPClientData ourFtpClientData = new FTPClientData(Config.UpLoadFtpUrl, Config.UpLoadFtpPort
                             , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);

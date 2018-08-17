@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/bg_gray"
+    android:background="@color/c4"
     android:orientation="vertical">
 
     <include layout="@layout/custom_toolbar" />
@@ -54,7 +54,7 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/c2"
             android:clickable="true"
             android:fadeScrollbars="true"
             android:fadingEdge="none"

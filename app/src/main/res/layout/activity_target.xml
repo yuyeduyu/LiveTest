@@ -10,12 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/c2"
         tools:context=".view.activity.TargetActivity">
 
         <include layout="@layout/custom_toolbar" />
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:background="@color/c4"
             android:layout_height="36dp">
 
             <TextView
@@ -42,6 +44,7 @@
 
         <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
             android:id="@+id/recycler"
+            android:background="@color/c2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>

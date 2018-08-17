@@ -36,12 +36,10 @@ public class LiveService extends Service {
         listener.registerListener(new ScreenBroadcastListener.ScreenStateListener() {
             @Override
             public void onScreenOn() {
-                Log.e("screen","---------->关闭activity");
                 screenManager.finishActivity();
             }
             @Override
             public void onScreenOff() {
-                LogUtils.e("screen","---------->开启activity");
                 screenManager.startActivity();
             }
         });

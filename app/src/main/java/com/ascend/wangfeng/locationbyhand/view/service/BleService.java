@@ -694,7 +694,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         } else {
             mStringLinkedBlockingQueue.offer(value);
         }
-        Log.e(TAG, "sendData: " + value);
+        Log.d(TAG, "sendData: " + value);
        /* if (gattCharacteristic != null) {
             gattCharacteristic.setValue(value);
             mBLE.writeCharacteristic(gattCharacteristic);

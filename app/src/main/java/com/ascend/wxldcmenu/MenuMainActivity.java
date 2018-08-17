@@ -205,7 +205,7 @@ public class MenuMainActivity extends BaseActivity {
             mToolbar.setTitle(AppVersionConfig.title);
         }
         devText.setText("编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
-        if (UploadService.getUploadService()!=null)
+        if (MyApplication.ftpConnect)
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
         else {

@@ -41,10 +41,8 @@ public class ScreenBroadcastListener {
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
             if (Intent.ACTION_SCREEN_ON.equals(action)) { // 开屏
-                Log.e("screen","开屏");
                 mListener.onScreenOn();
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) { // 锁屏
-                Log.e("screen","锁屏");
                 mListener.onScreenOff();
             }
         }

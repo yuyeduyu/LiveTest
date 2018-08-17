@@ -222,7 +222,7 @@ public class TargetActivity extends AppCompatActivity implements TargetContract.
     }
 
     private void initialView() {
-        mAppBar.setTitle("设置目标");
+        mAppBar.setTitle("布控目标");
         setSupportActionBar(mAppBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
