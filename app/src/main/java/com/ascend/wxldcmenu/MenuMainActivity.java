@@ -5,6 +5,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,15 +21,17 @@ import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
+import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
+import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
-import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
+import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.BLEActivity;
@@ -46,11 +50,21 @@ import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -90,6 +104,8 @@ public class MenuMainActivity extends BaseActivity {
     RelativeLayout llDev;
     @BindView(R.id.upload_text)
     TextView uploadText;
+    @BindView(R.id.rl_upload)
+    RelativeLayout rlUpload;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,8 +132,27 @@ public class MenuMainActivity extends BaseActivity {
         //获取动态权限
         getPermissions();
         //版本更新监测
-         AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
-                 ,AppVersionConfig.appName, null,MenuMainActivity.class);
+        AppVersionUitls.checkVersion(this, AppVersionConfig.appVersion
+                , AppVersionConfig.appName, null, MenuMainActivity.class);
+        //每天第一次打开app，同步网络布控目标
+        if (checkFirst()){
+            getTargetToString();
+        }
+    }
+
+    private boolean checkFirst() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");// HH:mm:ss
+        //获取当前时间
+        Date date = new Date(System.currentTimeMillis());
+        String dayTime = simpleDateFormat.format(date);
+        if (TextUtils.isEmpty(SharedPreferencesUtil.getString(MenuMainActivity.this, "daytime"))) {
+            SharedPreferencesUtil.putString(MenuMainActivity.this, "daytime", dayTime);
+            return true;
+        }else if (!SharedPreferencesUtil.getString(MenuMainActivity.this, "daytime").equals(dayTime)){
+            SharedPreferencesUtil.putString(MenuMainActivity.this, "daytime", dayTime);
+            return true;
+        }
+        return false;
     }
 
     private void checkIsLogin() {
@@ -197,14 +232,15 @@ public class MenuMainActivity extends BaseActivity {
 
         if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
             mToolbar.setTitle(BuildConfig.appTitle);
+            rlUpload.setVisibility(View.VISIBLE);
         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
             mToolbar.setTitle(R.string.app_name_cplus);
         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
             mToolbar.setTitle(R.string.app_name_c);
-        }else if (mToolbar !=null){
+        } else if (mToolbar != null) {
             mToolbar.setTitle(AppVersionConfig.title);
         }
-        devText.setText("编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+        devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
         if (MyApplication.ftpConnect)
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
@@ -224,11 +260,12 @@ public class MenuMainActivity extends BaseActivity {
                         //更新界面 MIni显示上传按钮
                         if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
                             mToolbar.setTitle(BuildConfig.appTitle);
+                            rlUpload.setVisibility(View.VISIBLE);
                             //保活线程
                             LiveService.toLiveService(MenuMainActivity.this);
                             startService(new Intent(MenuMainActivity.this, LocationService.class));
                             startService(new Intent(MenuMainActivity.this, UploadService.class));
-                            if (AppVersionConfig.appTitle.equals("便携式移动采集")){
+                            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
                                 //便携式移动采集
                                 isKaiZhan();
                             }
@@ -236,37 +273,39 @@ public class MenuMainActivity extends BaseActivity {
                             mToolbar.setTitle(R.string.app_name_cplus);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
-                        }  else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
+                        } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
                             mToolbar.setTitle(R.string.app_name_c);
-                        }else if (mToolbar != null) {
+                        } else if (mToolbar != null) {
                             mToolbar.setTitle(AppVersionConfig.title);
                         }
-                        devText.setText("编号:"+(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+                        devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
                     }
                 });
     }
-/**
- * 如果设备没有开站信息 则跳转开站界面
- * @author lish
- * created at 2018-08-10 11:52
- */
+
+    /**
+     * 如果设备没有开站信息 则跳转开站界面
+     *
+     * @author lish
+     * created at 2018-08-10 11:52
+     */
     private void isKaiZhan() {
         List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this
-                ,"kaizhan");
+                , "kaizhan");
         if (devs == null)
             //跳转开站界面
             startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
-                    .putExtra("from",1));
+                    .putExtra("from", 1));
         else {
             boolean isKaiZhan = false;
-            for (KaiZhanBean dev :devs){
+            for (KaiZhanBean dev : devs) {
                 if (dev.getMac().equals(MyApplication.mDevicdMac))
                     isKaiZhan = true;
             }
-            if (!isKaiZhan){
+            if (!isKaiZhan) {
                 //跳转开站界面
                 startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
-                        .putExtra("from",1));
+                        .putExtra("from", 1));
             }
         }
     }
@@ -373,5 +412,51 @@ public class MenuMainActivity extends BaseActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 同步网络布控目标
+     * @author lish
+     * created at 2018-08-21 16:21
+     */
+    public void getTargetToString(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Config.TargetUrl)
+                .build();
+        TargetActivity.GetTarget service = retrofit.create(TargetActivity.GetTarget.class);
+        Call<ResponseBody> call = service.getTarget();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    List<NoteDo> targets = new ArrayList<>();
+                    try {
+                        JSONArray array = new JSONArray(response.body().string());
+                        for (int i=0;i<array.length();i++){
+                            JSONObject object = array.getJSONObject(i);
+                            NoteDo note = new NoteDo();
+                            note.setMac(object.getString("valueStr")
+                                    .replaceAll("-",":")
+                                    .toUpperCase());
+                            note.setNote(object.getString("name"));
+                            note.setType(1);
+                            targets.add(note);
+                        }
+                        NoteDoDeal.saveToSqlite(targets);
+                        EventBus.getDefault().post(targets);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("e",e.toString());
+                    }
+                    if (loadingDialog!=null)
+                        loadingDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
+
     }
 }

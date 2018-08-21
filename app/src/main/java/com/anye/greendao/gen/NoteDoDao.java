@@ -28,6 +28,7 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
         public final static Property Note = new Property(1, String.class, "note", false, "NOTE");
         public final static Property Mac = new Property(2, String.class, "mac", false, "MAC");
         public final static Property Ring = new Property(3, boolean.class, "ring", false, "RING");
+        public final static Property Type = new Property(4, int.class, "type", false, "TYPE");
     };
 
 
@@ -46,7 +47,8 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NOTE\" TEXT," + // 1: note
                 "\"MAC\" TEXT," + // 2: mac
-                "\"RING\" INTEGER NOT NULL );"); // 3: ring
+                "\"RING\" INTEGER NOT NULL ," + // 3: ring
+                "\"TYPE\" INTEGER NOT NULL );"); // 4: type
     }
 
     /** Drops the underlying database table. */
@@ -74,6 +76,7 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
             stmt.bindString(3, mac);
         }
         stmt.bindLong(4, entity.getRing() ? 1L: 0L);
+        stmt.bindLong(5, entity.getType());
     }
 
     @Override
@@ -95,6 +98,7 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
             stmt.bindString(3, mac);
         }
         stmt.bindLong(4, entity.getRing() ? 1L: 0L);
+        stmt.bindLong(5, entity.getType());
     }
 
     @Override
@@ -108,7 +112,8 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // note
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // mac
-            cursor.getShort(offset + 3) != 0 // ring
+            cursor.getShort(offset + 3) != 0, // ring
+            cursor.getInt(offset + 4) // type
         );
         return entity;
     }
@@ -119,6 +124,7 @@ public class NoteDoDao extends AbstractDao<NoteDo, Long> {
         entity.setNote(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setMac(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setRing(cursor.getShort(offset + 3) != 0);
+        entity.setType(cursor.getInt(offset + 4));
      }
     
     @Override

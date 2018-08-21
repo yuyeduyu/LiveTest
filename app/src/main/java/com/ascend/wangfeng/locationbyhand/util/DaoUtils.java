@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 作者：lish on 2018-07-31.
- * 描述：
+ * 描述：布控目标日志
  */
 
 public class DaoUtils {

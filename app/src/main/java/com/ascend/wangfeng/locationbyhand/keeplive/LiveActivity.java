@@ -26,7 +26,7 @@ public class LiveActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
-
+        Log.e("screen","---------->startActivity");
         Window window = getWindow();
         //放在左上角
         window.setGravity(Gravity.START | Gravity.TOP);
@@ -46,5 +46,6 @@ public class LiveActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.e("screen","finishActivity");
     }
 }

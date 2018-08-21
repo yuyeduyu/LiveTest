@@ -10,9 +10,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
 import com.anye.greendao.gen.DaoMaster;
 import com.anye.greendao.gen.DaoSession;
 import com.anye.greendao.gen.NoteDoDao;
+import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.util.CrashHandler;
@@ -47,7 +49,7 @@ public class MyApplication extends Application {
     /**
      * 获取数据的请求是否发送
      */
-    private static Boolean isDataRun =true;
+    private static Boolean isDataRun = true;
 
     public static List<NoteDo> getmNoteDos() {
         return mNoteDos;
@@ -57,12 +59,14 @@ public class MyApplication extends Application {
         MyApplication.mNoteDos = mNoteDos;
     }
 
-    public static void setAppVersion(int AppVersion){
+    public static void setAppVersion(int AppVersion) {
         MyApplication.AppVersion = AppVersion;
     }
-    public static int getAppVersion(){
+
+    public static int getAppVersion() {
         return AppVersion;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -95,7 +99,7 @@ public class MyApplication extends Application {
      */
     private void initBase() {
         NoteDoDao dao = getInstances().getDaoSession().getNoteDoDao();
-        mNoteDos =dao.loadAll();
+        mNoteDos = dao.loadAll();
     }
 
     public static MyApplication getInstances() {
@@ -110,6 +114,7 @@ public class MyApplication extends Application {
         mDaoMaster = new DaoMaster(db);
         mDaoSession = mDaoMaster.newSession();
     }
+
     public DaoSession getDaoSession() {
         return mDaoSession;
     }
@@ -135,6 +140,7 @@ public class MyApplication extends Application {
 
     /**
      * 是否有网判断
+     *
      * @param context
      * @return
      */
@@ -154,9 +160,10 @@ public class MyApplication extends Application {
 
     /**
      * 获取上传时间间隔
+     *
      * @return
      */
-    public static int GetUpLoadTime(){
+    public static int GetUpLoadTime() {
         int upLoadTime;
         try {
             SharedPreferences read = mContext.getSharedPreferences("uploadTime", MODE_PRIVATE);
@@ -169,35 +176,36 @@ public class MyApplication extends Application {
             } else {
                 upLoadTime = 5 * 60 * 1000;                 //默认为5分钟
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             upLoadTime = 5 * 60 * 1000;                 //默认为5分钟
         }
         return upLoadTime;
     }
 
     public static String UpLoadFtpUrl = "123.57.175.155";                   //上传的地址
-    public static int UpLoadFtpPort = 21 ;                                   //端口号
-    public static String UpLoadFtpUser = "test123" ;                         //ftp帐号
-    public static String UpLoadFtpPass = "test123" ;                         //ftp密码
-    public static String UpLoadFilePath = "wificar" ;                        //文件名
+    public static int UpLoadFtpPort = 21;                                   //端口号
+    public static String UpLoadFtpUser = "test123";                         //ftp帐号
+    public static String UpLoadFtpPass = "test123";                         //ftp密码
+    public static String UpLoadFilePath = "wificar";                        //文件名
 
-    public static void ftpData(){
-        SharedPreferences ftpSp = mContext.getSharedPreferences("ftpData",MODE_PRIVATE);
-        if (ftpSp.getString("url","")!="" &&
-                ftpSp.getInt("port",-1) != -1 &&
-                ftpSp.getString("user","")!="" &&
-                ftpSp.getString("password","")!=""
+    public static void ftpData() {
+        SharedPreferences ftpSp = mContext.getSharedPreferences("ftpData", MODE_PRIVATE);
+        if (ftpSp.getString("url", "") != "" &&
+                ftpSp.getInt("port", -1) != -1 &&
+                ftpSp.getString("user", "") != "" &&
+                ftpSp.getString("password", "") != ""
 //                && ftpSp.getString("path","")!=""
                 ) {
             UpLoadFtpUrl = ftpSp.getString("url", "");
-            UpLoadFtpPort = ftpSp.getInt("port",-1);
-            UpLoadFtpUser = ftpSp.getString("user","");
-            UpLoadFtpPass = ftpSp.getString("password","");
-            UpLoadFilePath = ftpSp.getString("path","");
-            Log.e("FTP","存在SharePreferences-->"+UpLoadFtpUrl+">>"+UpLoadFtpPort+">>"+UpLoadFtpUser+">>"+UpLoadFtpPass+">>"+UpLoadFilePath);
-        }else{
-            Log.e("FTP","bu存在SharePreferences");
+            UpLoadFtpPort = ftpSp.getInt("port", -1);
+            UpLoadFtpUser = ftpSp.getString("user", "");
+            UpLoadFtpPass = ftpSp.getString("password", "");
+            UpLoadFilePath = ftpSp.getString("path", "");
+            Log.e("FTP", "存在SharePreferences-->" + UpLoadFtpUrl + ">>" + UpLoadFtpPort + ">>" + UpLoadFtpUser + ">>" + UpLoadFtpPass + ">>" + UpLoadFilePath);
+        } else {
+            Log.e("FTP", "bu存在SharePreferences");
         }
-
+        //重置获取网络布控目标api
+        AppClient.reSetTargetApi();
     }
 }

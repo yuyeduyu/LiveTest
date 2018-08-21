@@ -103,24 +103,12 @@ public class SetftpActivity extends AppCompatActivity {
 
 
     private void initData() {
-
-//        if (preferences.getString("url", "") != "" ||
-//                preferences.getString("user", "") != "" ||
-//                preferences.getString("password", "") != "" ||
-//                preferences.getString("path", "") != "") {
-//            setUrl.setText(preferences.getString("url", ""));
-//            setPort.setText(preferences.getInt("port", -1) + "");
-//            setUser.setText(preferences.getString("user", ""));
-//            setPassword.setText(preferences.getString("password", ""));
-//            setPath.setText(preferences.getString("path", ""));
-//        } else {
             setUrl.setText(preferences.getString("url", ""));
             setPort.setText(preferences.getInt("port", -1)==-1
                     ?"":preferences.getInt("port", -1) + "");
             setUser.setText(preferences.getString("user", ""));
             setPassword.setText(preferences.getString("password", ""));
             setPath.setText(preferences.getString("path", ""));
-//        }
     }
 
     @OnClick(R.id.set_submit)

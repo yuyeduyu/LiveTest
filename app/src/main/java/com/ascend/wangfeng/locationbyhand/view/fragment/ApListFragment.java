@@ -53,15 +53,9 @@ import com.ascend.wangfeng.locationbyhand.util.DataFormat;
 import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.view.activity.ChartActivity;
 import com.ascend.wangfeng.locationbyhand.view.service.UpLoadUtils;
-import com.ascend.wangfeng.locationbyhand.view.service.UploadService;
-import com.ascend.wxldcmenu.MenuMainActivity;
-
-import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -113,12 +107,6 @@ public class ApListFragment extends BaseFragment implements
         EventBus.getDefault().register(this);
         return view;
     }
-
-/*    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    public void onEvent(LocationData location){
-        myLatitude = location.getLatitude();
-        myLongitude = location.getLongitude();
-    }*/
 
     @Override
     public void onResume() {

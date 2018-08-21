@@ -22,10 +22,6 @@ import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
 import com.ascend.wangfeng.locationbyhand.util.DaoUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
-import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
-import com.ascend.wangfeng.locationbyhand.view.fragment.ApListFragment;
-import com.ascend.wangfeng.locationbyhand.view.fragment.StaListFragment;
-
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -140,6 +136,7 @@ public class TargetSetDialog {
         NoteDo noteDo = new NoteDo();
         noteDo.setMac(mac);
         noteDo.setNote(note);
+        noteDo.setType(0);
         deal.add(noteDo);
         view.show(1, "添加成功");
     }

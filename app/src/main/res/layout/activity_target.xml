@@ -10,51 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/c2"
         tools:context=".view.activity.TargetActivity">
 
         <include layout="@layout/custom_toolbar" />
 
-        <LinearLayout
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_my_basic"
             android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:tabMode="fixed"
             android:background="@color/c4"
-            android:layout_height="36dp">
+            app:tabIndicatorColor="@color/c4"
+            app:tabTextColor="@color/secondary_text"
+            app:tabSelectedTextColor="@color/blue" />
 
-            <TextView
-                android:id="@+id/order_by_mac"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="按MAC排序" />
-
-            <TextView
-                android:id="@+id/order_by_note"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="按备注排序" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray" />
-
-        <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
-            android:id="@+id/recycler"
-            android:background="@color/c2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="8"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>
-
-        <Button
-            android:id="@+id/btn"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="添加目标" />
+        <com.ascend.wangfeng.locationbyhand.view.myview.NoSrcollViewPage
+            android:id="@+id/vp_my_basic"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

@@ -34,13 +34,11 @@ public class ScreenManager {
     }
 
     public void startActivity() {
-        Log.e("screen","---------->startActivity");
         LiveActivity.actionToLiveActivity(mContext);
     }
 
     public void finishActivity() {
         //结束掉LiveActivity
-        Log.e("screen","finishActivity");
         if (mActivityWref != null) {
             Activity activity = mActivityWref.get();
             if (activity != null) {

@@ -13,7 +13,7 @@ import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 /**
@@ -22,10 +22,10 @@ import java.util.ArrayList;
  */
 public class SwipeAdapter extends SwipeMenuAdapter<SwipeAdapter.ViewHolder> {
 
-    private ArrayList<NoteDo> mList;
+    private List<NoteDo> mList;
 
 
-    public SwipeAdapter(ArrayList<NoteDo> list) {
+    public SwipeAdapter(List<NoteDo> list) {
         mList = list;
     }
 

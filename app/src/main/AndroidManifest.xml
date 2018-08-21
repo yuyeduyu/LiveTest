@@ -57,7 +57,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.MainActivity" />
+        <activity android:name=".view.activity.MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
         <activity android:name=".view.activity.NewMainActivity" />
         <activity
             android:name=".view.activity.ChartActivity"
