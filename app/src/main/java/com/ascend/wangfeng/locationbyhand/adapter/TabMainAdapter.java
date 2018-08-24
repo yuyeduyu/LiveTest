@@ -18,9 +18,9 @@ public class TabMainAdapter extends FragmentPagerAdapter implements ViewPager.On
     private String[] titles;
     private Fragment[] mFragments;
     private  DragLayout dl;
-    public TabMainAdapter(FragmentManager fm, int count, String[] titles, Fragment[] fragments, DragLayout dl) {
+    public TabMainAdapter(FragmentManager fm, String[] titles, Fragment[] fragments, DragLayout dl) {
         super(fm);
-        this.count=count;
+        this.count=fragments.length;
         this.titles=titles;
         this.mFragments=fragments;
         this.dl = dl;

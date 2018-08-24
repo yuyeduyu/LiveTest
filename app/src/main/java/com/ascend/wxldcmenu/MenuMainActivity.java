@@ -20,7 +20,6 @@ import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
-import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
@@ -40,7 +39,6 @@ import com.ascend.wangfeng.locationbyhand.view.activity.MainActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetActivity;
-import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.service.BleService;
@@ -136,10 +134,14 @@ public class MenuMainActivity extends BaseActivity {
                 , AppVersionConfig.appName, null, MenuMainActivity.class);
         //每天第一次打开app，同步网络布控目标
         if (checkFirst()){
-            getTargetToString();
+            getTargets();
         }
     }
-
+    /**
+     * 判断每天第一次打开app，用于网络布控目标数据同步
+     * @author lish
+     * created at 2018-08-22 14:16
+     */
     private boolean checkFirst() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");// HH:mm:ss
         //获取当前时间
@@ -265,10 +267,10 @@ public class MenuMainActivity extends BaseActivity {
                             LiveService.toLiveService(MenuMainActivity.this);
                             startService(new Intent(MenuMainActivity.this, LocationService.class));
                             startService(new Intent(MenuMainActivity.this, UploadService.class));
-                            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-                                //便携式移动采集
-                                isKaiZhan();
-                            }
+//                            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+//                                //便携式移动采集
+//                                isKaiZhan();
+//                            }
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
@@ -282,34 +284,6 @@ public class MenuMainActivity extends BaseActivity {
                     }
                 });
     }
-
-    /**
-     * 如果设备没有开站信息 则跳转开站界面
-     *
-     * @author lish
-     * created at 2018-08-10 11:52
-     */
-    private void isKaiZhan() {
-        List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this
-                , "kaizhan");
-        if (devs == null)
-            //跳转开站界面
-            startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
-                    .putExtra("from", 1));
-        else {
-            boolean isKaiZhan = false;
-            for (KaiZhanBean dev : devs) {
-                if (dev.getMac().equals(MyApplication.mDevicdMac))
-                    isKaiZhan = true;
-            }
-            if (!isKaiZhan) {
-                //跳转开站界面
-                startActivity(new Intent(MenuMainActivity.this, SetftpActivity.class)
-                        .putExtra("from", 1));
-            }
-        }
-    }
-
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -419,7 +393,7 @@ public class MenuMainActivity extends BaseActivity {
      * @author lish
      * created at 2018-08-21 16:21
      */
-    public void getTargetToString(){
+    public void getTargets(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Config.TargetUrl)
                 .build();

@@ -60,7 +60,7 @@ public class CustomDatePicker {
     private int startYear, startMonth, startDay, startHour, startMinute, endYear, endMonth, endDay, endHour, endMinute;
     private boolean spanYear, spanMon, spanDay, spanHour, spanMin;
     private Calendar selectedCalender, startCalendar, endCalendar;
-    private TextView tv_cancle, tv_select, hour_text, minute_text;
+    private TextView tv_cancle, tv_select, hour_text, minute_text,tv_title;
 
     public CustomDatePicker(Context context, ResultHandler resultHandler, String startDate, String endDate) {
         if (isValidDate(startDate, "yyyy-MM-dd HH:mm") && isValidDate(endDate, "yyyy-MM-dd HH:mm")) {
@@ -109,6 +109,7 @@ public class CustomDatePicker {
         tv_select = (TextView) datePickerDialog.findViewById(R.id.tv_select);
         hour_text = (TextView) datePickerDialog.findViewById(R.id.hour_text);
         minute_text = (TextView) datePickerDialog.findViewById(R.id.minute_text);
+        tv_title = (TextView) datePickerDialog.findViewById(R.id.tv_title);
 
         tv_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +127,7 @@ public class CustomDatePicker {
             }
         });
     }
-
+    
     private void initParameter() {
         startYear = startCalendar.get(Calendar.YEAR);
         startMonth = startCalendar.get(Calendar.MONTH) + 1;
@@ -516,7 +517,14 @@ public class CustomDatePicker {
             }
         }
     }
-
+    /**
+     * 设置时间框 标题
+     * @author lish
+     * created at 2018-08-22 9:25
+     */
+    public void setTitle(String title){
+        tv_title.setText(title);
+    }
     /**
      * 设置日期控件是否可以循环滚动
      */

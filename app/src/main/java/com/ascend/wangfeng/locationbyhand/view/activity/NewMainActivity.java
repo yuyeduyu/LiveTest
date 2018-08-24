@@ -308,7 +308,7 @@ public class NewMainActivity extends BaseActivity {
         Fragment[] fragments = new Fragment[]{
                 new ApListFragment(), new StaListFragment()
         };
-        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments, dl);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), titles, fragments, dl);
     }
 
     private void initTool() {

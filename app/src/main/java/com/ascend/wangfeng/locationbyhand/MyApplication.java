@@ -182,11 +182,11 @@ public class MyApplication extends Application {
         return upLoadTime;
     }
 
-    public static String UpLoadFtpUrl = "123.57.175.155";                   //上传的地址
-    public static int UpLoadFtpPort = 21;                                   //端口号
-    public static String UpLoadFtpUser = "test123";                         //ftp帐号
-    public static String UpLoadFtpPass = "test123";                         //ftp密码
-    public static String UpLoadFilePath = "wificar";                        //文件名
+    public static String UpLoadFtpUrl = BuildConfig.UpLoadFtpUrl;                   //上传的地址
+    public static int UpLoadFtpPort = BuildConfig.UpLoadFtpPort;                                   //端口号
+    public static String UpLoadFtpUser = BuildConfig.UpLoadFtpUser;                         //ftp帐号
+    public static String UpLoadFtpPass = BuildConfig.UpLoadFtpPass;                         //ftp密码
+    public static String UpLoadFilePath = BuildConfig.UpLoadFilePath;                        //文件名
 
     public static void ftpData() {
         SharedPreferences ftpSp = mContext.getSharedPreferences("ftpData", MODE_PRIVATE);

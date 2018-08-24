@@ -16,10 +16,14 @@ import android.widget.Toast;
 
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
+import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.data.FTPClientData;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 
 import org.apache.commons.net.ftp.FTPClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,7 +79,7 @@ public class SetftpActivity extends AppCompatActivity {
 
 
     private void initView() {
-        mToolbar.setTitle("设置FTP参数");
+        mToolbar.setTitle("设置服务器");
         mToolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -89,6 +93,8 @@ public class SetftpActivity extends AppCompatActivity {
     }
 
     private void back() {
+        //清除开站信息
+        delectKaizhanInfo();
         if (from==1){
             //开站
             MyApplication.ftpData(); //更新服务器地址
@@ -100,15 +106,27 @@ public class SetftpActivity extends AppCompatActivity {
         }
         finish();
     }
+    /**
+     * 清除开站数据
+     * @author lish
+     * created at 2018-08-22 15:44
+     */
+    private void delectKaizhanInfo() {
+        List<KaiZhanBean> devs = SharedPreferencesUtil.getList(SetftpActivity.this
+                , "kaizhan");
+        if (devs == null)
+            devs = new ArrayList<>();
+        devs.clear();
+        SharedPreferencesUtil.putList(SetftpActivity.this, "kaizhan", devs);
+    }
 
 
     private void initData() {
-            setUrl.setText(preferences.getString("url", ""));
-            setPort.setText(preferences.getInt("port", -1)==-1
-                    ?"":preferences.getInt("port", -1) + "");
-            setUser.setText(preferences.getString("user", ""));
-            setPassword.setText(preferences.getString("password", ""));
-            setPath.setText(preferences.getString("path", ""));
+            setUrl.setText(preferences.getString("url", MyApplication.UpLoadFtpUrl));
+            setPort.setText(preferences.getInt("port", MyApplication.UpLoadFtpPort)+"");
+            setUser.setText(preferences.getString("user", MyApplication.UpLoadFtpUser));
+            setPassword.setText(preferences.getString("password", MyApplication.UpLoadFtpPass));
+            setPath.setText(preferences.getString("path", MyApplication.UpLoadFilePath));
     }
 
     @OnClick(R.id.set_submit)

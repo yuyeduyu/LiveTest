@@ -212,20 +212,21 @@ public class MainActivity extends BaseActivity {
         Fragment[] fragments = new Fragment[]{
                 new ApListFragment(), new StaListFragment()
         };
-        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments, null);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), titles, fragments, null);
     }
 
     private void initTool() {
 
-        if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
-            mToolbar.setTitle(AppVersionConfig.appTitle);
-        } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
-            mToolbar.setTitle(R.string.app_name_cplus);
-        }else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
-            mToolbar.setTitle(R.string.app_name_c);
-        }else if (mToolbar != null) {
-            mToolbar.setTitle(AppVersionConfig.title);
-        }
+//        if (mToolbar != null & MyApplication.getAppVersion() == Config.C_MINI) {
+//            mToolbar.setTitle(AppVersionConfig.appTitle);
+//        } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C_PLUS) {
+//            mToolbar.setTitle(R.string.app_name_cplus);
+//        }else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
+//            mToolbar.setTitle(R.string.app_name_c);
+//        }else if (mToolbar != null) {
+//            mToolbar.setTitle(AppVersionConfig.title);
+//        }
+        mToolbar.setTitle("信息采集");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -241,17 +242,21 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onNext(AppVersionEvent event) {
                         //更新界面 MIni显示上传按钮
-                        if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
-                            mToolbar.setTitle(AppVersionConfig.appTitle);
-                        } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
-                            mToolbar.setTitle(R.string.app_name_cplus);
-                        } else if (mToolbar != null & event.getAppVersion() == -1) {
+//                        if (mToolbar != null & event.getAppVersion() == Config.C_MINI) {
+//                            mToolbar.setTitle(AppVersionConfig.appTitle);
+//                        } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
+//                            mToolbar.setTitle(R.string.app_name_cplus);
+//                        } else if (mToolbar != null & event.getAppVersion() == -1) {
+//                            mToolbar.setTitle("请连接本app专用设备蓝牙");
+//                        } else if (mToolbar != null & event.getAppVersion() == Config.C) {
+//                            mToolbar.setTitle(R.string.app_name_c);
+//                        }else if (mToolbar != null) {
+//                            mToolbar.setTitle(AppVersionConfig.title);
+//                        }
+                        if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
-                        } else if (mToolbar != null & event.getAppVersion() == Config.C) {
-                            mToolbar.setTitle(R.string.app_name_c);
-                        }else if (mToolbar != null) {
-                            mToolbar.setTitle(AppVersionConfig.title);
-                        }
+                        } else
+                            mToolbar.setTitle("信息采集");
                     }
                 });
     }

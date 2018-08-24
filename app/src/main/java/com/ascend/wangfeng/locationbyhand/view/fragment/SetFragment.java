@@ -40,6 +40,7 @@ import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.KaiZhanActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.NewLogAllActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
@@ -680,7 +681,6 @@ public class SetFragment extends BaseFragment implements SetContract.View {
 
     @OnClick(R.id.kaizhan)
     public void onViewClicked() {
-        startActivity(new Intent(getActivity(), SetftpActivity.class)
-                .putExtra("from",1));
+        startActivity(new Intent(getActivity(), KaiZhanActivity.class));
     }
 }

@@ -7,15 +7,105 @@ import java.io.Serializable;
  * 描述：
  */
 
-public class KaiZhanBean implements Serializable{
+public class KaiZhanBean implements Serializable {
+    //    MAC地址
+//            设备编号
+//    手机IMEI
+//            姓名
+//    身份证/警号
+//            手机号
+//    所属警种
+//    地市
+//           区县
+//    派出所
+//            经度
+//    纬度
     private String mac;
     private String imei;
+    private String devCode;
+    private String name;
+    private String card;
+    private String phone;
+    private String minjing;
     private String area;
-    private String adress;
-    private String cityCode;
-    private String areaCode;
+    private String city;
+    private String paichusuo;
     private double latitude;
     private double longitude;
+    private String adress;
+    private String pachusuoAdress;
+
+    public String getAdress() {
+        return adress;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
+
+    public String getPachusuoAdress() {
+        return pachusuoAdress;
+    }
+
+    public void setPachusuoAdress(String pachusuoAdress) {
+        this.pachusuoAdress = pachusuoAdress;
+    }
+
+    public String getDevCode() {
+        return devCode;
+    }
+
+    public void setDevCode(String devCode) {
+        this.devCode = devCode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCard() {
+        return card;
+    }
+
+    public void setCard(String card) {
+        this.card = card;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getMinjing() {
+        return minjing;
+    }
+
+    public void setMinjing(String minjing) {
+        this.minjing = minjing;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPaichusuo() {
+        return paichusuo;
+    }
+
+    public void setPaichusuo(String paichusuo) {
+        this.paichusuo = paichusuo;
+    }
 
     public String getMac() {
         return mac;
@@ -41,29 +131,6 @@ public class KaiZhanBean implements Serializable{
         this.area = area;
     }
 
-    public String getAdress() {
-        return adress;
-    }
-
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
-
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
-
-    public String getAreaCode() {
-        return areaCode;
-    }
-
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
-    }
 
     public double getLatitude() {
         return latitude;

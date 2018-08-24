@@ -9,92 +9,228 @@
 
     <include layout="@layout/custom_toolbar" />
 
-    <LinearLayout
-
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_weight="1"
-        android:gravity="left"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                style="@style/setText_left"
-                android:text="设备MAC:" />
+            <LinearLayout
 
-            <TextView
-                android:id="@+id/tv_devmac"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                tools:text="mac"
-                />
-        </LinearLayout>
+                android:layout_height="0dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
 
-        <include layout="@layout/view_line" />
+                    <TextView
+                        style="@style/setText_left"
+                        android:inputType="number"
+                        android:text="手机IMEI:" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+                    <TextView
+                        android:id="@+id/tv_imei"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text2"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/setText_left"
-                android:inputType="number"
-                android:text="手机IMEI:" />
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
 
-            <TextView
-                android:id="@+id/tv_imei"
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="设备MAC:" />
+
+                    <TextView
+                        android:textColor="@color/text2"
+                        android:id="@+id/tv_devmac"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        tools:text="mac" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:inputType="number"
+                        android:text="设备编号:" />
+
+                    <TextView
+                        android:id="@+id/tv_dev"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+            </LinearLayout>
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
-        <include layout="@layout/view_line" />
-        <LinearLayout
-            android:id="@+id/ll_adress"
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
-
-            <TextView
-                style="@style/setText_left"
-                android:text="地        址:" />
-
-            <TextView
-                android:id="@+id/tv_adress"
+                android:layout_height="20dp"
+                android:background="@color/c4"/>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical" />
-        </LinearLayout>
-        <include layout="@layout/view_line" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+                android:layout_height="0dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/ll_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
 
-            <TextView
-                style="@style/setText_left"
-                android:text="详细地址:" />
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="姓        名:" />
 
-            <EditText
-                android:id="@+id/et_adress"
+                    <EditText
+                        android:id="@+id/et_name"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:imeOptions="actionNext"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:id="@+id/ll_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="身份证/警号:" />
+
+                    <EditText
+                        android:id="@+id/et_card"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:imeOptions="actionNext"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:id="@+id/ll_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="手  机  号:" />
+
+                    <EditText
+                        android:id="@+id/et_phone"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:inputType="phone"
+                        android:imeOptions="actionNext"
+                        android:textSize="16sp"
+                        android:singleLine="true"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:id="@+id/ll_minjing"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="所属民警:" />
+
+                    <EditText
+                        android:id="@+id/et_minjing"
+                        android:textColor="@color/text2"
+                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+                <LinearLayout
+                    android:id="@+id/ll_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="地        址:" />
+
+                    <TextView
+                        android:id="@+id/tv_adress"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+
+                <LinearLayout
+                    android:id="@+id/ll_paichusuo"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="36dp">
+
+                    <TextView
+                        style="@style/setText_left"
+                        android:text="派  出  所:" />
+
+                    <TextView
+                        android:id="@+id/tv_paichusuo"
+                        android:textColor="@color/text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        />
+                </LinearLayout>
+
+                <include layout="@layout/view_line" />
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/set_submit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@null"
-                android:hint="请填写详细地址"/>
+                android:layout_height="56dp"
+                android:text="提交" />
         </LinearLayout>
-        <include layout="@layout/view_line" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/set_submit"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="提交" />
+    </ScrollView>
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.ascend.wangfeng.locationbyhand.view.activity;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,6 +53,8 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
+
 /**
  * 统计
  *
@@ -72,7 +75,8 @@ public class StatisticsActivity extends BaseActivity {
     TextView tvTime;
     private List<Log> datas;//当天采集mac
     private List<Map<String, String>> selectDatas;//查询时间段采集mac
-    private List<Integer> counts;//最近7天图表数据
+    private List<Integer> aps;//最近7天采集ap数
+    private List<Integer> stas;//最近7天采集终端数
     private StatisticAdapter todayadapter;
     private StatisticBySelectAdapter selectAdapter;
     private LineData mLineData;
@@ -141,8 +145,8 @@ public class StatisticsActivity extends BaseActivity {
         //获取x轴坐标数据
         getXDatas();
         //获取Y轴  柱状图数据 从查询数据中计算，节省查询数据库时间
-//        List<Integer> counts = getLast7Data(daoSession);
-        initBraChart(counts);
+//        List<Integer> aps = getLast7Data(daoSession);
+        initBraChart();
 
     }
 
@@ -152,7 +156,7 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-08-13 11:36
      */
-    private void initBraChart(List<Integer> counts) {
+    private void initBraChart() {
 
         barChart.setDrawBarShadow(false);
         barChart.setDrawValueAboveBar(true);
@@ -174,10 +178,14 @@ public class StatisticsActivity extends BaseActivity {
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
         xAxis.setLabelCount(7);
+        xAxis.setCenterAxisLabels(true);//设置标签居中
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return xDatas.get((int) value - 1);
+                if (value >= 0 & value <= xDatas.size()-1)
+                    return xDatas.get((int) value);
+                else return "";
+//                return value+"";
             }
 
             @Override
@@ -217,7 +225,7 @@ public class StatisticsActivity extends BaseActivity {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
 
-//        setData(counts);
+//        setData(aps);
     }
 
     /**
@@ -226,38 +234,59 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-08-13 11:35
      */
-    private void setData(List<Integer> counts) {
+    private void setData(List<Integer> aps, List<Integer> stas) {
 
         float start = 1f;
 
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
 
-        for (int i = (int) start; i < start + counts.size(); i++) {
-            yVals1.add(new BarEntry(i, counts.get(i - 1)));
+        for (int i = (int) start; i < start + aps.size(); i++) {
+            yVals1.add(new BarEntry(i, aps.get(i - 1)));
+            yVals2.add(new BarEntry(i, stas.get(i - 1)));
         }
 
-        BarDataSet set1;
+        BarDataSet set1, set2;
 
         if (barChart.getData() != null &&
                 barChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
+            set2 = (BarDataSet) barChart.getData().getDataSetByIndex(1);
             set1.setValues(yVals1);
+            set2.setValues(yVals2);
             barChart.getData().notifyDataChanged();
             barChart.notifyDataSetChanged();
         } else {
-            set1 = new BarDataSet(yVals1, "最近7天采集mac数");
+            set1 = new BarDataSet(yVals1, "AP数");
+            set2 = new BarDataSet(yVals2, "终端数");
 
-            set1.setColors(ColorTemplate.MATERIAL_COLORS);
+//            set1.setColors(ColorTemplate.MATERIAL_COLORS);
+//            set2.setColors(ColorTemplate.MATERIAL_COLORS);
+            set1.setColor(rgb("#2ecc71"));
+            set2.setColor(rgb("#e74c3c"));
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);
+            dataSets.add(set2);
 
             BarData data = new BarData(dataSets);
             data.setValueTextSize(10f);
-            data.setBarWidth(0.50f);
+            data.setBarWidth(0.9f);
 
             barChart.setData(data);
         }
+        float groupSpace = 0.2f;
+        float barSpace = 0f;
+        float barWidth = 0.4f;
+        barChart.getBarData().setBarWidth(barWidth);
+        barChart.getXAxis().setAxisMinimum(0);
+        // barData.getGroupWith(...) is a helper that calculates the width each group needs based on the provided parameters
+//        float groupSpace = 0.4f;
+//        float barSpace = 0f; // x3 DataSet
+//        float barWidth = 0.2f; // x3 DataSet
+//        // (0.2 + 0) * 3 + 0.4 = 1.00 -> interval per "group"
+        barChart.getXAxis().setAxisMaximum(barChart.getBarData().getGroupWidth(groupSpace, barSpace) * 7 + 0);
+        barChart.groupBars(0, groupSpace, barSpace);
     }
 
     /**
@@ -504,19 +533,20 @@ public class StatisticsActivity extends BaseActivity {
         String now = sdf.format(new Date());
         startTime = GetDataUtils.getDateStrByDay(now, -6);
         endTime = now.split(" ")[0];
-        tvTime.setText("时间段:"+startTime + " 至 " + endTime);
+        tvTime.setText("时间段:" + startTime + " 至 " + endTime);
         startData = GetDataUtils.getDateStrByMint(now, -30);
         lastData = GetDataUtils.getDateStrByMint(now, 0);
         startTimePicker = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
                 startTime = time.split(" ")[0];
-                tvTime.setText("时间段:"+startTime + " 至 ");
+                tvTime.setText("时间段:" + startTime + " 至 ");
                 showEndTimePicker();
             }
         }, "2018-01-01 00:00", lastData); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
         startTimePicker.showSpecificTime(false); // 不显示时和分
         startTimePicker.setIsLoop(false); // 不允许循环滚动
+        startTimePicker.setTitle("请选择开始时间");
     }
 
     /**
@@ -530,12 +560,13 @@ public class StatisticsActivity extends BaseActivity {
             @Override
             public void handle(String time) { // 回调接口，获得选中的时间
                 endTime = time.split(" ")[0];
-                tvTime.setText("时间段:"+startTime + " 至 " + endTime);
+                tvTime.setText("时间段:" + startTime + " 至 " + endTime);
                 searchMacData(startTime, endTime);
             }
         }, startTime + " 00:00", lastData); // 初始化日期格式请用：yyyy-MM-dd HH:mm，否则不能正常运行
         endTimePicker.showSpecificTime(false); // 显示时和分
         endTimePicker.setIsLoop(false); // 允许循环滚动
+        endTimePicker.setTitle("请选择结束时间");
         endTimePicker.show(startTime);
     }
 
@@ -576,7 +607,8 @@ public class StatisticsActivity extends BaseActivity {
      * created at 2018-07-17 11:01
      */
     public void getByTimeData(DaoSession session, String startTime, String endTime, int diffDays) {
-        counts = new ArrayList<>();
+        aps = new ArrayList<>();
+        stas = new ArrayList<>();
         Cursor c;
         //查询条件 开始 结束的0点时间戳
         long startLongTime = GetDataUtils.getLongTimeByDay(startTime, Config.timeTypeByYear);
@@ -590,7 +622,8 @@ public class StatisticsActivity extends BaseActivity {
             map.put("sta", String.valueOf(c.getCount()));
             map.put("time", String.valueOf(startLongTime + (i * oneDay)));
 
-            counts.add(Integer.valueOf(map.get("ap")) + Integer.valueOf(map.get("sta")));
+            aps.add(Integer.valueOf(map.get("ap")));
+            stas.add(Integer.valueOf(map.get("sta")));
             selectDatas.add(map);
         }
         //子线程中查询数据，则跳转到UI线程刷新界面
@@ -599,8 +632,8 @@ public class StatisticsActivity extends BaseActivity {
             public void run() {
                 selectAdapter.notifyDataSetChanged();
                 //第一次运行时，设置图形数据，点击查询时不需要设置图形数据
-                if (isFirst){
-                    setData(counts);
+                if (isFirst) {
+                    setData(aps,stas);
                     isFirst = false;
                     barChart.invalidate();
                 }

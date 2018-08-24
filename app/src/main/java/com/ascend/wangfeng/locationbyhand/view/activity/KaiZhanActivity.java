@@ -1,13 +1,11 @@
 package com.ascend.wangfeng.locationbyhand.view.activity;
 
-import android.app.Activity;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,16 +17,11 @@ import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.data.FTPClientData;
 import com.ascend.wangfeng.locationbyhand.data.FileData;
-import com.ascend.wangfeng.locationbyhand.data.saveData.ApData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
-import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
-import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
-import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.util.ImeiUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.citychoice.ChangeAddressPopwindow;
-import com.ascend.wxldcmenu.MenuMainActivity;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
@@ -40,10 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class KaiZhanActivity extends AppCompatActivity {
+import static com.ascend.wangfeng.locationbyhand.util.CardCodeUtil.cardCodeVerifySimple;
+import static com.ascend.wangfeng.locationbyhand.util.CardCodeUtil.isMobileNO;
+
+public class KaiZhanActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -55,46 +50,62 @@ public class KaiZhanActivity extends AppCompatActivity {
     TextView tvAdress;
     @BindView(R.id.ll_adress)
     LinearLayout llAdress;
-    @BindView(R.id.et_adress)
-    EditText etAdress;
+
     @BindView(R.id.set_submit)
     Button setSubmit;
+    @BindView(R.id.tv_dev)
+    TextView tvDev;
+    @BindView(R.id.et_name)
+    EditText etName;
+    @BindView(R.id.et_card)
+    EditText etCard;
+    @BindView(R.id.et_phone)
+    EditText etPhone;
+    @BindView(R.id.et_minjing)
+    EditText etMinjing;
+    @BindView(R.id.tv_paichusuo)
+    TextView tvPaichusuo;
+    @BindView(R.id.ll_name)
+    LinearLayout llName;
+    @BindView(R.id.ll_paichusuo)
+    LinearLayout llPaichusuo;
 
     private double latitude;
     private double longitude;
 
-    private String cityCode;//市code
-    private String areaCode; //区code
-    public LoadingDialog loadingDialog; //上传dialog
+    private String cityName;
+    private String areaName;
+    private String adress;
+    private String paichusuoCode;
+    private String paichusuoName;
+    private String paichusuoAdress;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_kai_zhan);
-        ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
-        initView();
-        loadingDialog = new LoadingDialog(this);
-
-        //检查是否开站
-        checkKaiZhan();
+    protected int setContentView() {
+        return R.layout.activity_kai_zhan;
     }
 
     /**
      * 检查是否开过站
+     *
      * @author lish
      * created at 2018-08-10 14:48
      */
     private void checkKaiZhan() {
         List<KaiZhanBean> devs = SharedPreferencesUtil.getList(KaiZhanActivity.this
-                ,"kaizhan");
-        if(devs!=null){
-            for (KaiZhanBean dev:devs){
-                if (dev.getMac().equals(MyApplication.mDevicdMac)){
-                    tvAdress.setText(dev.getArea());
-                    etAdress.setText(dev.getAdress());
-                    cityCode = dev.getCityCode();
-                    areaCode = dev.getAreaCode();
+                , "kaizhan");
+        if (devs != null) {
+            for (KaiZhanBean dev : devs) {
+                if (dev.getMac().equals(MyApplication.mDevicdMac)) {
+                    etName.setText(dev.getName());
+                    etCard.setText(dev.getCard());
+                    etPhone.setText(dev.getPhone());
+                    etMinjing.setText(dev.getMinjing());
+                    tvAdress.setText(dev.getAdress());
+                    tvPaichusuo.setText(dev.getPachusuoAdress());
+                    cityName = dev.getCity();
+                    areaName = dev.getArea();
+                    paichusuoName = dev.getPaichusuo();
                     latitude = dev.getLatitude();
                     longitude = dev.getLongitude();
                 }
@@ -102,7 +113,9 @@ public class KaiZhanActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
+    protected void initView() {
+        EventBus.getDefault().register(this);
+        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mToolbar.setTitle("开站信息采集");
         mToolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(mToolbar);
@@ -115,9 +128,12 @@ public class KaiZhanActivity extends AppCompatActivity {
         });
         tvDevmac.setText(MyApplication.mDevicdMac);
         tvImei.setText(ImeiUtils.getImei());
-    }
+        tvDev.setText(MyApplication.mDevicdID);
 
-    @OnClick({R.id.ll_adress, R.id.set_submit})
+        //检查是否开站
+        checkKaiZhan();
+    }
+    @OnClick({R.id.ll_adress, R.id.set_submit, R.id.ll_paichusuo})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.ll_adress:
@@ -127,6 +143,10 @@ public class KaiZhanActivity extends AppCompatActivity {
             case R.id.set_submit:
                 if (checkSubmit())
                     UpLoad();
+                break;
+            case R.id.ll_paichusuo:
+                //选择派出所
+                shownPaichusuoSlect();
                 break;
         }
     }
@@ -139,19 +159,43 @@ public class KaiZhanActivity extends AppCompatActivity {
      */
     private boolean checkSubmit() {
         if (TextUtils.isEmpty(tvDevmac.getText().toString().trim())) {
-            Toast.makeText(KaiZhanActivity.this, "获取设备编号失败，请退出重新连接设备", Toast.LENGTH_SHORT).show();
+            Toast.makeText(KaiZhanActivity.this, "获取设备MAC失败，请退出重新连接设备", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (TextUtils.isEmpty(tvImei.getText().toString().trim())) {
             Toast.makeText(KaiZhanActivity.this, "获取手机IMEI失败，请检查相关权限是否开放", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (TextUtils.isEmpty(cityCode) || TextUtils.isEmpty(areaCode)) {
+        if (TextUtils.isEmpty(tvDev.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "获取设备编号失败，请退出重新连接设备", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(etName.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "请输入姓名", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!TextUtils.isEmpty(etCard.getText().toString().trim()) & !isCard(etCard.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "输入身份证号或者警号有误", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(etPhone.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "请输入手机号", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!isMobileNO(etPhone.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "输入手机号有误", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(etMinjing.getText().toString().trim())) {
+            Toast.makeText(KaiZhanActivity.this, "请输入所属民警", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(cityName)){
             Toast.makeText(KaiZhanActivity.this, "请选择地址", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (TextUtils.isEmpty(etAdress.getText().toString().trim())) {
-            Toast.makeText(KaiZhanActivity.this, "请填写详细地址", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(paichusuoName)) {
+            Toast.makeText(KaiZhanActivity.this, "请选择派出所", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (latitude == 0 || longitude == 0) {
@@ -161,8 +205,22 @@ public class KaiZhanActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * 判断是否是身份证号 或者警号（8位）
+     *
+     * @author lish
+     * created at 2018-08-23 15:50
+     */
+    private boolean isCard(String trim) {
+        if (trim.length() == 8)
+            return true;
+        else
+            return cardCodeVerifySimple(trim);
+    }
+
     //点击上传文件
     private void UpLoad() {
+        loadingDialog.show();
         if (MyApplication.mDevicdID != null) {                               //连接成功
             new Thread(new Runnable() {
                 @Override
@@ -196,14 +254,21 @@ public class KaiZhanActivity extends AppCompatActivity {
                     //上传开站数据
                     StringBuffer content = new StringBuffer();
                     content.append(tvDevmac.getText().toString().trim().replaceAll(":", ""));
-                    content.append("," + tvAdress.getText().toString().trim() + etAdress.getText().toString().trim());
-                    content.append("," + cityCode);
-                    content.append("," + areaCode);
+                    content.append("," + tvDev.getText().toString().trim());
                     content.append("," + tvImei.getText().toString().trim());
+                    content.append("," + etName.getText().toString().trim());
+                    content.append("," + (TextUtils.isEmpty(etCard.getText().toString().trim())
+                            ? " " : etCard.getText().toString().trim()));
+                    content.append("," + etPhone.getText().toString().trim());
+                    content.append("," + etMinjing.getText().toString().trim());
+                    content.append("," + (cityName.equals("")?" ":cityName));
+                    content.append("," + (areaName.equals("")?" ":areaName));
+                    content.append("," + paichusuoName);
+
                     content.append("," + longitude);
                     content.append("," + latitude);
-                    FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName+".carsite", content);
-                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName+".carsite");
+                    FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName + ".carsite", content);
+                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite");
 
                     (KaiZhanActivity.this).runOnUiThread(new Runnable() {
                         @Override
@@ -229,6 +294,7 @@ public class KaiZhanActivity extends AppCompatActivity {
 
     /**
      * 开站数据上传成功后 保存开站数据
+     *
      * @author lish
      * created at 2018-08-10 14:39
      */
@@ -240,12 +306,18 @@ public class KaiZhanActivity extends AppCompatActivity {
         KaiZhanBean bean = new KaiZhanBean();
         bean.setMac(tvDevmac.getText().toString().trim());
         bean.setImei(tvImei.getText().toString().trim());
-        bean.setArea(tvAdress.getText().toString().trim());
-        bean.setAdress(etAdress.getText().toString().trim());
-        bean.setCityCode(cityCode);
-        bean.setAreaCode(areaCode);
+        bean.setDevCode(tvDev.getText().toString().trim());
+        bean.setName(etName.getText().toString().trim());
+        bean.setCard(etCard.getText().toString().trim());
+        bean.setPhone(etPhone.getText().toString().trim());
+        bean.setMinjing(etMinjing.getText().toString().trim());
+        bean.setCity(cityName);
+        bean.setArea(areaName);
+        bean.setPaichusuo(paichusuoName);
         bean.setLatitude(latitude);
         bean.setLongitude(longitude);
+        bean.setAdress(adress);
+        bean.setPachusuoAdress(paichusuoAdress);
         devs.add(bean);
         SharedPreferencesUtil.putList(KaiZhanActivity.this, "kaizhan", devs);
     }
@@ -253,17 +325,40 @@ public class KaiZhanActivity extends AppCompatActivity {
 
     //城市选择器
     private void shownCitySlect() {
-        ChangeAddressPopwindow mChangeAddressPopwindow = new ChangeAddressPopwindow(KaiZhanActivity.this);
-//        mChangeAddressPopwindow.setAddress("浙江", "杭州", "西湖区");
+        ChangeAddressPopwindow mChangeAddressPopwindow =
+                new ChangeAddressPopwindow(KaiZhanActivity.this, "city.json", "gbk");
+        mChangeAddressPopwindow.setAddress("浙江", "杭州", "西湖区");
         mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 0);
         mChangeAddressPopwindow
                 .setAddresskListener(new ChangeAddressPopwindow.OnAddressCListener() {
 
                     @Override
-                    public void onClick(String province, String city, String area, String provinceCode) {
-                        tvAdress.setText(province + city + area);
-                        cityCode = "666666";
-                        areaCode = "666666";
+                    public void onClick(String province, String city, String area
+                            , String provinceCode, String cityCode, String areaCode) {
+                        tvAdress.setText(province +"  "+ city +"  "+ area);
+                        cityName = city;
+                        areaName = area;
+                        adress = province +"  "+ city +"  "+ area;
+                    }
+                });
+    }
+
+    //派出所选择器
+    private void shownPaichusuoSlect() {
+        ChangeAddressPopwindow mChangeAddressPopwindow =
+                new ChangeAddressPopwindow(KaiZhanActivity.this, "paichusuo.json", "utf-8");
+        mChangeAddressPopwindow.setAddress("台州市", "温岭市公安局", "太平派出所");
+        mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 0);
+        mChangeAddressPopwindow
+                .setAddresskListener(new ChangeAddressPopwindow.OnAddressCListener() {
+
+                    @Override
+                    public void onClick(String province, String city, String area
+                            , String provinceCode, String cityCode, String areaCode) {
+                        tvPaichusuo.setText(province +"  "+ city +"  "+ area);
+                        paichusuoCode = areaCode;
+                        paichusuoName = area;
+                        paichusuoAdress = province +"  "+ city +"  "+ area;
                     }
                 });
     }

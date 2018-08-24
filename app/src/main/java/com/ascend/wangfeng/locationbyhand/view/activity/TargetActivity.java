@@ -106,7 +106,7 @@ public class TargetActivity extends AppCompatActivity {
         Fragment[] fragments = new Fragment[]{
                 new TargetFragment().newInstance(LOCALTARGET), new TargetFragment().newInstance(NETTARGET)
         };
-        adapter = new TabMainAdapter(getSupportFragmentManager(), 2, titles, fragments, null);
+        adapter = new TabMainAdapter(getSupportFragmentManager(), titles, fragments, null);
         vpMyBasic.setAdapter(adapter);
         tabMyBasic.setupWithViewPager(vpMyBasic);
 

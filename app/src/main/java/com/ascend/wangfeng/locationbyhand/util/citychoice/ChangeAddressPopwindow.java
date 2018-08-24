@@ -46,7 +46,15 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
     /**
      * 所有省代码
      */
-    private Map<String, String>  mProvinceCodes = new HashMap<>();
+    private Map<String, String> mProvinceCodes = new HashMap<>();
+    /**
+     * 所有市代码
+     */
+    private Map<String, String> mCitiysCodes = new HashMap<>();
+    /**
+     * 所有县，区代码
+     */
+    private Map<String, String> mAreasCodes = new HashMap<>();
     /**
      * key - 省 value - 市s
      */
@@ -71,19 +79,22 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
 
     private int maxsize = 14;
     private int minsize = 12;
-
-    public ChangeAddressPopwindow(final Context context) {
+    private String filePath;
+    private String style;
+    public ChangeAddressPopwindow(final Context context,String filePath,String style) {
         super(context);
         this.context = context;
-        View view=View.inflate(context, R.layout.popupwindow_basic_information_city,null);
+        this.filePath = filePath;
+        this.style = style;
+        View view = View.inflate(context, R.layout.popupwindow_basic_information_city, null);
 
         wvProvince = (WheelView) view.findViewById(R.id.wv_address_province);
         wvCitys = (WheelView) view.findViewById(R.id.wv_address_city);
-        wvArea = (WheelView)view. findViewById(R.id.wv_address_area);
+        wvArea = (WheelView) view.findViewById(R.id.wv_address_area);
         lyChangeAddress = view.findViewById(R.id.ly_myinfo_changeaddress);
         lyChangeAddressChild = view.findViewById(R.id.ly_myinfo_changeaddress_child);
         btnSure = (TextView) view.findViewById(R.id.btn_myinfo_sure);
-        btnCancel = (TextView)view. findViewById(R.id.btn_myinfo_cancel);
+        btnCancel = (TextView) view.findViewById(R.id.btn_myinfo_cancel);
 
 
         //设置SelectPicPopupWindow的View
@@ -296,7 +307,8 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         // TODO Auto-generated method stub
         if (v == btnSure) {
             if (onAddressCListener != null) {
-                onAddressCListener.onClick(strProvince, strCity,strArea,getProvinceCode(strProvince));
+                onAddressCListener.onClick(strProvince, strCity, strArea
+                        , getProvinceCode(strProvince),getCityCode(strCity),getAreaCode(strArea));
             }
         } else if (v == btnCancel) {
 
@@ -312,10 +324,10 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
      * 回调接口
      *
      * @author Administrator
-     *
      */
     public interface OnAddressCListener {
-        public void onClick(String province, String city, String area, String provinceCode);
+        public void onClick(String province, String city, String area
+                , String provinceCode,String cityCode,String areaCode);
     }
 
 
@@ -325,11 +337,11 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
     private void initJsonData() {
         try {
             StringBuffer sb = new StringBuffer();
-            InputStream is = context.getClass().getClassLoader().getResourceAsStream("assets/" + "city.json");
+            InputStream is = context.getClass().getClassLoader().getResourceAsStream("assets/" + filePath);
             int len = -1;
             byte[] buf = new byte[1024];
             while ((len = is.read(buf)) != -1) {
-                sb.append(new String(buf, 0, len, "gbk"));
+                sb.append(new String(buf, 0, len, style));
             }
             is.close();
             mJsonObj = new JSONObject(sb.toString());
@@ -343,60 +355,59 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
     /**
      * 解析整个Json对象，完成后释放Json对象的内存
      */
-    private void initDatas()
-    {
-        try
-        {
+    private void initDatas() {
+        try {
             JSONArray jsonArray = mJsonObj.getJSONArray("citylist");
             mProvinceDatas = new String[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonP = jsonArray.getJSONObject(i);// 每个省的json对象
-                  String province = jsonP.getString("p");// 省名字
+                String province = jsonP.getString("p");// 省名字
                 String mProvinceCode = "";
-                if (jsonP.has("code")){
+                if (jsonP.has("code")) {
                     mProvinceCode = jsonP.getString("code");// 省名字
                 }
-
-
                 mProvinceDatas[i] = province;
-                mProvinceCodes.put(province,mProvinceCode);
+                mProvinceCodes.put(province, mProvinceCode);
 
                 JSONArray jsonCs = null;
-                try
-                {
+                try {
                     /**
                      * Throws JSONException if the mapping doesn't exist or is
                      * not a JSONArray.
                      */
                     jsonCs = jsonP.getJSONArray("c");
-                } catch (Exception e1)
-                {
+                } catch (Exception e1) {
                     continue;
                 }
                 String[] mCitiesDatas = new String[jsonCs.length()];
-                for (int j = 0; j < jsonCs.length(); j++)
-                {
+                for (int j = 0; j < jsonCs.length(); j++) {
                     JSONObject jsonCity = jsonCs.getJSONObject(j);
                     String city = jsonCity.getString("n");// 市名字
+                    String mCityCode = "";
+                    if (jsonCity.has("code")) {
+                        mCityCode = jsonP.getString("code");// 省名字
+                    }
                     mCitiesDatas[j] = city;
+                    mCitiysCodes.put(city, mCityCode);
                     JSONArray jsonAreas = null;
-                    try
-                    {
+                    try {
                         /**
                          * Throws JSONException if the mapping doesn't exist or
                          * is not a JSONArray.
                          */
                         jsonAreas = jsonCity.getJSONArray("a");
-                    } catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         continue;
                     }
 
                     String[] mAreasDatas = new String[jsonAreas.length()];// 当前市的所有区
-                    for (int k = 0; k < jsonAreas.length(); k++)
-                    {
+                    for (int k = 0; k < jsonAreas.length(); k++) {
                         String area = jsonAreas.getJSONObject(k).getString("s");// 区域的名称
+                        String mAreaCode = "";
+                        if (jsonAreas.getJSONObject(k).has("code")) {
+                            mAreaCode = jsonAreas.getJSONObject(k).getString("code");// 省名字
+                        }
+                        mAreasCodes.put(area, mAreaCode);
                         mAreasDatas[k] = area;
                     }
                     mAreaDatasMap.put(city, mAreasDatas);
@@ -405,8 +416,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
                 mCitisDatasMap.put(province, mCitiesDatas);
             }
 
-        } catch (JSONException e)
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         mJsonObj = null;
@@ -414,13 +424,37 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
 
     /**
      * 获取省会编码
+     *
      * @param province
      * @return
      */
-    public String getProvinceCode(String province){
+    public String getProvinceCode(String province) {
 
         return mProvinceCodes.get(province);
     }
+
+  /**
+     * 获取市编码
+     *
+     * @param city
+     * @return
+     */
+    public String getCityCode(String city) {
+
+        return mCitiysCodes.get(city);
+    }
+
+  /**
+     * 获取县，区编码
+     *
+     * @param area
+     * @return
+     */
+    public String getAreaCode(String area) {
+
+        return mAreasCodes.get(area);
+    }
+
     /**
      * 初始化省会
      */
@@ -521,8 +555,8 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
             }
         }
         if (noprovince) {
-            strProvince = "广东";
-            return 18;
+            strProvince = arrProvinces.get(0);
+            return 0;
         }
         return provinceIndex;
     }
@@ -547,8 +581,8 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
             }
         }
         if (nocity) {
-            strCity = "深圳";
-            return 2;
+            strCity = arrCitys.get(0);
+            return 0;
         }
         return cityIndex;
     }
@@ -573,10 +607,10 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
             }
         }
         if (noarea) {
-            strArea = "福田区";
-            return 1;
+            strArea = arrAreas.get(0);
+            return 0;
         }
         return areaIndex;
     }
-    
+
 }

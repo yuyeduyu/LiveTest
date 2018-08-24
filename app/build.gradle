@@ -42,11 +42,17 @@ android {
         wxld {
             applicationId "com.ascend.wangfeng.wxld"
             manifestPlaceholders = [app_name: "无线雷达"]
-            buildConfigField "String", "appTitle", "\"无线雷达-MINI\""
-            buildConfigField "String", "title", "\"无线雷达\""
-            buildConfigField "String", "appVersion", "\"wxldCVersion.txt\""
-            buildConfigField "String", "appName", "\"app-wxld-release.apk\""
-            buildConfigField "String", "AppName", "\"无线雷达\""
+            buildConfigField "String", "appTitle", "\"无线雷达-MINI\""//app连接mini设备时标题名称
+            buildConfigField "String", "title", "\"无线雷达\""//app未连接设备默认名称
+            buildConfigField "String", "appVersion", "\"wxldCVersion.txt\""//服务器中检测app版本的文件名
+            buildConfigField "String", "appName", "\"app-wxld-release.apk\""//服务器中下载app的名称
+            buildConfigField "String", "AppName", "\"无线雷达\""//app名称
+
+            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "int", "UpLoadFtpPort", "21"//端口号
+            buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
+            buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
+            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
         }
         menu {
             applicationId "com.ascend.wangfeng.wxld.menu"
@@ -56,9 +62,29 @@ android {
             buildConfigField "String", "appVersion", "\"wxldMenuVersion.txt\""
             buildConfigField "String", "appName", "\"app-menu-release.apk\""
             buildConfigField "String", "AppName", "\"便携式移动采集\""
+
+            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "int", "UpLoadFtpPort", "21"//端口号
+            buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
+            buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
+            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+        }
+        menufortaizhou {
+            applicationId "com.ascend.wangfeng.wxld.menu.taizhou"
+            manifestPlaceholders = [app_name: "便携式移动采集-台州"]
+            buildConfigField "String", "appTitle", "\"便携式移动采集\""
+            buildConfigField "String", "title", "\"便携式移动采集\""
+            buildConfigField "String", "appVersion", "\"wxldMenuVersion.txt\""
+            buildConfigField "String", "appName", "\"app-menu-release.apk\""
+            buildConfigField "String", "AppName", "\"便携式移动采集\""
+
+            buildConfigField "String", "UpLoadFtpUrl", "\"202.96.109.105\""//上传的地址
+            buildConfigField "int", "UpLoadFtpPort", "7021"//端口号
+            buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
+            buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
+            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
         }
     }
-
     //打包命令:gradlew assemble
 
 //源文件目录设置
