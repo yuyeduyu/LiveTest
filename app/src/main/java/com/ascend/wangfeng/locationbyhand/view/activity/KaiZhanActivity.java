@@ -75,10 +75,8 @@ public class KaiZhanActivity extends BaseActivity {
 
     private String cityName;
     private String areaName;
-    private String adress;
     private String paichusuoCode;
     private String paichusuoName;
-    private String paichusuoAdress;
 
     @Override
     protected int setContentView() {
@@ -101,8 +99,7 @@ public class KaiZhanActivity extends BaseActivity {
                     etCard.setText(dev.getCard());
                     etPhone.setText(dev.getPhone());
                     etMinjing.setText(dev.getMinjing());
-                    tvAdress.setText(dev.getAdress());
-                    tvPaichusuo.setText(dev.getPachusuoAdress());
+                    tvPaichusuo.setText(dev.getCity()+"  "+dev.getArea()+"  "+dev.getPaichusuo());
                     cityName = dev.getCity();
                     areaName = dev.getArea();
                     paichusuoName = dev.getPaichusuo();
@@ -186,10 +183,10 @@ public class KaiZhanActivity extends BaseActivity {
             Toast.makeText(KaiZhanActivity.this, "输入手机号有误", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (TextUtils.isEmpty(etMinjing.getText().toString().trim())) {
-            Toast.makeText(KaiZhanActivity.this, "请输入所属民警", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        if (TextUtils.isEmpty(etMinjing.getText().toString().trim())) {
+//            Toast.makeText(KaiZhanActivity.this, "请输入所属民警", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
         if (TextUtils.isEmpty(cityName)){
             Toast.makeText(KaiZhanActivity.this, "请选择地址", Toast.LENGTH_SHORT).show();
             return false;
@@ -260,7 +257,8 @@ public class KaiZhanActivity extends BaseActivity {
                     content.append("," + (TextUtils.isEmpty(etCard.getText().toString().trim())
                             ? " " : etCard.getText().toString().trim()));
                     content.append("," + etPhone.getText().toString().trim());
-                    content.append("," + etMinjing.getText().toString().trim());
+                    content.append("," + (TextUtils.isEmpty(etMinjing.getText().toString().trim())
+                            ?" ":etMinjing.getText().toString().trim()));
                     content.append("," + (cityName.equals("")?" ":cityName));
                     content.append("," + (areaName.equals("")?" ":areaName));
                     content.append("," + paichusuoName);
@@ -316,8 +314,6 @@ public class KaiZhanActivity extends BaseActivity {
         bean.setPaichusuo(paichusuoName);
         bean.setLatitude(latitude);
         bean.setLongitude(longitude);
-        bean.setAdress(adress);
-        bean.setPachusuoAdress(paichusuoAdress);
         devs.add(bean);
         SharedPreferencesUtil.putList(KaiZhanActivity.this, "kaizhan", devs);
     }
@@ -335,10 +331,10 @@ public class KaiZhanActivity extends BaseActivity {
                     @Override
                     public void onClick(String province, String city, String area
                             , String provinceCode, String cityCode, String areaCode) {
-                        tvAdress.setText(province +"  "+ city +"  "+ area);
-                        cityName = city;
-                        areaName = area;
-                        adress = province +"  "+ city +"  "+ area;
+//                        tvAdress.setText(province +"  "+ city +"  "+ area);
+//                        cityName = city;
+//                        areaName = area;
+//                        adress = province +"  "+ city +"  "+ area;
                     }
                 });
     }
@@ -358,7 +354,8 @@ public class KaiZhanActivity extends BaseActivity {
                         tvPaichusuo.setText(province +"  "+ city +"  "+ area);
                         paichusuoCode = areaCode;
                         paichusuoName = area;
-                        paichusuoAdress = province +"  "+ city +"  "+ area;
+                        cityName = province;
+                        areaName = city;
                     }
                 });
     }

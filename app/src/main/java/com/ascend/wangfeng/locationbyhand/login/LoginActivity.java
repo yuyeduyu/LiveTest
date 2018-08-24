@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.util.ImeiUtils;
@@ -20,9 +23,12 @@ import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.BaseActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.PermissionListener;
 import com.ascend.wxldcmenu.MenuMainActivity;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity {
@@ -35,6 +41,8 @@ public class LoginActivity extends BaseActivity {
     LinearLayout mLinearLayout;
     @BindView(R.id.activity_login)
     RelativeLayout mActivityLogin;
+    @BindView(R.id.name)
+    TextView name;
     private String imei;
     private static PermissionListener mListener;
 
@@ -43,25 +51,26 @@ public class LoginActivity extends BaseActivity {
         return R.layout.activity_login;
     }
 
-    @SuppressLint("MissingPermission")
     private void initData() {
         imei = ImeiUtils.getImei();
         mLoginImei.setText(imei);
     }
 
     protected void initView() {
-        getPermissions();
+        name.setText(BuildConfig.AppName);
+//        getPermissions();
         if (MyApplication.isDev) {
             //测试版本，跳过登录
 //            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-                //便携式车载采集系统
-                startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+            //便携式车载采集系统
+            startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
 //            } else
 //                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
             finish();
-        }else {
+        } else {
             checkIsLogin();
         }
+        initData();
     }
 
     private void checkIsLogin() {
@@ -69,8 +78,8 @@ public class LoginActivity extends BaseActivity {
                 .getParam(getBaseContext(), "passwordOfApp", "null");
         if (!password.equals("null")) {
 //            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-                //便携式车载采集系统
-                startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+            //便携式车载采集系统
+            startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
 //            } else
 //                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
             finish();
@@ -90,8 +99,8 @@ public class LoginActivity extends BaseActivity {
                 SharedPreferencesUtils.setParam(getBaseContext(), "passwordOfApp", password);
                 //验证成功，跳转指定页面；
 //                if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-                    //便携式车载采集系统
-                    startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+                //便携式车载采集系统
+                startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
 //                } else
 //                    startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
                 finish();
@@ -103,6 +112,9 @@ public class LoginActivity extends BaseActivity {
     }
 
     private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.ACCESS_FINE_LOCATION",
             "android.permission.READ_PHONE_STATE"};
 
     /**
@@ -117,7 +129,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void granted() {
                     //权限申请通过
-                    initData();
+//                    initData();
                 }
 
                 @Override
@@ -177,4 +189,5 @@ public class LoginActivity extends BaseActivity {
             }
         }
     }
+
 }

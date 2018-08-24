@@ -20,6 +20,7 @@ import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
+import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
@@ -133,12 +134,14 @@ public class MenuMainActivity extends BaseActivity {
         AppVersionUitls.checkVersion(this, AppVersionConfig.appVersion
                 , AppVersionConfig.appName, null, MenuMainActivity.class);
         //每天第一次打开app，同步网络布控目标
-        if (checkFirst()){
+        if (checkFirst()) {
             getTargets();
         }
     }
+
     /**
      * 判断每天第一次打开app，用于网络布控目标数据同步
+     *
      * @author lish
      * created at 2018-08-22 14:16
      */
@@ -150,7 +153,7 @@ public class MenuMainActivity extends BaseActivity {
         if (TextUtils.isEmpty(SharedPreferencesUtil.getString(MenuMainActivity.this, "daytime"))) {
             SharedPreferencesUtil.putString(MenuMainActivity.this, "daytime", dayTime);
             return true;
-        }else if (!SharedPreferencesUtil.getString(MenuMainActivity.this, "daytime").equals(dayTime)){
+        } else if (!SharedPreferencesUtil.getString(MenuMainActivity.this, "daytime").equals(dayTime)) {
             SharedPreferencesUtil.putString(MenuMainActivity.this, "daytime", dayTime);
             return true;
         }
@@ -242,7 +245,7 @@ public class MenuMainActivity extends BaseActivity {
         } else if (mToolbar != null) {
             mToolbar.setTitle(AppVersionConfig.title);
         }
-        devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+        setDevText();
         if (MyApplication.ftpConnect)
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
@@ -267,23 +270,41 @@ public class MenuMainActivity extends BaseActivity {
                             LiveService.toLiveService(MenuMainActivity.this);
                             startService(new Intent(MenuMainActivity.this, LocationService.class));
                             startService(new Intent(MenuMainActivity.this, UploadService.class));
-//                            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-//                                //便携式移动采集
-//                                isKaiZhan();
-//                            }
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
+                            rlUpload.setVisibility(View.GONE);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
+                            rlUpload.setVisibility(View.GONE);
                         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
                             mToolbar.setTitle(R.string.app_name_c);
+                            rlUpload.setVisibility(View.GONE);
                         } else if (mToolbar != null) {
                             mToolbar.setTitle(AppVersionConfig.title);
+                            rlUpload.setVisibility(View.GONE);
                         }
-                        devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+                        setDevText();
                     }
                 });
     }
+
+    private void setDevText() {
+        if (BuildConfig.AppName.equals("便携式移动采集")) {
+            List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this,"kaizhan");
+            if (devs!=null&MyApplication.mDevicdID!=null){
+                for (KaiZhanBean dev:devs){
+                    if (dev.getDevCode().equals(MyApplication.mDevicdID)){
+                        devText.setText(dev.getName() +"("
+                                + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID)+")");
+                    }
+                }
+            }else {
+                devText.setText(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID);
+            }
+        } else
+            devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+    }
+
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -390,12 +411,13 @@ public class MenuMainActivity extends BaseActivity {
 
     /**
      * 同步网络布控目标
+     *
      * @author lish
      * created at 2018-08-21 16:21
      */
-    public void getTargets(){
+    public void getTargets() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Config.TargetUrl)
+                .baseUrl(Config.getTargetUrl())
                 .build();
         TargetActivity.GetTarget service = retrofit.create(TargetActivity.GetTarget.class);
         Call<ResponseBody> call = service.getTarget();
@@ -406,11 +428,11 @@ public class MenuMainActivity extends BaseActivity {
                     List<NoteDo> targets = new ArrayList<>();
                     try {
                         JSONArray array = new JSONArray(response.body().string());
-                        for (int i=0;i<array.length();i++){
+                        for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
                             NoteDo note = new NoteDo();
                             note.setMac(object.getString("valueStr")
-                                    .replaceAll("-",":")
+                                    .replaceAll("-", ":")
                                     .toUpperCase());
                             note.setNote(object.getString("name"));
                             note.setType(1);
@@ -420,9 +442,9 @@ public class MenuMainActivity extends BaseActivity {
                         EventBus.getDefault().post(targets);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e("e",e.toString());
+                        Log.e("e", e.toString());
                     }
-                    if (loadingDialog!=null)
+                    if (loadingDialog != null)
                         loadingDialog.dismiss();
                 }
             }

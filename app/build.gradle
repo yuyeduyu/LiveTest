@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 29  //根据这个值 判断版本升级
-        versionName "3.6.1"
+        versionCode 31  //根据这个值 判断版本升级
+        versionName "3.6.3"
     }
 
 //签名配置
@@ -74,8 +74,8 @@ android {
             manifestPlaceholders = [app_name: "便携式移动采集-台州"]
             buildConfigField "String", "appTitle", "\"便携式移动采集\""
             buildConfigField "String", "title", "\"便携式移动采集\""
-            buildConfigField "String", "appVersion", "\"wxldMenuVersion.txt\""
-            buildConfigField "String", "appName", "\"app-menu-release.apk\""
+            buildConfigField "String", "appVersion", "\"wxldMenuForTaizhouVersion.txt\""
+            buildConfigField "String", "appName", "\"app-menufortaizhou-release.apk\""
             buildConfigField "String", "AppName", "\"便携式移动采集\""
 
             buildConfigField "String", "UpLoadFtpUrl", "\"202.96.109.105\""//上传的地址

@@ -248,7 +248,7 @@ public class TargetActivity extends AppCompatActivity {
      */
     public void getTargetToString(){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Config.TargetUrl)
+                .baseUrl(Config.getTargetUrl())
                 .build();
         GetTarget service = retrofit.create(GetTarget.class);
         Call<ResponseBody> call = service.getTarget();
@@ -283,7 +283,7 @@ public class TargetActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.getMessage());
-                Toast.makeText(TargetActivity.this,"同步网络布控目标失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(TargetActivity.this,"连接服务器失败",Toast.LENGTH_SHORT).show();
                 if (loadingDialog!=null)
                     loadingDialog.dismiss();
             }

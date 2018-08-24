@@ -187,6 +187,7 @@
                 <include layout="@layout/view_line" />
                 <LinearLayout
                     android:id="@+id/ll_adress"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="36dp">
 
@@ -202,7 +203,8 @@
                         android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
-                <include layout="@layout/view_line" />
+                <include layout="@layout/view_line"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/ll_paichusuo"

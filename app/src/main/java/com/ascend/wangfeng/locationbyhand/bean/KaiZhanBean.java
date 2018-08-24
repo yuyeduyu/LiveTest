@@ -32,24 +32,6 @@ public class KaiZhanBean implements Serializable {
     private String paichusuo;
     private double latitude;
     private double longitude;
-    private String adress;
-    private String pachusuoAdress;
-
-    public String getAdress() {
-        return adress;
-    }
-
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
-
-    public String getPachusuoAdress() {
-        return pachusuoAdress;
-    }
-
-    public void setPachusuoAdress(String pachusuoAdress) {
-        this.pachusuoAdress = pachusuoAdress;
-    }
 
     public String getDevCode() {
         return devCode;

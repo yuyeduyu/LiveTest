@@ -29,13 +29,7 @@ public class Config {
     public static String UpLoadFtpPass = "test123";                         //上传的地址
     public static String UpLoadFilePath = "wificartest";                        //文件名
 
-    public static String TargetUrl = "http://192.168.168.56:9086/";//网络布控目标服务器地址
-
-//    public static String UpLoadFtpUrl = "192.168.5.178";                   //上传的地址
-//    public static int UpLoadFtpPort = 21;                                   //端口号
-//    public static String UpLoadFtpUser = "test";                         //上传的地址
-//    public static String UpLoadFtpPass = "111111";                         //上传的地址
-//    public static String UpLoadFilePath = "wificartest";                        //文件名
+    public static String TargetUrl = "http://192.168.168.56:9086/";     //网络布控目标服务器地址
 
     private static AlarmMacListDo alarmMacListDo;
 
@@ -44,6 +38,14 @@ public class Config {
             updateConfig();
         }
         return alarmMacListDo;
+    }
+
+    public static String getTargetUrl() {
+        if (MyApplication.isDev)
+            //测试版本
+            return TargetUrl;
+        else
+            return "http://"+MyApplication.UpLoadFtpUrl+":"+MyApplication.UpLoadFtpPort;
     }
 
     public static void updateConfig() {
