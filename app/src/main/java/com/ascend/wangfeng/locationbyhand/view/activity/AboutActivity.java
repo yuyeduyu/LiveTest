@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
+import com.ascend.wangfeng.locationbyhand.BuildConfig;
+import com.ascend.wangfeng.locationbyhand.Config;
+import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
@@ -78,18 +81,35 @@ public class AboutActivity extends AppCompatActivity {
                 finish();
             }
         });
-        appname.setText(AppVersionConfig.AppName);
+
+        setAppName();
         mAboutVersion.setText(this.getString(R.string.version) + VersionUtils.getVersion(this).toString());
         checkVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadingDialog.show();
                 AppVersionUitls.checkVersion(AboutActivity.this
-                        , AppVersionConfig.appVersion, AppVersionConfig.appName, loadingDialog,AboutActivity.class);
+                        , AppVersionConfig.appVersion, AppVersionConfig.appName, loadingDialog
+                        , AboutActivity.class, true);
             }
         });
         if ((boolean) SharedPreferencesUtils.getParam(AboutActivity.this, "appVersion", false)) {
             update.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setAppName() {
+        if (MyApplication.getAppVersion() == Config.C_MINI) {
+            if (BuildConfig.AppName.equals("便携式移动采集"))
+                appname.setText(VersionUtils.getAppName(this, VersionUtils.getPackageName(this)));
+            else
+            appname.setText(BuildConfig.appTitle);
+        } else if ( MyApplication.getAppVersion() == Config.C_PLUS) {
+            appname.setText(R.string.app_name_cplus);
+        } else if (MyApplication.getAppVersion() == Config.C) {
+            appname.setText(R.string.app_name_c);
+        } else{
+            appname.setText(AppVersionConfig.title);
         }
     }
 

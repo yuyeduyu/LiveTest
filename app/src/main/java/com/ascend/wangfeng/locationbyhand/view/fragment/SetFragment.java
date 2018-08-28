@@ -28,6 +28,7 @@ import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.contract.SetContract;
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.event.RingEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.GhzEvent;
@@ -46,7 +47,7 @@ import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.TaskActivity;
-import com.ascend.wxldcmenu.MenuMainActivity;
+import com.ascend.wangfeng.locationbyhand.view.service.UpLoadUtils;
 import com.kyleduo.switchbutton.SwitchButton;
 
 import butterknife.BindView;
@@ -67,6 +68,8 @@ public class SetFragment extends BaseFragment implements SetContract.View {
 
     private static final int UPLOADTIME = 0;
     private static final int UPLOADPATH = 1;
+    public static final int UPLOADTESTSUCESS = 3;//FTP服务器连接测试成功
+    public static final int UPLOADTESTFLASE = 4;//FTP服务器连接测试失败
     @BindView(R.id.targetAp)
     RelativeLayout mTargetAp;
     @BindView(R.id.set_switch_isRing)
@@ -129,6 +132,8 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     View view;
     @BindView(R.id.kaizhan)
     RelativeLayout kaizhan;
+    @BindView(R.id.ftptest)
+    RelativeLayout ftptest;
 
 
     private String TAG = getClass().getCanonicalName();
@@ -161,7 +166,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     private Boolean isChangeGhz = false;
     private AlertDialog collectRadiusDialog;
     private int mCollectRadiusId;
-
+    public LoadingDialog loadingDialog; //上传dialog
 
     private Handler guiHandler;
 
@@ -194,7 +199,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         initData();
         initView();
         initGhz();
-
+        loadingDialog = new LoadingDialog(getActivity());
         guiHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -211,7 +216,14 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                             mPath.setText(MyApplication.UpLoadFtpUrl + ":" + MyApplication.UpLoadFtpPort
                                     + "/" + MyApplication.UpLoadFilePath);
                         break;
-
+                    case UPLOADTESTSUCESS:
+                        Snackbar.make(mEquipment, "服务器连接成功", Snackbar.LENGTH_SHORT).show();
+                        if (loadingDialog != null) loadingDialog.dismiss();
+                        break;
+                    case UPLOADTESTFLASE:
+                        Snackbar.make(mEquipment, "服务器连接失败", Snackbar.LENGTH_SHORT).show();
+                        if (loadingDialog != null) loadingDialog.dismiss();
+                        break;
                 }
             }
         };
@@ -369,15 +381,15 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             mCollectRadius.setVisibility(View.VISIBLE);
             mUpTime.setVisibility(View.VISIBLE);
             mUpPath.setVisibility(View.VISIBLE);
+            ftptest.setVisibility(View.VISIBLE);
+            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+                //便携式车载采集app 设置界面显示 开站信息
+                kaizhan.setVisibility(View.VISIBLE);
+            }
 //            rlLogAll.setVisibility(View.VISIBLE);
         }
         if (MyApplication.AppVersion != Config.C_MINI)
             mGhz.setVisibility(View.VISIBLE);
-
-        if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-            //便携式车载采集app 设置界面显示 开站信息
-            kaizhan.setVisibility(View.VISIBLE);
-        }
     }
 
     /**
@@ -511,7 +523,7 @@ public class SetFragment extends BaseFragment implements SetContract.View {
 
     @OnClick({R.id.targetAp, R.id.scanChannel, R.id.workStyle, R.id.url, R.id.set_track_channel,
             R.id.about, R.id.task, R.id.analyse, R.id.workMode, R.id.upTime, R.id.upPath,
-            R.id.collect_radius, R.id.rl_log_all, R.id.tongji})
+            R.id.collect_radius, R.id.rl_log_all, R.id.tongji, R.id.ftptest})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.targetAp:                 //布控目标
@@ -568,6 +580,11 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 //得到新打开Activity关闭后返回的数据
                 //第二个参数为请求码，可以根据业务需求自己编号
                 startActivityForResult(new Intent(getActivity(), SetftpActivity.class), 1);
+                break;
+            case R.id.ftptest:
+                //ftp服务器连接测试
+                loadingDialog.show();
+                UpLoadUtils.UpLoadTest(getActivity(), guiHandler);
                 break;
             default:
                 break;

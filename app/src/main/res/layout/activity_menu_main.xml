@@ -28,6 +28,7 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/iv_collect"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:src="@mipmap/caiji" />
@@ -43,6 +44,7 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/iv_log"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:src="@mipmap/rizhi" />
@@ -58,6 +60,7 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/iv_bukong"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:src="@mipmap/bukong" />
@@ -79,6 +82,7 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/iv_fenxi"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:src="@mipmap/fenxi" />
@@ -93,6 +97,7 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/iv_tongji"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:src="@mipmap/tongji" />
@@ -172,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:text="设备状态"
+                android:textColor="@color/text1"
                 android:textStyle="bold" />
 
             <TextView
@@ -207,7 +213,8 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="上传状态"
+                android:text="服务器状态"
+                android:textColor="@color/text1"
                 android:textStyle="bold" />
 
             <TextView

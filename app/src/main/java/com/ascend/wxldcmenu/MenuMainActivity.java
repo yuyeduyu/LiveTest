@@ -1,6 +1,7 @@
 package com.ascend.wxldcmenu;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -9,11 +10,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anye.greendao.gen.DaoSession;
+import com.anye.greendao.gen.LogDao;
 import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
 import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
@@ -21,6 +25,7 @@ import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.api.BaseSubcribe;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
+import com.ascend.wangfeng.locationbyhand.bean.MounthCollectData;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
@@ -29,8 +34,11 @@ import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
+import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
+import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
 import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
@@ -56,6 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -66,6 +75,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivity.getSql;
 
 /**
  * 便携式汽车采集app首页
@@ -105,6 +116,17 @@ public class MenuMainActivity extends BaseActivity {
     TextView uploadText;
     @BindView(R.id.rl_upload)
     RelativeLayout rlUpload;
+    @BindView(R.id.iv_collect)
+    ImageView ivCollect;
+    @BindView(R.id.iv_log)
+    ImageView ivLog;
+    @BindView(R.id.iv_bukong)
+    ImageView ivBukong;
+    @BindView(R.id.iv_fenxi)
+    ImageView ivFenxi;
+    @BindView(R.id.iv_tongji)
+    ImageView ivTongji;
+    private DaoSession daoSession;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +141,9 @@ public class MenuMainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        daoSession = MyApplication.instances.getDaoSession();
+        if (!BuildConfig.isManger)
+            initMangerView();
         initService();
 
         listenConnect();
@@ -132,16 +157,115 @@ public class MenuMainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         AppVersionUitls.checkVersion(this, AppVersionConfig.appVersion
-                , AppVersionConfig.appName, null, MenuMainActivity.class);
-        //每天第一次打开app，同步网络布控目标
-        if (checkFirst()) {
-            getTargets();
+                , AppVersionConfig.appName, null, MenuMainActivity.class,false);
+    }
+
+    /**
+     * 低权限版本更换主页图标
+     *
+     * @author lish
+     * created at 2018-08-27 15:18
+     */
+    private void initMangerView() {
+        ivCollect.setImageResource(R.mipmap.caiji_l);
+        ivLog.setImageResource(R.mipmap.rizhi_l);
+        ivBukong.setImageResource(R.mipmap.bukong_l);
+        ivFenxi.setImageResource(R.mipmap.fenxi_l);
+    }
+
+    /**
+     * 第一次打开app，统计采集数量累加到当月数据中保存
+     *
+     * @author lish
+     * created at 2018-08-24 16:14
+     */
+    static long oneDay = 24 * 60 * 60 * 1000;
+
+    private void mounthCollectData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String mounth = "";
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+                String now = sdf.format(new Date());
+                String startTime = "";
+                String endTime = GetDataUtils.getDateStrByDay(now, -1);
+                if (GetDataUtils.getNowTime("dd").equals("01")) {
+                    //当月第一天则统计上月数据
+                    mounth = GetDataUtils.getLastDate(GetDataUtils.getNowTime("yyyy-MM-dd"), 1, "yyyy-MM-dd");
+                } else {
+                    mounth = GetDataUtils.getNowTime("yyyy-MM");
+                }
+                MounthCollectData data = SharedPreferencesUtil.getObject(MenuMainActivity.this, mounth);
+                int diffDays = 0;
+                if (data == null) {
+                    //没有保存记录，则统计上一天数据，存储到当月数据中
+                    startTime = endTime;
+                    data = new MounthCollectData();
+                } else {
+                    //测试数据
+//                    data.setApCount("0");
+//                    data.setStaCount("0");
+//                    data.setDayTime("2018-08-27");
+//                    data = new MounthCollectData();
+//                    SharedPreferencesUtil.putObject(MenuMainActivity.this,mounth,data);
+                    startTime = data.getDayTime();
+                    if (startTime == null)
+                        startTime = endTime;
+                }
+                // 跨月份要分别统计 开始时间和 mounth 不在同一个月 则要统计2次
+                if (GetDataUtils.compare_date(startTime.substring(0, 8), mounth, "yyyy-MM") == 0) {
+                    //同一个月
+                    diffDays = GetDataUtils.differentDaysByMillisecond(startTime, endTime, Config.timeTypeByYear);
+                    getByTimeData(data, daoSession, startTime, endTime, diffDays + 1, mounth);
+                } else {
+                    //不同月份，统计上月份数据
+                    String lastMounth = GetDataUtils.getLastDate(GetDataUtils.getNowTime("yyyy-MM-dd"), 1, "yyyy-MM-dd");
+                    //上个月 最后一天日期
+                    String lastEndTime = TimeUtil.getLastLastDay("yyyy-MM-dd");
+                    diffDays = GetDataUtils.differentDaysByMillisecond(startTime, lastEndTime, Config.timeTypeByYear);
+                    getByTimeData(data, daoSession, startTime, lastEndTime, diffDays + 1, lastMounth);
+
+                    //统计本月数据
+                    //本月第一天日期
+                    String firstStartTime = TimeUtil.getFirstDay("yyyy-MM-dd");
+                    diffDays = GetDataUtils.differentDaysByMillisecond(firstStartTime, endTime, Config.timeTypeByYear);
+                    getByTimeData(data, daoSession, firstStartTime, endTime, diffDays + 1, mounth);
+                }
+
+                //删除指定天数前的数据
+                delectLogData();
+            }
+        }).start();
+    }
+
+    /**
+     * 根据开始结束时间 查询过滤重复mac数
+     *
+     * @author lish
+     * created at 2018-07-17 11:01
+     */
+    public void getByTimeData(MounthCollectData data, DaoSession session, String startTime
+            , String endTime, int diffDays, String mounth) {
+        Cursor c;
+        //查询条件 开始 结束的0点时间戳
+        long startLongTime = GetDataUtils.getLongTimeByDay(startTime, Config.timeTypeByYear);
+        long endLongTime = GetDataUtils.getLongTimeByDay(endTime, Config.timeTypeByYear);
+        for (int i = 0; i < diffDays; i++) {
+            c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 0), null);
+            data.setApCount(String.valueOf(Integer.valueOf(data.getApCount() == null ? "0" : data.getApCount()) + c.getCount()));
+            c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 1), null);
+            data.setStaCount(String.valueOf(Integer.valueOf(data.getStaCount() == null ? "0" : data.getStaCount()) + c.getCount()));
+            data.setDayTime(TimeUtil.getTime(startLongTime + (i * oneDay), Config.timeTypeByYear));
+
         }
+        SharedPreferencesUtil.putObject(MenuMainActivity.this, mounth, data);
     }
 
     /**
      * 判断每天第一次打开app，用于网络布控目标数据同步
      *
+     * @return true 第一次打开  flase不是
      * @author lish
      * created at 2018-08-22 14:16
      */
@@ -182,6 +306,13 @@ public class MenuMainActivity extends BaseActivity {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
             bluestatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+            //每天第一次打开app，同步网络布控目标
+            if (checkFirst()) {
+                //同步网络布控目标
+                getTargets();
+                //统计每月ap/终端采集数
+                mounthCollectData();
+            }
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
@@ -199,12 +330,21 @@ public class MenuMainActivity extends BaseActivity {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
                             bluestatu.setBackground(
                                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+                            setDevText();
                             //重载ap设置的密码
                             Config.reLoadApPassword();
+                            //每天第一次打开app，同步网络布控目标
+                            if (checkFirst()) {
+                                //同步网络布控目标
+                                getTargets();
+                                //统计每月ap/终端采集数
+                                mounthCollectData();
+                            }
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
                             bluestatu.setBackground(
                                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
+                            devText.setText("未连接");
                         }
                     }
                 });
@@ -216,6 +356,7 @@ public class MenuMainActivity extends BaseActivity {
             uploadText.setText("");
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+            uploadText.setText("正常");
         } else {
             uploadText.setText("连接服务器失败");
             loadstatu.setBackground(
@@ -246,10 +387,11 @@ public class MenuMainActivity extends BaseActivity {
             mToolbar.setTitle(AppVersionConfig.title);
         }
         setDevText();
-        if (MyApplication.ftpConnect)
+        if (MyApplication.ftpConnect) {
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
-        else {
+            uploadText.setText("正常");
+        } else {
             uploadText.setText("连接服务器失败");
             loadstatu.setBackground(
                     ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
@@ -288,17 +430,32 @@ public class MenuMainActivity extends BaseActivity {
                 });
     }
 
+    /**
+     * 删除指定天数前的log日志
+     *
+     * @author lish
+     * created at 2018-08-27 11:35
+     */
+    private void delectLogData() {
+        //获取N天前 时间戳
+        long delectTime = TimeUtil.getLastmorning(Config.SAVEDATATIME);
+
+        List<com.ascend.wangfeng.locationbyhand.bean.dbBean.Log> delectLogs =
+                daoSession.getLogDao().queryBuilder().where(LogDao.Properties.Ltime.lt(delectTime)).list();
+        daoSession.getLogDao().deleteInTx(delectLogs);
+    }
+
     private void setDevText() {
         if (BuildConfig.AppName.equals("便携式移动采集")) {
-            List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this,"kaizhan");
-            if (devs!=null&MyApplication.mDevicdID!=null){
-                for (KaiZhanBean dev:devs){
-                    if (dev.getDevCode().equals(MyApplication.mDevicdID)){
-                        devText.setText(dev.getName() +"("
-                                + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID)+")");
+            List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this, "kaizhan");
+            if (devs != null & MyApplication.mDevicdID != null) {
+                for (KaiZhanBean dev : devs) {
+                    if (dev.getDevCode().equals(MyApplication.mDevicdID)) {
+                        devText.setText(dev.getName() + "("
+                                + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID) + ")");
                     }
                 }
-            }else {
+            } else {
                 devText.setText(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID);
             }
         } else
@@ -345,21 +502,37 @@ public class MenuMainActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_main:
-                startActivity(new Intent(this, MainActivity.class));
+                if (!BuildConfig.isManger) {
+                    Toast.makeText(MenuMainActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                    return;
+                } else
+                    startActivity(new Intent(this, MainActivity.class));
                 break;
             case R.id.ll_log:
                 //监测日志
-                startActivity(new Intent(this, NewLogAllActivity.class));
+                if (!BuildConfig.isManger) {
+                    Toast.makeText(MenuMainActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                    return;
+                } else
+                    startActivity(new Intent(this, NewLogAllActivity.class));
 //                dl.close();
                 break;
             case R.id.ll_bukong:
                 //布控目标
-                startActivity(new Intent(this, TargetActivity.class));
+                if (!BuildConfig.isManger) {
+                    Toast.makeText(MenuMainActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                    return;
+                } else
+                    startActivity(new Intent(this, TargetActivity.class));
 //                dl.close();
                 break;
             case R.id.ll_fenxi:
                 //数据分析
-                startActivity(new Intent(this, AnalyseActivity.class));
+                if (!BuildConfig.isManger) {
+                    Toast.makeText(MenuMainActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                    return;
+                } else
+                    startActivity(new Intent(this, AnalyseActivity.class));
 //                dl.close();
                 break;
             case R.id.ll_tongji:

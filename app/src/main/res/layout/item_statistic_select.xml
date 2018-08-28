@@ -9,6 +9,7 @@
         android:id="@+id/id"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:visibility="gone"
         android:textColor="@color/text1"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -18,7 +19,7 @@
         android:id="@+id/time"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:gravity="center"
         android:paddingLeft="16dp"
         android:textColor="@color/text1"
@@ -41,4 +42,12 @@
         android:layout_height="match_parent"
         android:gravity="center"
         tools:text="终端数" />
+    <TextView
+        android:id="@+id/total"
+        android:textColor="@color/text1"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        tools:text="总数" />
 </LinearLayout>

@@ -410,6 +410,24 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/gray"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/ftptest"
+                android:visibility="gone"
+                style="@style/set_text">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="服务器连接测试"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
                     android:visibility="gone"
                     android:layout_alignParentBottom="true"
                     android:background="@color/gray"/>

@@ -120,7 +120,7 @@ public class NewMainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         AppVersionUitls.checkVersion(this,AppVersionConfig.appVersion
-                ,AppVersionConfig.appName, null,NewMainActivity.class);
+                ,AppVersionConfig.appName, null,NewMainActivity.class,false);
         //打开系统设置，手动将app加入白名单
 //        GetSystemUtils.openStart(NewMainActivity.this);
 

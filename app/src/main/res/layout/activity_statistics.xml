@@ -18,13 +18,14 @@
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/bar_chart"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_margin="8dp" />
 
     <LinearLayout
         android:id="@+id/ll_ap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
@@ -36,8 +37,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MAC采集数"
                 android:layout_weight="1"
+                android:text="最近3个月MAC采集数"
                 android:textColor="@color/text1"
                 android:textStyle="bold" />
 

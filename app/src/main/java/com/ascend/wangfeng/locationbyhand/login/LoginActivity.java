@@ -58,7 +58,7 @@ public class LoginActivity extends BaseActivity {
 
     protected void initView() {
         name.setText(BuildConfig.AppName);
-//        getPermissions();
+        getPermissions();
         if (MyApplication.isDev) {
             //测试版本，跳过登录
 //            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
@@ -70,7 +70,7 @@ public class LoginActivity extends BaseActivity {
         } else {
             checkIsLogin();
         }
-        initData();
+//        initData();
     }
 
     private void checkIsLogin() {
@@ -129,7 +129,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void granted() {
                     //权限申请通过
-//                    initData();
+                    initData();
                 }
 
                 @Override
@@ -142,52 +142,4 @@ public class LoginActivity extends BaseActivity {
             });
         } else initData();
     }
-
-    /**
-     * 申请权限
-     */
-    public static void requestRuntimePermissions(
-            String[] permissions, PermissionListener listener) {
-        mListener = listener;
-        List<String> permissionList = new ArrayList<>();
-        // 遍历每一个申请的权限，把没有通过的权限放在集合中
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(activity, permission) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                permissionList.add(permission);
-            } else {
-                mListener.granted();
-            }
-        }
-        // 申请权限
-        if (!permissionList.isEmpty()) {
-            ActivityCompat.requestPermissions(activity,
-                    permissionList.toArray(new String[permissionList.size()]), 1);
-        }
-    }
-
-    /**
-     * 申请后的处理
-     */
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0) {
-            List<String> deniedList = new ArrayList<>();
-            // 遍历所有申请的权限，把被拒绝的权限放入集合
-            for (int i = 0; i < grantResults.length; i++) {
-                int grantResult = grantResults[i];
-                if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                    mListener.granted();
-                } else {
-                    deniedList.add(permissions[i]);
-                }
-            }
-            if (!deniedList.isEmpty()) {
-                mListener.denied(deniedList);
-            }
-        }
-    }
-
 }

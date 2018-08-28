@@ -18,9 +18,11 @@ import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
 import com.ascend.wangfeng.locationbyhand.data.FTPClientData;
+import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +105,8 @@ public class SetftpActivity extends AppCompatActivity {
             //设置服务器地址
             Intent intent = new Intent();
             SetftpActivity.this.setResult(1, intent);
+            EventBus.getDefault().post(new FTPEvent(true));
+            MyApplication.ftpConnect = true;
         }
         finish();
     }

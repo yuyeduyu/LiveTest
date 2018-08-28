@@ -43,13 +43,16 @@ public class StatisticBySelectAdapter extends RecyclerView.Adapter<StatisticBySe
             holder.id.setText("序号");
             holder.ap.setText("AP数量");
             holder.sta.setText("终端数量");
-            holder.time.setText("日期");
+            holder.total.setText("总数");
+            holder.time.setText("月份");
         }else {
             Map<String,String> data = mList.get(position-1);
             holder.id.setText(String.valueOf(position));
             holder.ap.setText(data.get("ap"));
             holder.sta.setText(data.get("sta"));
-            holder.time.setText(TimeUtil.getTime(Long.parseLong(data.get("time")), Config.timeTypeByYear));
+//            holder.time.setText(TimeUtil.getTime(Long.parseLong(data.get("time")), Config.timeTypeByYear));
+            holder.time.setText(data.get("time"));
+            holder.total.setText(Integer.valueOf(data.get("ap"))+Integer.valueOf(data.get("sta"))+"");
         }
     }
 
@@ -63,6 +66,7 @@ public class StatisticBySelectAdapter extends RecyclerView.Adapter<StatisticBySe
         TextView ap;
         TextView time;
         TextView sta;
+        TextView total;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -70,6 +74,7 @@ public class StatisticBySelectAdapter extends RecyclerView.Adapter<StatisticBySe
             ap = (TextView) itemView.findViewById(R.id.ap);
             time = (TextView) itemView.findViewById(R.id.time);
             sta = (TextView) itemView.findViewById(R.id.sta);
+            total = (TextView) itemView.findViewById(R.id.total);
         }
     }
 }

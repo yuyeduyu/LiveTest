@@ -2,6 +2,7 @@ package com.ascend.wangfeng.locationbyhand.view.service;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
@@ -14,8 +15,10 @@ import com.ascend.wangfeng.locationbyhand.data.saveData.ApData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.util.VersionUtils;
+import com.ascend.wangfeng.locationbyhand.view.fragment.SetFragment;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.greenrobot.eventbus.EventBus;
@@ -92,7 +95,38 @@ public class UpLoadUtils {
             }).start();
         }
     }
+    /**
+     * FTP服务器连接测试
+     * @author lish
+     * created at 2018-08-27 14:35
+     */
+    public static void UpLoadTest(final Context context, final Handler handler) {
+        if (MyApplication.mDevicdID != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    FTPClientData otherFtpClientData = new FTPClientData();
+                    FTPClient otherFtpClient = otherFtpClientData.ftpConnect();
+                    Looper.prepare();
+                    if (otherFtpClient != null) {
+                        EventBus.getDefault().post(new FTPEvent(true));
+                        MyApplication.ftpConnect = true;
+                        handler.sendEmptyMessage(SetFragment.UPLOADTESTSUCESS);
+                    } else {
+                        //上传失败，信息有问题
+//                        Toast.makeText(context, "服务器连接失败", Toast.LENGTH_SHORT).show();
+                        EventBus.getDefault().post(new FTPEvent(false));
+                        MyApplication.ftpConnect = false;
+                        handler.sendEmptyMessage(SetFragment.UPLOADTESTFLASE);
+                    }
 
+                    Looper.loop();
+                }
+            }).start();
+        }else {
+            Toast.makeText(context, "请先连接设备", Toast.LENGTH_SHORT).show();
+        }
+    }
     private void delectLocalData(String filePath, String fileName) {
         // 上传成功后， 删除手机上的文件
         File localFile = new File(filePath + fileName);

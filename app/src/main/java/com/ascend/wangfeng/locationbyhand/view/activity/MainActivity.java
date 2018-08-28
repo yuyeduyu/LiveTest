@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity {
     protected void initView() {
 
         Log.i(TAG, "initView: ");
-//        listenConnect();
+        listenConnect();
         initData();
         initTool();
         initStart();
@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity {
                         if (event.isConnected()) {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
                             //重载ap设置的密码
-                            Config.reLoadApPassword();
+//                            Config.reLoadApPassword();
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
                         }

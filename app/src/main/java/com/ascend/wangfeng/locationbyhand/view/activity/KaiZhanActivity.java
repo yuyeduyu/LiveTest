@@ -343,7 +343,7 @@ public class KaiZhanActivity extends BaseActivity {
     private void shownPaichusuoSlect() {
         ChangeAddressPopwindow mChangeAddressPopwindow =
                 new ChangeAddressPopwindow(KaiZhanActivity.this, "paichusuo.json", "utf-8");
-        mChangeAddressPopwindow.setAddress("台州市", "温岭市公安局", "太平派出所");
+//        mChangeAddressPopwindow.setAddress("台州市", "温岭市公安局", "太平派出所");
         mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 0);
         mChangeAddressPopwindow
                 .setAddresskListener(new ChangeAddressPopwindow.OnAddressCListener() {

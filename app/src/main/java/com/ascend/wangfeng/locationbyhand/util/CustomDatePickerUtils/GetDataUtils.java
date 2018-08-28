@@ -76,14 +76,43 @@ public class GetDataUtils {
         else
             return false;
     }
+    /**
+     * q日期比较大小
+     *
+     * @param DATE1
+     * @param DATE2
+     * @return 返回0 为同一天
+     * 返回1 dt1 在dt2前
+     * 返回-1 dt1在dt2后
+     */
+    public static int compare_date(String DATE1, String DATE2,String type) {
+
+        DateFormat df = new SimpleDateFormat(type);
+        try {
+            Date dt1 = df.parse(DATE1);
+            Date dt2 = df.parse(DATE2);
+            if (dt1.getTime() > dt2.getTime()) {
+                System.out.println("dt1 在dt2前");
+                return 1;
+            } else if (dt1.getTime() < dt2.getTime()) {
+                System.out.println("dt1在dt2后");
+                return -1;
+            } else {
+                return 0;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return 0;
+    }
 
     /**
      * 获取当前时间 格式yyyy年MM月dd日    HH:mm:ss
      *
      * @return
      */
-    public static String getNowTime() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String getNowTime(String type) {
+        SimpleDateFormat formatter = new SimpleDateFormat(type);
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         String str = formatter.format(curDate);
         return str;
@@ -152,5 +181,25 @@ public class GetDataUtils {
             e.printStackTrace();
         }
         return -1;
+    }
+    // 使用当前月份,得到上一个月的月份:月份的格式是:yyyy-MM
+    public static String getLastDate(String currentDate,int days,String type) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(type);
+        Date date = null;
+        try {
+            date = sdf.parse(currentDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, -days);
+
+        String lastDate = c.get(Calendar.YEAR) + "-"
+                + String.format("%02d",c.get(Calendar.MONTH) + 1);
+        LogUtils.e("lastDate",lastDate);
+        return lastDate;
     }
 }

@@ -68,7 +68,6 @@ public class TargetFragment extends Fragment {
     private AlertDialog addDialog;
     private Comparator<NoteDo> comparator;
 
-    private boolean isZhence;
     private int type = 0;//0:本地布控，1:网络布控
     private NoteDoDao noteDoDao;
 
@@ -146,10 +145,6 @@ public class TargetFragment extends Fragment {
                 if (MyApplication.AppVersion == Config.C_PLUS) {
                     swipeRightMenu.addMenuItem(zhence);
                 }
-                if (MyApplication.isDev)
-                    swipeRightMenu.addMenuItem(dingwei);
-                if (swipeRightMenu.getMenuItem(3).getText().equals("快速侦测"))
-                    isZhence = true;
             }
         };
     }
@@ -252,13 +247,12 @@ public class TargetFragment extends Fragment {
                             startActivity(intent);
                             break;
                         case 3:
-                            if (isZhence)
                                 //快速侦测
                                 TargetSetDialog.showFastScanDialog(getActivity(), localList.get(adapterPosition).getMac());
-                            else
-                                //定位
-                                startActivity(new Intent(getActivity(), SelectPositionActivity.class)
-                                        .putExtra("mac", localList.get(adapterPosition).getMac()));
+//                            else
+//                                //定位
+//                                startActivity(new Intent(getActivity(), SelectPositionActivity.class)
+//                                        .putExtra("mac", localList.get(adapterPosition).getMac()));
                             break;
                         default:
                             break;

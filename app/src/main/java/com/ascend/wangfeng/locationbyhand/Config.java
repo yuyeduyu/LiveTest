@@ -23,6 +23,8 @@ public class Config {
 
     public static String timeTypeByYear = "yyyy-MM-dd";
 
+    public static int SAVEDATATIME = 30;//日志保存时间
+
     public static String UpLoadFtpUrl = "123.57.175.155";                   //上传的地址
     public static int UpLoadFtpPort = 21;                                   //端口号
     public static String UpLoadFtpUser = "test123";                         //上传的地址
@@ -95,10 +97,10 @@ public class Config {
      * 向设备设置密码
      */
     public static void reLoadApPassword() {
-        String mac = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_mac", null);
-        String name = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_name", null);
-        String password = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_password", null);
-        if (password != null && mac != null) {
+        String mac = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_mac", "");
+        String name = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_name", "");
+        String password = (String) SharedPreferencesUtils.getParam(MyApplication.mContext, "pa_ap_password", "");
+        if (!password.equals("") && !mac.equals("")) {
             MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
             event.setData("ESSID:" + name);
             RxBus.getDefault().post(event);

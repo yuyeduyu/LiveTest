@@ -18,10 +18,12 @@ import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.adapter.StatisticAdapter;
 import com.ascend.wangfeng.locationbyhand.adapter.StatisticBySelectAdapter;
+import com.ascend.wangfeng.locationbyhand.bean.MounthCollectData;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.Log;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.CustomDatePicker;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -101,6 +103,27 @@ public class StatisticsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         daoSession = MyApplication.instances.getDaoSession();
+
+//        historyVersion();
+        //柱状图显示最近7天统计
+        initBarChart();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        String now = sdf.format(new Date());
+        startTime = GetDataUtils.getDateStrByDay(now, -6);
+        endTime = now.split(" ")[0];
+        selectDatas = new ArrayList<>();
+        searchMacData(startTime, endTime);
+
+        initRecyleByMoth();
+    }
+
+    /**
+     * 废弃的历史版本
+     *
+     * @author lish
+     * created at 2018-08-24 11:53
+     */
+    private void historyVersion() {
         //初始化时间选择控件
         initDatePicker();
         //显示今天采集不重复的mac信息
@@ -109,14 +132,28 @@ public class StatisticsActivity extends BaseActivity {
         initRecyleBySelect();
         //折线图显示最近7天统计
 //        initLineChart();
-        //柱状图显示最近7天统计
-        initBarChart();
-        searchMacData(startTime, endTime);
     }
 
     @Override
     protected void initView() {
         initTool();
+    }
+
+    /**
+     * 最近三个月采集ap和终端数
+     *
+     * @author lish
+     * created at 2018-08-14 10:18
+     */
+    private void initRecyleByMoth() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(StatisticsActivity.this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        selectDatas = new ArrayList<>();
+
+        selectAdapter = new StatisticBySelectAdapter(selectDatas, StatisticsActivity.this);
+        recycler.setLayoutManager(layoutManager);
+        recycler.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recycler.setAdapter(selectAdapter);
     }
 
     /**
@@ -182,7 +219,7 @@ public class StatisticsActivity extends BaseActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                if (value >= 0 & value <= xDatas.size()-1)
+                if (value >= 0 & value <= xDatas.size() - 1)
                     return xDatas.get((int) value);
                 else return "";
 //                return value+"";
@@ -373,7 +410,7 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-08-13 16:21
      */
-    private static String getSql(int i, long startLongTime, long endLongTime, int diff, int type) {
+    public static String getSql(int i, long startLongTime, long endLongTime, int diff, int type) {
         String SQL_COUNT_LAST_7 = "SELECT " + LogDao.Properties.Mac.columnName
                 + "," + LogDao.Properties.Ltime.columnName + "," + LogDao.Properties.Type.columnName
                 + " FROM " + LogDao.TABLENAME
@@ -580,12 +617,13 @@ public class StatisticsActivity extends BaseActivity {
      * @author lish
      * created at 2018-08-13 15:54
      */
-    private void searchMacData(final String startTime, final String endTime) {
+    public void searchMacData(final String startTime, final String endTime) {
         mBaseActivity.showDialog(true);
         //开始 结束时间差，同一天 则 diffDays = 0;
         final int diffDays = GetDataUtils.differentDaysByMillisecond(startTime, endTime, Config.timeTypeByYear);
         if (diffDays == -1) {
             Toast.makeText(this, "计算时间差错误,请重新选择时间", Toast.LENGTH_SHORT).show();
+            if (loadingDialog != null) loadingDialog.dismiss();
             return;
         } else if (diffDays > 30) {
             Toast.makeText(this, "查询时间差不能大于31天，请重新选择时间", Toast.LENGTH_SHORT).show();
@@ -624,22 +662,51 @@ public class StatisticsActivity extends BaseActivity {
 
             aps.add(Integer.valueOf(map.get("ap")));
             stas.add(Integer.valueOf(map.get("sta")));
-            selectDatas.add(map);
+
+//            selectDatas.add(map);
         }
         //子线程中查询数据，则跳转到UI线程刷新界面
         mBaseActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                selectAdapter.notifyDataSetChanged();
+                setMothData();
+//                selectAdapter.notifyDataSetChanged();
                 //第一次运行时，设置图形数据，点击查询时不需要设置图形数据
                 if (isFirst) {
-                    setData(aps,stas);
+                    setData(aps, stas);
                     isFirst = false;
                     barChart.invalidate();
                 }
                 mBaseActivity.showDialog(false);
             }
         });
+    }
+    /**
+     *  设置最近3个月数据 本地存储当月数据+今天获取数据
+     * @author lish
+     * created at 2018-08-24 14:56
+     */
+    private void setMothData() {
+        String mounth = "";
+        for (int i=2;i>=0;i--){
+            mounth = GetDataUtils.getLastDate(GetDataUtils.getNowTime("yyyy-MM-dd"),i,"yyyy-MM-dd");
+            MounthCollectData data = SharedPreferencesUtil.getObject(StatisticsActivity.this
+                    ,mounth);
+            Map<String,String> map = new HashMap<>();
+            if (i==0){
+                //当月采集数量 加上当天采集数量
+                map.put("ap", data==null?String.valueOf(aps.get(6))
+                        :String.valueOf(Integer.valueOf(data.getApCount()==null?"0":data.getApCount())+aps.get(6)));
+                map.put("sta", data==null?String.valueOf(stas.get(6))
+                        :String.valueOf(Integer.valueOf(data.getStaCount()==null?"0":data.getStaCount())+stas.get(6)));
+            }else {
+                map.put("ap", data==null?"0":data.getApCount());
+                map.put("sta", data==null?"0":data.getStaCount());
+            }
+            map.put("time", mounth);
+            selectDatas.add(map);
+        }
+        selectAdapter.notifyDataSetChanged();
     }
 
     @OnClick(R.id.tv_time)

@@ -48,6 +48,7 @@ public class AppVersionUitls {
         return version;
 
     }
+
     /**
      * 检测app版本是否需要更新
      *
@@ -55,7 +56,8 @@ public class AppVersionUitls {
      * created at 2018-07-24 11:57
      */
     public static void checkVersion(final Context context, String appVersionTxt
-            , final String appName, final LoadingDialog loadingDialog, final Class<?> cls) {
+            , final String appName, final LoadingDialog loadingDialog, final Class<?> cls
+            , final boolean isShown) {
         AppClient.getAppVersionApi().getAppVersion(appVersionTxt)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -68,18 +70,19 @@ public class AppVersionUitls {
                     public void onError(Throwable e) {
                         LogUtils.e("getAppVersion:", e.toString());
                         Toast.makeText(context, "获取版本信息失败", Toast.LENGTH_LONG).show();
-                        if (loadingDialog!=null) loadingDialog.dismiss();
+                        if (loadingDialog != null) loadingDialog.dismiss();
                     }
 
                     @Override
                     public void onNext(AppVersionBack appVersion) {
-                        if (loadingDialog!=null) loadingDialog.dismiss();
+                        if (loadingDialog != null) loadingDialog.dismiss();
                         if (AppVersionUitls.getVersionNo(context) < appVersion.getData().getVersionCode()) {
                             SharedPreferencesUtils.setParam(context, "appVersion", true);
-                            shownUpdataDialog(context,appVersion.getData().getDes(),appName,cls);
-                        } else{
+                            shownUpdataDialog(context, appVersion.getData().getDes(), appName, cls);
+                        } else {
                             SharedPreferencesUtils.setParam(context, "appVersion", false);
-                            Toast.makeText(context, "当前为最新版本", Toast.LENGTH_LONG).show();
+                            if (isShown)
+                                Toast.makeText(context, "当前为最新版本", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -103,7 +106,7 @@ public class AppVersionUitls {
                     public void onClick(DialogInterface dialog, int which) {
                         //...To-do
 //                        downApk(context,appName);
-                        VersionUpdateService.beginUpdate(context,appName, R.drawable.ic_my_launcher,cls);
+                        VersionUpdateService.beginUpdate(context, appName, R.drawable.ic_my_launcher, cls);
                         dialog.dismiss();
                     }
                 });
