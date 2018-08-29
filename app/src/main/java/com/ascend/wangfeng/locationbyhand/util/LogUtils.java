@@ -3,6 +3,8 @@ package com.ascend.wangfeng.locationbyhand.util;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ascend.wangfeng.locationbyhand.MyApplication;
+
 /**
  * 作者：lish on 2018-07-17.
  * 描述：
@@ -14,7 +16,7 @@ public class LogUtils {
     public static boolean showD = true;
     public static boolean showI = true;
     public static boolean showW = true;
-    public static boolean showE = true;
+    public static boolean showE = MyApplication.isDev;
     public static boolean showWTF = true;
 
     /**

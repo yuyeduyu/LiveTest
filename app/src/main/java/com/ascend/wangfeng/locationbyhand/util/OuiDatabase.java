@@ -69,7 +69,7 @@ public class OuiDatabase {
         String databaseFilename = "oui.db";
         File dir = new File(sdPath);
         if (!dir.exists()) {
-            dir.mkdir();
+            dir.mkdirs();
         }
         file = new File(dir, databaseFilename);
         if (file.exists()){

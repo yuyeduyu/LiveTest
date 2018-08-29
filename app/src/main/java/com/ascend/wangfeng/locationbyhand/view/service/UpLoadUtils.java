@@ -101,7 +101,7 @@ public class UpLoadUtils {
      * created at 2018-08-27 14:35
      */
     public static void UpLoadTest(final Context context, final Handler handler) {
-        if (MyApplication.mDevicdID != null) {
+//        if (MyApplication.mDevicdID != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -123,9 +123,9 @@ public class UpLoadUtils {
                     Looper.loop();
                 }
             }).start();
-        }else {
-            Toast.makeText(context, "请先连接设备", Toast.LENGTH_SHORT).show();
-        }
+//        }else {
+//            Toast.makeText(context, "请先连接设备", Toast.LENGTH_SHORT).show();
+//        }
     }
     private void delectLocalData(String filePath, String fileName) {
         // 上传成功后， 删除手机上的文件

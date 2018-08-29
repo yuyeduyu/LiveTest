@@ -75,10 +75,10 @@ public class MyApplication extends Application {
         if (getVersionNo() % 2 == 1) isDev = true;
         mContext = getBaseContext();
         Config.updateConfig();
-//        if (!isDev) {
-//            CrashHandler crashHandler = CrashHandler.getInstance();
-//            crashHandler.init(getApplicationContext());
-//        }
+        if (!isDev) {
+            CrashHandler crashHandler = CrashHandler.getInstance();
+            crashHandler.init(getApplicationContext());
+        }
         instances = this;
         setDatabase();
         mContext = this;

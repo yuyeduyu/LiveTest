@@ -467,7 +467,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             case 3://电量
                 int vol = getVol(request);
                 RxBus.getDefault().post(new VolEvent(vol));
-                Log.i(TAG, "case: 3");
+                Log.e(TAG, "case: 3"+"   "+vol);
                 break;
             case 4://编号
                 String num = getNumber(request);

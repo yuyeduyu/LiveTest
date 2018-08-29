@@ -1,5 +1,6 @@
 package com.ascend.wangfeng.locationbyhand.util;
 
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.ascend.wangfeng.locationbyhand.R;
@@ -21,6 +22,20 @@ public class PowerImageSet {
             mElectric.setImageResource(R.drawable.power_3);
         }else {
             mElectric.setImageResource(R.drawable.power_4);
+        }
+    }
+
+    public static void setImageForBar(MenuItem mElectric, int power){
+        if (power<20){
+            mElectric.setIcon(R.drawable.power_0);
+        }else if (power<40){
+            mElectric.setIcon(R.drawable.power_1);
+        }else if (power<60){
+            mElectric.setIcon(R.drawable.power_2);
+        }else if (power<80){
+            mElectric.setIcon(R.drawable.power_3);
+        }else {
+            mElectric.setIcon(R.drawable.power_4);
         }
     }
 }

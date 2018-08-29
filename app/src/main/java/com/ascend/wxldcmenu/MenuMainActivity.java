@@ -2,13 +2,17 @@ package com.ascend.wxldcmenu;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,10 +36,13 @@ import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
 import com.ascend.wangfeng.locationbyhand.event.RxBus;
 import com.ascend.wangfeng.locationbyhand.event.ble.AppVersionEvent;
 import com.ascend.wangfeng.locationbyhand.event.ble.ConnectedEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.MessageEvent;
+import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
 import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
@@ -73,6 +80,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -128,6 +136,14 @@ public class MenuMainActivity extends BaseActivity {
     ImageView ivTongji;
     private DaoSession daoSession;
 
+    Runnable runnable = null;//更新电量
+    private Subscription mVolRxBus;
+    private long rate = 5000;//第一次获取电量间隔
+    public static final long VOL_RATE = 5 * 60 * 1000;//获取电量后 每次获取电量时间间隔
+    final static Handler handler = new Handler();
+
+    private MenuItem refreshItem;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,7 +161,7 @@ public class MenuMainActivity extends BaseActivity {
         if (!BuildConfig.isManger)
             initMangerView();
         initService();
-
+        initVol();
         listenConnect();
         initTool();
         if (!MyApplication.isDev) {
@@ -157,7 +173,46 @@ public class MenuMainActivity extends BaseActivity {
         getPermissions();
         //版本更新监测
         AppVersionUitls.checkVersion(this, AppVersionConfig.appVersion
-                , AppVersionConfig.appName, null, MenuMainActivity.class,false);
+                , AppVersionConfig.appName, null, MenuMainActivity.class, false);
+    }
+
+    //更新电量
+    private void initVol() {
+        mVolRxBus = RxBus.getDefault().toObservable(VolEvent.class)         //接受数据
+                //在io线程进行订阅，可以执行一些耗时操作
+                .subscribeOn(Schedulers.io())
+                //在主线程中进行观察，可做UI更新操作
+                .observeOn(AndroidSchedulers.mainThread())
+                //观察的对象   BaseSubcribe<VolEvent>继承Subscriber
+                .subscribe(new BaseSubcribe<VolEvent>() {
+                    @Override
+                    public void onNext(VolEvent event) {
+                        PowerImageSet.setImageForBar(refreshItem, event.getVol());
+                        rate = VOL_RATE;
+                        refreshItem.setVisible(true);
+                    }
+                });
+        //定时获取电量
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+                event.setData("GETVOL");
+                RxBus.getDefault().post(event);
+                handler.postDelayed(this, rate);
+            }
+        };
+
+        handler.post(runnable);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.target, menu);
+        refreshItem = menu.findItem(R.id.refresh);
+        refreshItem.setVisible(false);
+        refreshItem.setTitle("设备电量:");
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -561,6 +616,9 @@ public class MenuMainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        if (runnable != null)
+            handler.removeCallbacks(runnable);
+        if (mVolRxBus != null) mVolRxBus.unsubscribe();
     }
 
     //记录用户首次点击返回键的时间

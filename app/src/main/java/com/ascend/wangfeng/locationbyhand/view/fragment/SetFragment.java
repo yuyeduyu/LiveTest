@@ -377,15 +377,17 @@ public class SetFragment extends BaseFragment implements SetContract.View {
             workmode = (int) SharedPreferencesUtils.getParam(getActivity(), "workmode", 0);
             workModeText.setText(mWorkMode[workmode]);
         }
+        if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
+            //便携式车载采集app 设置界面显示 开站信息
+            kaizhan.setVisibility(View.VISIBLE);
+            mUpPath.setVisibility(View.VISIBLE);
+            ftptest.setVisibility(View.VISIBLE);
+        }
         if (MyApplication.AppVersion == Config.C_MINI) {
             mCollectRadius.setVisibility(View.VISIBLE);
             mUpTime.setVisibility(View.VISIBLE);
             mUpPath.setVisibility(View.VISIBLE);
             ftptest.setVisibility(View.VISIBLE);
-            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-                //便携式车载采集app 设置界面显示 开站信息
-                kaizhan.setVisibility(View.VISIBLE);
-            }
 //            rlLogAll.setVisibility(View.VISIBLE);
         }
         if (MyApplication.AppVersion != Config.C_MINI)

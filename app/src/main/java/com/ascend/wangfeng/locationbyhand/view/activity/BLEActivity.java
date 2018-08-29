@@ -116,7 +116,6 @@ public class BLEActivity extends AppCompatActivity {
                         isKaiZhan(mDevices.get(position));
                     }else {
                         connectBLE(mDevices.get(position));
-
                         finish();
                     }
                 }

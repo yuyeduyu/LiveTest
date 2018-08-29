@@ -48,7 +48,6 @@ public class XYMarkerView extends MarkerView {
         else if (style == 1){
             tvContent.setText("x: " + TimeUtil.formatToHour((long) e.getX()*LineFragment.Multiple)
                     + ", y: " + format.format(e.getY() - 100));
-            LogUtils.e("x",e.getX()+"");
         }
         super.refreshContent(e, highlight);
     }

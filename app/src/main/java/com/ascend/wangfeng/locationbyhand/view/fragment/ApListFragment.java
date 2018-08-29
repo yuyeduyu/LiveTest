@@ -74,8 +74,6 @@ import rx.schedulers.Schedulers;
  */
 public class ApListFragment extends BaseFragment implements
         ApListContract.View, IShowView {
-
-    public static final long VOL_RATE = 5 * 60 * 1000;
     @BindView(R.id.frame_aplist_recycler)
     RecyclerView mFrameAplistRecycler;
     @BindView(R.id.update_time)
@@ -94,9 +92,6 @@ public class ApListFragment extends BaseFragment implements
     private Subscription rxSubFromSearch;
     private Subscription rxElectric;
     private Subscription mVolRxBus;
-    private long rate = 5000;
-    final static Handler handler = new Handler();
-    Runnable runnable = null;
 
     public LoadingDialog loadingDialog; //上传dialog
     @Nullable
@@ -126,6 +121,9 @@ public class ApListFragment extends BaseFragment implements
         initVol();
         initUpload();
         loadingDialog = new LoadingDialog( getActivity() );
+        MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
+        event.setData("GETVOL");
+        RxBus.getDefault().post(event);
     }
 
     //mini 上传
@@ -161,22 +159,8 @@ public class ApListFragment extends BaseFragment implements
                     @Override
                     public void onNext(VolEvent event) {
                         PowerImageSet.setImage(mElectric,event.getVol());
-                        rate=VOL_RATE;
                     }
                 });
-        //定时获取电量
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "run: GETVOL");
-                MessageEvent event = new MessageEvent(MessageEvent.SEND_DATA);
-                event.setData("GETVOL");
-                RxBus.getDefault().post(event);
-                handler.postDelayed(this, rate);
-            }
-        };
-
-        handler.post(runnable);
     }
 
     private void initView() {
@@ -283,8 +267,6 @@ public class ApListFragment extends BaseFragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (runnable != null)
-            handler.removeCallbacks(runnable);
     }
 
 
