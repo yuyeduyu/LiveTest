@@ -42,7 +42,7 @@ public class AllLogAdapter extends RecyclerView.Adapter<AllLogAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         holder.mac.setText(datas.get(position).getMac());
-        holder.time.setText(TimeUtil.getTime(datas.get(position).getLtime()));
+        holder.time.setText(TimeUtil.getTime(datas.get(position).getLtime(),"yy-MM-dd HH:mm:ss"));
         if (MyApplication.getAppVersion() == Config.C_MINI){
             holder.dbm.setText(format(datas.get(position).getDistance()));
             holder.image.setImageResource(getResourceID(datas.get(position).getDistance()));

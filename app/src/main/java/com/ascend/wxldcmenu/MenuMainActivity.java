@@ -2,7 +2,6 @@ package com.ascend.wxldcmenu;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +41,6 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
@@ -114,8 +113,6 @@ public class MenuMainActivity extends BaseActivity {
     LinearLayout about;
     @BindView(R.id.bluestatu)
     TextView bluestatu;
-    @BindView(R.id.loadstatu)
-    TextView loadstatu;
     @BindView(R.id.dev_text)
     TextView devText;
     @BindView(R.id.ll_dev)
@@ -123,7 +120,7 @@ public class MenuMainActivity extends BaseActivity {
     @BindView(R.id.upload_text)
     TextView uploadText;
     @BindView(R.id.rl_upload)
-    RelativeLayout rlUpload;
+    LinearLayout rlUpload;
     @BindView(R.id.iv_collect)
     ImageView ivCollect;
     @BindView(R.id.iv_log)
@@ -134,6 +131,10 @@ public class MenuMainActivity extends BaseActivity {
     ImageView ivFenxi;
     @BindView(R.id.iv_tongji)
     ImageView ivTongji;
+    @BindView(R.id.pb_volue)
+    ProgressBar pbVolue;
+    @BindView(R.id.tv_volue)
+    TextView tvVolue;
     private DaoSession daoSession;
 
     Runnable runnable = null;//更新电量
@@ -141,9 +142,6 @@ public class MenuMainActivity extends BaseActivity {
     private long rate = 5000;//第一次获取电量间隔
     public static final long VOL_RATE = 5 * 60 * 1000;//获取电量后 每次获取电量时间间隔
     final static Handler handler = new Handler();
-
-    private MenuItem refreshItem;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,9 +185,8 @@ public class MenuMainActivity extends BaseActivity {
                 .subscribe(new BaseSubcribe<VolEvent>() {
                     @Override
                     public void onNext(VolEvent event) {
-                        PowerImageSet.setImageForBar(refreshItem, event.getVol());
-                        rate = VOL_RATE;
-                        refreshItem.setVisible(true);
+                        pbVolue.setProgress(event.getVol());
+                        tvVolue.setText(event.getVol()+"%");
                     }
                 });
         //定时获取电量
@@ -205,16 +202,6 @@ public class MenuMainActivity extends BaseActivity {
 
         handler.post(runnable);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.target, menu);
-        refreshItem = menu.findItem(R.id.refresh);
-        refreshItem.setVisible(false);
-        refreshItem.setTitle("设备电量:");
-        return super.onCreateOptionsMenu(menu);
-    }
-
     /**
      * 低权限版本更换主页图标
      *
@@ -359,8 +346,15 @@ public class MenuMainActivity extends BaseActivity {
         if (MyApplication.connectStation) {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
-            bluestatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+            bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
+            bluestatu.setText("已连接");
+            if (MyApplication.ftpConnect) {
+                uploadText.setText("已连接");
+                uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
+            } else {
+                uploadText.setText("连接异常");
+                uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
+            }
             //每天第一次打开app，同步网络布控目标
             if (checkFirst()) {
                 //同步网络布控目标
@@ -371,8 +365,10 @@ public class MenuMainActivity extends BaseActivity {
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
-            bluestatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
+            bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.text3));
+            bluestatu.setText("未连接");
+            uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.text3));
+            uploadText.setText("未连接");
         }
 
         //监听连接状态
@@ -383,8 +379,8 @@ public class MenuMainActivity extends BaseActivity {
                     public void onNext(ConnectedEvent event) {
                         if (event.isConnected()) {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-                            bluestatu.setBackground(
-                                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+                            bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
+                            bluestatu.setText("已连接");
                             setDevText();
                             //重载ap设置的密码
                             Config.reLoadApPassword();
@@ -397,9 +393,8 @@ public class MenuMainActivity extends BaseActivity {
                             }
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
-                            bluestatu.setBackground(
-                                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
-                            devText.setText("未连接");
+                            bluestatu.setText("连接异常");
+                            bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
                         }
                     }
                 });
@@ -408,14 +403,11 @@ public class MenuMainActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void FTPEvent(FTPEvent event) {
         if (event.isContent()) {
-            uploadText.setText("");
-            loadstatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
-            uploadText.setText("正常");
+            uploadText.setText("已连接");
+            uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
         } else {
-            uploadText.setText("连接服务器失败");
-            loadstatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
+            uploadText.setText("连接异常");
+            uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
         }
     }
 
@@ -424,8 +416,8 @@ public class MenuMainActivity extends BaseActivity {
             startActivity(new Intent(this, BLEActivity.class));
         else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-            bluestatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
+            bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
+            bluestatu.setText("已连接");
         }
     }
 
@@ -442,15 +434,7 @@ public class MenuMainActivity extends BaseActivity {
             mToolbar.setTitle(AppVersionConfig.title);
         }
         setDevText();
-        if (MyApplication.ftpConnect) {
-            loadstatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_green));
-            uploadText.setText("正常");
-        } else {
-            uploadText.setText("连接服务器失败");
-            loadstatu.setBackground(
-                    ContextCompat.getDrawable(MenuMainActivity.this, R.drawable.statu_red));
-        }
+
         setSupportActionBar(mToolbar);
 
         RxBus.getDefault().toObservable(AppVersionEvent.class)
@@ -507,14 +491,14 @@ public class MenuMainActivity extends BaseActivity {
                 for (KaiZhanBean dev : devs) {
                     if (dev.getDevCode().equals(MyApplication.mDevicdID)) {
                         devText.setText(dev.getName() + "("
-                                + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID) + ")");
+                                + (MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID) + ")");
                     }
                 }
             } else {
-                devText.setText(MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID);
+                devText.setText(MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID);
             }
         } else
-            devText.setText("编号:" + (MyApplication.mDevicdID == null ? "未连接" : MyApplication.mDevicdID));
+            devText.setText("编号:" + (MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID));
     }
 
     private static String[] PERMISSIONS_STORAGE = {

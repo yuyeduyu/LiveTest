@@ -109,66 +109,6 @@ public class TargetActivity extends AppCompatActivity {
         adapter = new TabMainAdapter(getSupportFragmentManager(), titles, fragments, null);
         vpMyBasic.setAdapter(adapter);
         tabMyBasic.setupWithViewPager(vpMyBasic);
-
-        tabMyBasic.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0)
-                    refreshItem.setVisible(false);
-                else if (tab.getPosition() == 1)
-                    refreshItem.setVisible(true);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //同步网络布控目标
-        showCompareDialog();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showCompareDialog() {
-        final AlertDialog.Builder
-                normalDialog =
-                new AlertDialog.Builder(TargetActivity.this);
-        normalDialog.setTitle("同步布控目标");
-        normalDialog.setMessage("请先确认手机与服务器网络畅通");
-        normalDialog.setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        loadingDialog.show();
-                        getTargetToString();
-                    }
-                });
-        normalDialog.setNegativeButton("关闭",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        //显示
-        normalDialog.show();
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.target, menu);
-        refreshItem = menu.findItem(R.id.refresh);
-        refreshItem.setVisible(false);
-        return super.onCreateOptionsMenu(menu);
     }
 
     private void initView() {
@@ -240,54 +180,5 @@ public class TargetActivity extends AppCompatActivity {
     public interface GetTarget {
         @GET("app/monitor/getRuleCorrelationGroup.do")
         Call<ResponseBody> getTarget();
-    }
-    /**
-     * 同步网络布控目标
-     * @author lish
-     * created at 2018-08-21 16:21
-     */
-    public void getTargetToString(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Config.getTargetUrl())
-                .build();
-        GetTarget service = retrofit.create(GetTarget.class);
-        Call<ResponseBody> call = service.getTarget();
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    targets.clear();
-                    try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        for (int i=0;i<array.length();i++){
-                            JSONObject object = array.getJSONObject(i);
-                            NoteDo note = new NoteDo();
-                            note.setMac(object.getString("valueStr")
-                                    .replaceAll("-",":")
-                                    .toUpperCase());
-                            note.setNote(object.getString("name"));
-                            note.setType(1);
-                            targets.add(note);
-                        }
-                        NoteDoDeal.saveToSqlite(targets);
-                        EventBus.getDefault().post(targets);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("e",e.toString());
-                    }
-                    if (loadingDialog!=null)
-                        loadingDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "onFailure: " + t.getMessage());
-                Toast.makeText(TargetActivity.this,"连接服务器失败",Toast.LENGTH_SHORT).show();
-                if (loadingDialog!=null)
-                    loadingDialog.dismiss();
-            }
-        });
-
     }
 }

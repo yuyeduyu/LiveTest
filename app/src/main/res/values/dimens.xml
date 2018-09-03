@@ -5,4 +5,8 @@
     <dimen name="item_width">72dp</dimen>
     <dimen name="item_height">32dp</dimen>
     <dimen name="margins_20">20dp</dimen>
+    <dimen name="text_18">18sp</dimen>
+    <dimen name="text_16">16sp</dimen>
+    <dimen name="text_14">14sp</dimen>
+    <dimen name="text_12">12sp</dimen>
 </resources>

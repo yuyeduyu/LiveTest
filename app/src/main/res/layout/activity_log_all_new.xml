@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/c4"
+    android:background="@color/layout_backgroud"
     tools:context="com.ascend.wangfeng.locationbyhand.view.activity.LogAllActivity">
 
     <include layout="@layout/custom_toolbar" />
@@ -52,7 +52,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
-            android:background="@color/c2"
+            android:background="@color/view_backgroud"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </in.srain.cube.views.ptr.PtrClassicFrameLayout>

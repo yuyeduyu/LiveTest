@@ -60,17 +60,17 @@ public class UpLoadUtils {
                         e.printStackTrace();
                     }
                     //上传AP数据
-                    FileData fileData = new FileData(context, filePath, fileName + ".apl", aplist, version);
-                    boolean otherLoad1 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".apl");
+                    FileData fileData = new FileData(context, filePath, fileName + ".carapl", aplist, version);
+                    boolean otherLoad1 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carapl");
                     //上传终端数据
-                    FileData staFile = new FileData(context, filePath, fileName + ".log", stalist, version, 1);
-                    boolean otherLoad2 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".log");
+                    FileData staFile = new FileData(context, filePath, fileName + ".carmac", stalist, version, 1);
+                    boolean otherLoad2 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carmac");
                     //上传连接数据
-                    FileData ScFile = new FileData(context, filePath, fileName + ".net", sclist, version, "1");
-                    boolean otherLoad3 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".net");
+                    FileData ScFile = new FileData(context, filePath, fileName + ".carnet", sclist, version, "1");
+                    boolean otherLoad3 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carnet");
                     //上传GPS轨迹的坐标
-                    FileData GpsFile = new FileData(context, filePath, fileName + ".gps", gpslist, version, "", 1);
-                    boolean otherLoad4 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".gps");
+                    FileData GpsFile = new FileData(context, filePath, fileName + ".cargps", gpslist, version, "", 1);
+                    boolean otherLoad4 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".cargps");
                     EventBus.getDefault().post(new FTPEvent(true));
                     MyApplication.ftpConnect = true;
 
@@ -78,18 +78,18 @@ public class UpLoadUtils {
                             , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);
                     FTPClient ourFtpClient = ourFtpClientData.ftpConnect();
                     //上传AP数据
-                    boolean ourLoad1 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".apl");
+                    boolean ourLoad1 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carapl");
                     //上传终端数据
-                    boolean ourLoad2 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".log");
+                    boolean ourLoad2 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carmac");
                     //上传连接数据
-                    boolean ourLoad3 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".net");
+                    boolean ourLoad3 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carnet");
                     //上传GPS轨迹的坐标
-                    boolean ourLoad4 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".gps");
+                    boolean ourLoad4 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".cargps");
 
-                    if (otherLoad1 & ourLoad1) delectLocalData(filePath,fileName + ".apl");
-                    if (otherLoad2 & ourLoad2) delectLocalData(filePath,fileName + ".log");
-                    if (otherLoad3 & ourLoad3) delectLocalData(filePath,fileName + ".net");
-                    if (otherLoad4 & ourLoad4) delectLocalData(filePath,fileName + ".gps");
+                    if (otherLoad1 & ourLoad1) delectLocalData(filePath,fileName + ".carapl");
+                    if (otherLoad2 & ourLoad2) delectLocalData(filePath,fileName + ".carmac");
+                    if (otherLoad3 & ourLoad3) delectLocalData(filePath,fileName + ".carnet");
+                    if (otherLoad4 & ourLoad4) delectLocalData(filePath,fileName + ".cargps");
                 }
 
             }).start();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#03A9F4</color>
-    <color name="primary_dark">#0288D1</color>
+    <color name="primary">#422ef9</color>
+    <color name="primary_dark">#3B29DF</color>
     <color name="primary_light">#B3E5FC</color>
     <color name="accent">#ffff00</color>
     <color name="primary_text">#212121</color>
@@ -44,13 +44,17 @@
     <color name="target">#fdfd01</color>
     <color name="sta">#a5a5a5</color>
 
-    <color name="text1">#333333</color>
+    <color name="text1">#222222</color>
     <color name="text2">#666666</color>
+    <color name="text3">#999999</color>
+    <color name="layout_backgroud">#f8f8f8</color>
+    <color name="view_backgroud">#ffffff</color>
     <color name="c13">#de1e7c</color>
     <color name="c4">#dddddd</color>
     <color name="c3">#eeeeee</color>
     <color name="c2">#f2f2f2</color>
     <color name="c1">#f8f8f8</color>
+    <color name="statu_red">#ef0000</color>
 
     <color name="timeTitle">#59B29C</color>
 </resources>

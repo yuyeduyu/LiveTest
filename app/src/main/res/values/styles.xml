@@ -28,8 +28,10 @@
         <!--图标颜色-->
         <item name="android:textColorSecondary">#ffffff</item>
         <!--下拉菜单背景-->
-        <item name="android:colorBackground">@color/primary_dark</item>
-
+        <!--<item name="android:colorBackground">@color/primary_dark</item>-->
+        <!--<item name="android:textSize">@dimen/text_18</item>-->
+        <item name="buttonGravity">top</item>
+        <item name="android:textColor">@color/text1</item>
     </style>
 
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -157,7 +159,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">8dp</item>
-        <item name="android:textColor">#333333</item>
+        <item name="android:textColor">#7c7a7d</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -170,4 +172,20 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
+    <style name="text_title_16">
+        <item name="android:textColor">@color/text1</item>
+        <item name="android:textSize">@dimen/text_16</item>
+    </style>
+    <style name="text_16">
+        <item name="android:textColor">@color/text2</item>
+        <item name="android:textSize">@dimen/text_14</item>
+    </style>
+    <style name="text_title_14">
+        <item name="android:textColor">@color/text1</item>
+        <item name="android:textSize">@dimen/text_14</item>
+    </style>
+    <style name="text_14">
+        <item name="android:textColor">@color/text2</item>
+        <item name="android:textSize">@dimen/text_14</item>
+    </style>
 </resources>

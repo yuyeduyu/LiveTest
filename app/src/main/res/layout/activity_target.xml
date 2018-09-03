@@ -19,12 +19,12 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             app:tabMode="fixed"
-            android:background="@color/c4"
-            app:tabIndicatorColor="@color/c4"
+            android:background="@color/layout_backgroud"
+            app:tabIndicatorColor="@color/layout_backgroud"
             app:tabTextColor="@color/secondary_text"
-            app:tabSelectedTextColor="@color/blue" />
+            app:tabSelectedTextColor="@color/primary" />
 
-        <com.ascend.wangfeng.locationbyhand.view.myview.NoSrcollViewPage
+        <android.support.v4.view.ViewPager
             android:id="@+id/vp_my_basic"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/layout_backgroud"
     android:orientation="vertical">
 
     <!--toolbar-->
@@ -11,10 +12,151 @@
         layout="@layout/custom_toolbar"></include>
 
     <LinearLayout
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/ll_dev"
+            style="@style/set_text"
+            android:layout_height="44dp">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="设备状态"
+                android:textColor="@color/text1"
+                android:textSize="@dimen/text_14" />
+
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/arrow_right" />
+
+            <TextView
+                android:id="@+id/dev_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:layout_toLeftOf="@id/iv_arrow"
+                android:textColor="@color/text1"
+                android:textSize="@dimen/text_14"
+                tools:text="设备编号" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/view_backgroud"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设备连接状态:"
+                    android:textColor="@color/text3"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/bluestatu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="未连接"
+                    android:textColor="@color/text3"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="电量情况:"
+                    android:textColor="@color/text3"
+                    android:textSize="12sp" />
+
+                <ProgressBar
+                    android:id="@+id/pb_volue"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="6dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/progress_bar_layer_list"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tv_volue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    tools:text="10%" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rl_upload"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:background="@color/view_backgroud"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="服务器连接状态:"
+                android:textColor="@color/text3"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/upload_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="未连接"
+                android:textColor="@color/text3"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingTop="20dp"
         android:layout_weight="1"
+        android:background="@color/view_backgroud"
         android:orientation="vertical">
 
         <LinearLayout
@@ -69,13 +211,6 @@
                     style="@style/superview_item_text"
                     android:text="布控目标" />
             </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
             <LinearLayout
                 android:id="@+id/ll_fenxi"
                 style="@style/superview_item_layout"
@@ -91,6 +226,14 @@
                     style="@style/superview_item_text"
                     android:text="数据分析" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <LinearLayout
                 android:id="@+id/ll_tongji"
                 style="@style/superview_item_layout"
@@ -125,9 +268,9 @@
 
             <LinearLayout
                 android:id="@+id/about"
-                android:visibility="gone"
                 style="@style/superview_item_layout"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:visibility="invisible">
 
                 <ImageView
                     android:layout_width="45dp"
@@ -143,7 +286,7 @@
             <LinearLayout
                 style="@style/superview_item_layout"
                 android:layout_weight="1"
-                android:visibility="gone">
+                android:visibility="invisible">
 
                 <ImageView
                     android:layout_width="45dp"
@@ -157,88 +300,4 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/divider" />
-
-        <RelativeLayout
-            android:id="@+id/ll_dev"
-            style="@style/set_text">
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="设备状态"
-                android:textColor="@color/text1"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/dev_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="100dp"
-                android:background="@null"
-                tools:text="设备编号" />
-
-            <TextView
-                android:id="@+id/bluestatu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/statu_red" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/gray" />
-        </RelativeLayout>
-
-        <RelativeLayout style="@style/set_text"
-            android:id="@+id/rl_upload"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="服务器状态"
-                android:textColor="@color/text1"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/upload_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="100dp"
-                android:background="@null"
-                tools:text="上传失败" />
-
-            <TextView
-                android:id="@+id/loadstatu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/statu_red" />
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/divider" />
-    </LinearLayout>
 </LinearLayout>

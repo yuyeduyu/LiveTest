@@ -75,6 +75,7 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
         BluetoothLeClass.OnServiceDiscoverListener, BluetoothLeClass.OnDataAvailableListener {
     private final static String TAG = BleService.class.getSimpleName();
     private final static String UUID_KEY_DATA = "0000ffe1-0000-1000-8000-00805f9b34fb";
+//    private final static String NEW_UUID_KEY_DATA = "1-0000-1000-8000-00805f9b34fb";
     private static final long SCAN_PERIOD = 10000;
     private static final byte SEPARATOR_START = 0x1a;
     private static final byte SEPARATOR_END = 0x1b;

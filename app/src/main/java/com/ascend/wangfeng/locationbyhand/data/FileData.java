@@ -100,7 +100,7 @@ public class FileData {
             raf = new RandomAccessFile(file, "rwd");           //对文件内容进行操作
 
             if (haveTitle){
-                strContent = "asd_iwm_02," + getMobileMAC() + "," + version+ ","+ MyApplication.mDevicdID+","+"211.211.211.211," + "\n";
+                strContent = "asd_iwm_02," + MyApplication.mDevicdMac.replaceAll(":","") + "," + version+ ","+ MyApplication.mDevicdID+","+"211.211.211.211," + "\n";
 //            Log.e(TAG,"头行信息:"+strContent+"    手机MAC地址："+getLocalMacAddressFromIp());
                 raf.seek(file.length());
                 raf.write(strContent.getBytes());

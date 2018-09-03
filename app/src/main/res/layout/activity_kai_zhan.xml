@@ -99,6 +99,7 @@
                         android:imeOptions="actionNext"
                         android:singleLine="true"
                         android:textSize="16sp"
+                        android:hint="请输入姓名"
                         android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
@@ -121,6 +122,7 @@
                         android:imeOptions="actionNext"
                         android:singleLine="true"
                         android:textSize="16sp"
+                        android:hint="请输入身份证或警号(选填)"
                         android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
@@ -143,6 +145,7 @@
                         android:inputType="phone"
                         android:imeOptions="actionNext"
                         android:textSize="16sp"
+                        android:hint="请输入手机号"
                         android:singleLine="true"
                         android:layout_gravity="center_vertical" />
                 </LinearLayout>
@@ -165,6 +168,7 @@
                         android:layout_height="wrap_content"
                         android:singleLine="true"
                         android:textSize="16sp"
+                        android:hint="请输入设备所属民警(选填)"
                         android:layout_gravity="center_vertical" />
                 </LinearLayout>
 

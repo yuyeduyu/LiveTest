@@ -9,12 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anye.greendao.gen.NoteDoDao;
 import com.ascend.wangfeng.locationbyhand.Config;
@@ -24,11 +26,13 @@ import com.ascend.wangfeng.locationbyhand.adapter.MyItemDecoration;
 import com.ascend.wangfeng.locationbyhand.adapter.SwipeAdapter;
 import com.ascend.wangfeng.locationbyhand.bean.NoteDoDeal;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
+import com.ascend.wangfeng.locationbyhand.dialog.LoadingDialog;
 import com.ascend.wangfeng.locationbyhand.dialog.TargetSetDialog;
 import com.ascend.wangfeng.locationbyhand.util.DaoUtils;
 import com.ascend.wangfeng.locationbyhand.util.RegularExprssion;
 import com.ascend.wangfeng.locationbyhand.view.activity.LogActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.SelectPositionActivity;
+import com.ascend.wangfeng.locationbyhand.view.activity.TargetActivity;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -39,7 +43,10 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,6 +54,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * 目标Ap设置界面
@@ -70,7 +82,7 @@ public class TargetFragment extends Fragment {
 
     private int type = 0;//0:本地布控，1:网络布控
     private NoteDoDao noteDoDao;
-
+    public LoadingDialog loadingDialog; //上传dialog
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_target, container, false);
@@ -86,8 +98,9 @@ public class TargetFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (type == 1) mBtn.setVisibility(View.GONE);//网络布控，则隐藏添加布控按钮
+        if (type == 1) mBtn.setText("同步网络布控");//网络布控
         noteDoDao = MyApplication.instances.getDaoSession().getNoteDoDao();
+        loadingDialog = new LoadingDialog(getActivity());
         initialData();
         initialLisener();
         initialView();
@@ -96,7 +109,7 @@ public class TargetFragment extends Fragment {
 
     private void initialData() {
         mList = MyApplication.getmNoteDos();
-        localList = noteDoDao.queryBuilder().where(NoteDoDao.Properties.Type.eq(type)).list();
+        localList = new ArrayList<>();
         comparator = new Comparator<NoteDo>() {
             @Override
             public int compare(NoteDo noteVo, NoteDo t1) {
@@ -104,8 +117,16 @@ public class TargetFragment extends Fragment {
             }
         };
         Collections.sort(localList, comparator);
-        adapter = new SwipeAdapter(localList);
+        adapter = new SwipeAdapter(getActivity(),localList);
         mOrderByMac.setTextColor(ContextCompat.getColor(getActivity(), R.color.primary));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        localList.clear();
+        localList.addAll(noteDoDao.queryBuilder().where(NoteDoDao.Properties.Type.eq(type)).list());
+        adapter.notifyDataSetChanged();
     }
 
     private void initialLisener() {
@@ -187,7 +208,7 @@ public class TargetFragment extends Fragment {
 
         mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mRecycler.setSwipeMenuCreator(swipeMenuCreator);
+//        mRecycler.setSwipeMenuCreator(swipeMenuCreator);
         mRecycler.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
             public void onItemClick(Closeable closeable, final int adapterPosition, int menuPosition, int direction) {
@@ -247,8 +268,8 @@ public class TargetFragment extends Fragment {
                             startActivity(intent);
                             break;
                         case 3:
-                                //快速侦测
-                                TargetSetDialog.showFastScanDialog(getActivity(), localList.get(adapterPosition).getMac());
+                            //快速侦测
+                            TargetSetDialog.showFastScanDialog(getActivity(), localList.get(adapterPosition).getMac());
 //                            else
 //                                //定位
 //                                startActivity(new Intent(getActivity(), SelectPositionActivity.class)
@@ -267,12 +288,93 @@ public class TargetFragment extends Fragment {
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addDialog.show();
+                if (type == 0)
+                    //本地布控，添加布控目标
+                    addDialog.show();
+                else if (type == 1)
+                    //网络布控，同步数据
+                    showCompareDialog();
             }
         });
 
     }
+    private void showCompareDialog() {
+        final AlertDialog.Builder
+                normalDialog =
+                new AlertDialog.Builder(getActivity());
+        normalDialog.setTitle("同步布控目标");
+        normalDialog.setMessage("请先确认手机与服务器网络畅通");
+        normalDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        loadingDialog.show();
+                        getTargetToString();
+                    }
+                });
+        normalDialog.setNegativeButton("关闭",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        //显示
+        normalDialog.show();
+    }
+    /**
+     * 同步网络布控目标
+     * @author lish
+     * created at 2018-08-21 16:21
+     */
+    public void getTargetToString(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Config.getTargetUrl())
+                .build();
+        TargetActivity.GetTarget service = retrofit.create(TargetActivity.GetTarget.class);
+        Call<ResponseBody> call = service.getTarget();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    localList.clear();
+                    try {
+                        JSONArray array = new JSONArray(response.body().string());
+                        for (int i=0;i<array.length();i++){
+                            JSONObject object = array.getJSONObject(i);
+                            NoteDo note = new NoteDo();
+                            note.setMac(object.getString("valueStr")
+                                    .replaceAll("-",":")
+                                    .toUpperCase());
+                            note.setNote(object.getString("name"));
+                            note.setType(1);
+                            localList.add(note);
+                        }
+                        NoteDoDeal.saveToSqlite(localList);
+                        Collections.sort(localList, comparator);
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+                                adapter.notifyDataSetChanged();
+//                            }
+//                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("e",e.toString());
+                    }
+                    if (loadingDialog!=null)
+                        loadingDialog.dismiss();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getActivity(),"连接服务器失败",Toast.LENGTH_SHORT).show();
+                if (loadingDialog!=null)
+                    loadingDialog.dismiss();
+            }
+        });
+
+    }
     public void show(String message) {
         Snackbar.make(mBtn, message, Snackbar.LENGTH_SHORT).show();
     }
@@ -321,9 +423,10 @@ public class TargetFragment extends Fragment {
         frag.setArguments(args);
         return frag;
     }
+
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onEvent(List<NoteDo> datas) {
-        if (localList!=null){
+        if (localList != null) {
             localList.clear();
             localList.addAll(datas);
             Collections.sort(localList, comparator);

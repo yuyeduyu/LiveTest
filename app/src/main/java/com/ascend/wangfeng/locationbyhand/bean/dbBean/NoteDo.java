@@ -4,13 +4,15 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
 
+import java.io.Serializable;
+
 /**
  * Created by fengye on 2017/8/12.
  * email 1040441325@qq.com
  * 布控目标
  */
 @Entity
-public class NoteDo {
+public class NoteDo implements Serializable {
     @Id(autoincrement = true)
     private Long id;
     private String note;
