@@ -168,8 +168,8 @@ public class LogActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface anInterface, int i) {
                         LogDao dao = MyApplication.getInstances().getDaoSession().getLogDao();
-                        for (Log log : mList) {
-                            dao.delete(log);
+                        for(int j=1;j<mList.size();j++) {
+                            dao.delete(mList.get(j));
                         }
                         mList.clear();
                         adapter.notifyDataSetChanged();

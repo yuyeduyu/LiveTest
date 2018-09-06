@@ -192,9 +192,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             }
         }
     }
-
-
-
     // 初始化写线程
     private void initWriteThread() {
         ExecutorService pool = Executors.newFixedThreadPool(1);

@@ -56,9 +56,9 @@ android {
 
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
         }
-        menu {
+        menuH {
             applicationId "com.ascend.wangfeng.wxld.menu"
-            manifestPlaceholders = [app_name: "便携式移动采集"]
+            manifestPlaceholders = [app_name: "便携式移动采集H"]
             buildConfigField "String", "appTitle", "\"便携式移动采集\""
             buildConfigField "String", "title", "\"便携式移动采集\""
             buildConfigField "String", "appVersion", "\"wxldMenuVersion.txt\""
@@ -72,6 +72,23 @@ android {
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
 
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
+        }
+        menuL {
+            applicationId "com.ascend.wangfeng.wxld.menuL"
+            manifestPlaceholders = [app_name: "便携式移动采集L"]
+            buildConfigField "String", "appTitle", "\"便携式移动采集\""
+            buildConfigField "String", "title", "\"便携式移动采集\""
+            buildConfigField "String", "appVersion", "\"wxldMenuVersionL.txt\""
+            buildConfigField "String", "appName", "\"app-menuL-release.apk\""
+            buildConfigField "String", "AppName", "\"便携式移动采集\""
+
+            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "int", "UpLoadFtpPort", "21"//端口号
+            buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
+            buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
+            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+
+            buildConfigField "boolean", "isManger", "false"//权限管理  true 高权限 flase 低权限
         }
         menutaizhouH {
             applicationId "com.ascend.wangfeng.wxld.menu.taizhouh"

@@ -180,8 +180,6 @@ public class MainService extends Service implements MainServiceContract.View, Sh
                             saveCount++;
                         }
                         try {
-//                            maintainData(data);
-//                            saveToSqlite(mApVos, mStaVos);
                             checkRing();
                             //发送数据
                             updateData(mApVos, mStaVos);
@@ -190,16 +188,6 @@ public class MainService extends Service implements MainServiceContract.View, Sh
                         } catch (Exception e) {
                             Log.e(TAG, "onNext: " + e.getMessage());
                         }
-
-
-/*=======
-                        }
-                        checkRing();
-                        //发送数据
-                        updateData(mApVos, mStaVos);
-                        toLineData();
-                        toListData();
->>>>>>> wxldMini*/
                     }
                 });
         mCommand = RxBus.getDefault().toObservable(MainServiceEvent.class)

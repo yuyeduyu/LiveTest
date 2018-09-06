@@ -42,12 +42,12 @@ public class XYMarkerView extends MarkerView {
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
         if (style == 0){
-            tvContent.setText("x: " + TimeUtil.formatToHour((long) e.getX())
-                    + ", y: " + format.format(e.getY()));
+            tvContent.setText("时间: " + TimeUtil.formatToHour((long) e.getX())
+                    + "\n信号强度: " + format.format(e.getY()));
         }
         else if (style == 1){
-            tvContent.setText("x: " + TimeUtil.formatToHour((long) e.getX()*LineFragment.Multiple)
-                    + ", y: " + format.format(e.getY() - 100));
+            tvContent.setText("时间: " + TimeUtil.formatToHour((long) e.getX()*LineFragment.Multiple)
+                    + "\n信号强度: " + format.format(e.getY() - 100));
         }
         super.refreshContent(e, highlight);
     }

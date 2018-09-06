@@ -113,7 +113,7 @@ public class KaiZhanActivity extends BaseActivity {
     protected void initView() {
         EventBus.getDefault().register(this);
         getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        mToolbar.setTitle("开站信息采集");
+        mToolbar.setTitle("开站信息");
         mToolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

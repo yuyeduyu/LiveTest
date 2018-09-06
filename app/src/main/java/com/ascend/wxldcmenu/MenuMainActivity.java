@@ -487,9 +487,9 @@ public class MenuMainActivity extends BaseActivity {
     private void setDevText() {
         if (BuildConfig.AppName.equals("便携式移动采集")) {
             List<KaiZhanBean> devs = SharedPreferencesUtil.getList(MenuMainActivity.this, "kaizhan");
-            if (devs != null & MyApplication.mDevicdID != null) {
+            if (devs != null & MyApplication.mDevicdMac != null) {
                 for (KaiZhanBean dev : devs) {
-                    if (dev.getDevCode().equals(MyApplication.mDevicdID)) {
+                    if (dev.getMac().equals(MyApplication.mDevicdMac)) {
                         devText.setText(dev.getName() + "("
                                 + (MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID) + ")");
                     }
