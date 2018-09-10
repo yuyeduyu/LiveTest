@@ -464,6 +464,14 @@ public class MainService extends Service implements MainServiceContract.View, Sh
     @Override
     public void updateData(List<ApVo> aps, List<StaVo> stas) {
         //发送数据
+        for (int i=0;i<aps.size();i++){
+            int num =0;
+            for (int j=0;j<stas.size();j++){
+                if (aps.get(i).getBssid().equals(stas.get(j).getApmac()))
+                    num++;
+            }
+            aps.get(i).setStas(num);
+        }
         RxBus.getDefault().post(new ApListEvent(aps));
         RxBus.getDefault().post(new StaListEvent(stas));
 

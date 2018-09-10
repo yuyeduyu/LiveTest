@@ -63,6 +63,18 @@ public class StaListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
                 holder.img.setBackgroundResource(R.mipmap.sam);
             } else if (data.getOui().indexOf("Xiaomi") > -1) {
                 holder.img.setBackgroundResource(R.mipmap.xiaomi);
+            }else if (data.getOui().indexOf("Lenovo") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.lianxiang);
+            }else if (data.getOui().indexOf("MEIZU") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.meizu);
+            }else if (data.getOui().indexOf("Nokia") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.nuojiya);
+            }else if (data.getOui().indexOf("SONY") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.suoni);
+            }else if (data.getOui().indexOf("zte corporation") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.zhongxing);
+            }else if (data.getOui().indexOf("Vivo") > -1||data.getOui().indexOf("vivo") > -1) {
+                holder.img.setBackgroundResource(R.mipmap.vivo);
             } else {
                 holder.img.setBackgroundResource(R.mipmap.phone);
             }

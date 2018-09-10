@@ -71,8 +71,6 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     public static final String NOMAC = "00:00:00:00:00:00";
     @BindView(R.id.title)
     TextView mTitle;
-    @BindView(R.id.name_title)
-    TextView mNameTitle;
     @BindView(R.id.ApName)
     TextView mApName;
     @BindView(R.id.ltime)
@@ -92,6 +90,12 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     LinearLayout mVIdLayout;
     @BindView(R.id.chart1)
     BarChart BarChart;
+    @BindView(R.id.ll_ap)
+    LinearLayout llAp;
+    @BindView(R.id.ll_nobarchart)
+    TextView llNobarchart;
+    @BindView(R.id.tv_note)
+    TextView tvNote;
     private String mac;
     private Integer type;
     private LinePresenterImpl mPresenter;
@@ -109,6 +113,7 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     private List<TagLog> logs;
     private boolean isTag;//是否是布控目标
     ArrayList<BarEntry> barChartData = new ArrayList<BarEntry>();
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -137,8 +142,9 @@ public class LineFragment extends BaseFragment implements LineContract.View {
                     public void onNext(LineEvent event) {
                         if (type == 0)
                             updateAp(event.getApVo());
-                        else
+                        else {
                             updateSta(event.getStaVo());
+                        }
                     }
                 });
     }
@@ -147,6 +153,15 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         Intent intent = getActivity().getIntent();
         mac = intent.getStringExtra("mac");
         type = intent.getIntExtra("type", 0);
+        if (type==0){
+            ApVo apVo = (ApVo) intent.getSerializableExtra("ap");
+            setApTitle(apVo);
+        }else if (type==1){
+            llAp.setVisibility(View.VISIBLE);
+            StaVo staVo = (StaVo) intent.getSerializableExtra("sta");
+            setStaVoTitle(staVo);
+        }
+
         //mPresenter = new LinePresenterImpl(this);
         initMapSeries();
     }
@@ -154,8 +169,9 @@ public class LineFragment extends BaseFragment implements LineContract.View {
     private void initView() {
         initMap();
         //布控目标则显示最近一个小时采集信号
-        if (isTag){
+        if (isTag) {
             BarChart.setVisibility(View.VISIBLE);
+            llNobarchart.setVisibility(View.GONE);
             long time = System.currentTimeMillis();
             logs = logDao
                     .queryBuilder()
@@ -163,12 +179,12 @@ public class LineFragment extends BaseFragment implements LineContract.View {
                             TagLogDao.Properties.Ltime.between(time - 3600 * 1000, time))
                     .orderAsc(TagLogDao.Properties.Ltime)
                     .list();
-            LogUtils.e("tagLogs",logs.size()+"");
+            LogUtils.e("tagLogs", logs.size() + "");
             initBraChart();
-        }
+        } else llNobarchart.setVisibility(View.INVISIBLE);
         //oui匹配信息
-        String re = OuiDatabase.ouiMatch(mac);
-        mMessage.setText(re + "");
+        String re = OuiDatabase.ouiMatch(mac).trim();
+        mMessage.setText("生产厂商    " + re + "");
     }
 
     @Override
@@ -369,15 +385,25 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         //若两次数据是同一时间采集,无需更新
         if (lastTime == data.getLtime()) return;
         lastTime = data.getLtime();
-        mTitle.setText(data.getBssid() + (data.isTag() ? "(" + data.getNote() + ")" : ""));
-        mApName.setText(data.getEssid() + "");
-        mMac.setText(data.getBssid() + "");
-        mChannel.setText(data.getChannel() + "");
-        mSignal.setText(data.getSignal() + "dBm");
+        setApTitle(data);
+        update(lastTime, data.getSignal());
+    }
+
+    private void setApTitle(ApVo data) {
+        mTitle.setText("MAC:  " + data.getBssid());
+        if (data.getNote()!=null){
+            if (!data.getNote().equals("")){
+                tvNote.setVisibility(View.VISIBLE);
+                tvNote.setText(data.getNote());
+            }
+        }else tvNote.setVisibility(View.GONE);
+        mApName.setText("AP名称       " + data.getEssid() + "");
+        mMac.setText("AP-MAC    " + data.getBssid() + "");
+        mChannel.setText("信道  " + data.getChannel() + "");
+        mSignal.setText("强度:  " + data.getSignal() + "dBm");
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
-        mLtime.setText(time + "");
-        update(lastTime, data.getSignal());
+        mLtime.setText("更新时间    " + time + "");
     }
 
 
@@ -386,34 +412,44 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         //若两次数据是同一时间采集,无需更新
         if (lastTime == data.getLtime()) return;
         lastTime = data.getLtime();
-        mTitle.setText(data.getMac() + (data.isTag() ? "(" + data.getNote() + ")" : ""));
+        setStaVoTitle(data);
+        //显示虚拟身份图标
+        initVirtualIdentity(data);
+        update(lastTime, data.getSignal());
+    }
+
+    private void setStaVoTitle(StaVo data) {
+        mTitle.setText("MAC:  " + data.getMac());
+        if (data.getNote()!=null){
+            if (!data.getNote().equals("")){
+                tvNote.setVisibility(View.VISIBLE);
+                tvNote.setText(data.getNote());
+            }
+        }else tvNote.setVisibility(View.GONE);
         if ("00:00:00:00:00:00".equals(data.getApmac())) {
             //未连接
-            mApName.setText("未连接");
-            mMac.setText("无");
-            mChannel.setText("无");
+            mApName.setText("AP名称       " + "未连接");
+            mMac.setText("AP-MAC    " + "无");
+            mChannel.setText("信道  " + "无");
 
         } else {
             if (data.getApmac().equals(NOMAC)) {
                 //有连接信息，但Ap不在范围内，无ap信息
-                mApName.setText("未知");
-                mMac.setText(data.getApmac() + "");
-                mChannel.setText("无");
+                mApName.setText("AP名称       " + "未知");
+                mMac.setText("AP-MAC    " + data.getApmac() + "");
+                mChannel.setText("信道  " + "无");
 
             } else {
                 //正常情况
-                mApName.setText(data.getEssid());
-                mMac.setText(data.getApmac() + "");
-                mChannel.setText(data.getChannel() + "");
+                mApName.setText("AP名称       " + data.getEssid());
+                mMac.setText("AP-MAC    " + data.getApmac() + "");
+                mChannel.setText("信道  " + data.getChannel() + "");
             }
         }
-        //显示虚拟身份图标
-        initVirtualIdentity(data);
-        mSignal.setText(data.getSignal() + "dBm");
+        mSignal.setText("强度:  " + data.getSignal() + "dBm");
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
-        mLtime.setText(time);
-        update(lastTime, data.getSignal());
+        mLtime.setText("更新时间    " + time);
     }
 
     /**
@@ -500,14 +536,11 @@ public class LineFragment extends BaseFragment implements LineContract.View {
         }
         mLineChart.setVisibleXRangeMaximum(mLineChart.getData().getXMax());
         //刷新柱状图
-        barChartData.add(new BarEntry(TimeUtil.formatToTime(lastTime/ Multiple), 100 + signal));
+        barChartData.add(new BarEntry(TimeUtil.formatToTime(lastTime / Multiple), 100 + signal));
 
-        LogUtils.e("mult",TimeUtil.formatToHour((long) TimeUtil.formatToTime(lastTime/ Multiple) * Multiple));
+//        LogUtils.e("mult", TimeUtil.formatToHour((long) TimeUtil.formatToTime(lastTime / Multiple) * Multiple));
 
         setData(barChartData);
-//        BarChart.notifyDataSetChanged();
         BarChart.invalidate();
-//        BarChart.setVisibleXRangeMaximum(BarChart.getData().getXMax());
     }
-
 }

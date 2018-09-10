@@ -159,8 +159,6 @@ public class VersionUpdateService extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//                downApk(this,appName);
-//                downloadApk();
         }
 
         return super.onStartCommand(intent, flags, startId);

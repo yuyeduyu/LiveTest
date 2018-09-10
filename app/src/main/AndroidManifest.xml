@@ -114,8 +114,8 @@
         <activity android:name=".view.activity.StatisticsActivity" />
         <activity
             android:name=".keeplive.LiveActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/LiveStyle" />
-
         <service android:name=".keeplive.LiveService" />
         <service android:name=".util.versionUpdate.VersionUpdateService" />
 

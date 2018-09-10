@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/c4"
+    android:background="@color/layout_backgroud"
     android:orientation="vertical">
 
     <include layout="@layout/custom_toolbar" />
@@ -18,12 +18,14 @@
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/bar_chart"
         android:layout_width="match_parent"
+        android:background="@color/view_backgroud"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_margin="8dp" />
 
     <LinearLayout
         android:id="@+id/ll_ap"
+        android:background="@color/view_backgroud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -55,7 +57,7 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/c2"
+            android:background="@color/view_backgroud"
             android:clickable="true"
             android:fadeScrollbars="true"
             android:fadingEdge="none"

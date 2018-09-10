@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/layout_backgroud"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
@@ -11,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/view_backgroud"
+        android:background="@color/layout_backgroud"
         tools:context=".view.activity.TargetActivity">
 
         <LinearLayout
@@ -42,18 +40,48 @@
             android:layout_height="1dp"
             android:background="@color/gray" />
 
-        <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
+       <!-- <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/view_backgroud"
+            android:layout_marginBottom="12dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right|center_vertical"
+                android:text="添加目标"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/imgap"/>
+        </LinearLayout>-->
+
+      <!--  <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
             android:id="@+id/recycler"
             android:background="@color/view_backgroud"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="8"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>
+            android:layout_weight="1"
+            android:layout_height="match_parent"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:background="@color/view_backgroud"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
         <Button
             android:id="@+id/btn"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/button_bg"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:text="添加目标" />
     </LinearLayout>
 </RelativeLayout>

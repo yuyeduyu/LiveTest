@@ -175,6 +175,7 @@ public class StaListFragment extends BaseFragment
                 intent.putExtra("type", 1);
                 intent.putExtra("channel", mData.get(position).getChannel());
                 intent.putExtra("tag", mData.get(position).isTag());        //是否是布控目标
+                intent.putExtra("sta", mData.get(position));
                 startActivity(intent);
 
             }

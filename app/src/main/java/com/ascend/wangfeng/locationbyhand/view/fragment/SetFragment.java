@@ -128,8 +128,6 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout rlLogAll;
     @BindView(R.id.tongji)
     RelativeLayout tongji;
-    @BindView(R.id.view)
-    View view;
     @BindView(R.id.kaizhan)
     RelativeLayout kaizhan;
     @BindView(R.id.ftptest)

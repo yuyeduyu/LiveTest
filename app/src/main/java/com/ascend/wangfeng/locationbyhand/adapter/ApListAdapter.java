@@ -48,7 +48,8 @@ public class ApListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
 
 //        holder.img.setBackgroundResource(R.drawable.icon_wifi);
         if (MyApplication.mGhz == Ghz.G24) {
-            holder.tv_ghz.setText("2.4G");
+//            holder.tv_ghz.setText("2.4G");
+            holder.tv_ghz.setText("信道  "+data.getChannel());
         } else {
             holder.tv_ghz.setText("5.8G");
         }
@@ -64,6 +65,7 @@ public class ApListAdapter extends RecyclerView.Adapter<ApListViewHolder> {
         SimpleDateFormat format =  new SimpleDateFormat("HH:mm:ss");
         String time = format.format(data.getLtime());
         holder.time.setText(time + "");
+        holder.tv_img.setText(data.getStas()+"");
         if (Config.getApPasswordMac()!=null&& Config.getApPasswordMac().equals(data.getBssid())){
             holder.mShowPasswordImg.setVisibility(View.VISIBLE);
         }else {

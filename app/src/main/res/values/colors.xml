@@ -29,6 +29,7 @@
     <color name="blue_tran_0">#000288D1</color>
     <color name="yellow">#FFC107</color>
     <color name="orange">#e17824</color>
+    <color name="bg_orange">#ff9920</color>
     <color name="green">#3ece59</color>
     <color name="green_tran_30">#333ece59</color>
     <color name="green_tran">#003ece59</color>

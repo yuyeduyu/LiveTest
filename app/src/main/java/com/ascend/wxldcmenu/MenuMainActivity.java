@@ -10,8 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,7 +39,6 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
-import com.ascend.wangfeng.locationbyhand.util.PowerImageSet;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
@@ -135,13 +132,16 @@ public class MenuMainActivity extends BaseActivity {
     ProgressBar pbVolue;
     @BindView(R.id.tv_volue)
     TextView tvVolue;
+    @BindView(R.id.ll_notice)
+    LinearLayout llNotice;
     private DaoSession daoSession;
 
     Runnable runnable = null;//更新电量
     private Subscription mVolRxBus;
     private long rate = 5000;//第一次获取电量间隔
-    public static final long VOL_RATE = 5 * 60 * 1000;//获取电量后 每次获取电量时间间隔
+    public static final long VOL_RATE = 1 * 60 * 1000;//获取电量后 每次获取电量时间间隔
     final static Handler handler = new Handler();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,7 +186,8 @@ public class MenuMainActivity extends BaseActivity {
                     @Override
                     public void onNext(VolEvent event) {
                         pbVolue.setProgress(event.getVol());
-                        tvVolue.setText(event.getVol()+"%");
+                        tvVolue.setText(event.getVol() + "%");
+                        rate = VOL_RATE;
                     }
                 });
         //定时获取电量
@@ -202,6 +203,7 @@ public class MenuMainActivity extends BaseActivity {
 
         handler.post(runnable);
     }
+
     /**
      * 低权限版本更换主页图标
      *
@@ -246,9 +248,9 @@ public class MenuMainActivity extends BaseActivity {
                     data = new MounthCollectData();
                 } else {
                     //测试数据
-//                    data.setApCount("0");
-//                    data.setStaCount("0");
-//                    data.setDayTime("2018-08-27");
+                    data.setApCount("11");
+                    data.setStaCount("11");
+                    data.setDayTime("2018-09-02");
 //                    data = new MounthCollectData();
 //                    SharedPreferencesUtil.putObject(MenuMainActivity.this,mounth,data);
                     startTime = data.getDayTime();
@@ -272,6 +274,7 @@ public class MenuMainActivity extends BaseActivity {
                     //本月第一天日期
                     String firstStartTime = TimeUtil.getFirstDay("yyyy-MM-dd");
                     diffDays = GetDataUtils.differentDaysByMillisecond(firstStartTime, endTime, Config.timeTypeByYear);
+                    data = new MounthCollectData();
                     getByTimeData(data, daoSession, firstStartTime, endTime, diffDays + 1, mounth);
                 }
 
@@ -293,13 +296,14 @@ public class MenuMainActivity extends BaseActivity {
         //查询条件 开始 结束的0点时间戳
         long startLongTime = GetDataUtils.getLongTimeByDay(startTime, Config.timeTypeByYear);
         long endLongTime = GetDataUtils.getLongTimeByDay(endTime, Config.timeTypeByYear);
-        for (int i = 0; i < diffDays; i++) {
+        for (int i = 1; i < diffDays; i++) {
             c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 0), null);
             data.setApCount(String.valueOf(Integer.valueOf(data.getApCount() == null ? "0" : data.getApCount()) + c.getCount()));
+            Log.e("getTimeDataAp",c.getCount()+"");
             c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 1), null);
             data.setStaCount(String.valueOf(Integer.valueOf(data.getStaCount() == null ? "0" : data.getStaCount()) + c.getCount()));
+            Log.e("getTimeDataSat",c.getCount()+"");
             data.setDayTime(TimeUtil.getTime(startLongTime + (i * oneDay), Config.timeTypeByYear));
-
         }
         SharedPreferencesUtil.putObject(MenuMainActivity.this, mounth, data);
     }
@@ -381,19 +385,14 @@ public class MenuMainActivity extends BaseActivity {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
                             bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
                             bluestatu.setText("已连接");
+                            llNotice.setVisibility(View.GONE);
                             setDevText();
                             //重载ap设置的密码
                             Config.reLoadApPassword();
-                            //每天第一次打开app，同步网络布控目标
-                            if (checkFirst()) {
-                                //同步网络布控目标
-                                getTargets();
-                                //统计每月ap/终端采集数
-                                mounthCollectData();
-                            }
                         } else {
                             mToolbar.setBackgroundColor(getResources().getColor(R.color.gray));
                             bluestatu.setText("连接异常");
+                            llNotice.setVisibility(View.VISIBLE);
                             bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
                         }
                     }
@@ -453,16 +452,25 @@ public class MenuMainActivity extends BaseActivity {
                             startService(new Intent(MenuMainActivity.this, UploadService.class));
                         } else if (mToolbar != null & event.getAppVersion() == Config.C_PLUS) {
                             mToolbar.setTitle(R.string.app_name_cplus);
-                            rlUpload.setVisibility(View.GONE);
+                            rlUpload.setVisibility(View.INVISIBLE);
                         } else if (mToolbar != null & event.getAppVersion() == -1) {
                             mToolbar.setTitle("请连接本app专用设备蓝牙");
-                            rlUpload.setVisibility(View.GONE);
+                            rlUpload.setVisibility(View.INVISIBLE);
                         } else if (mToolbar != null & MyApplication.getAppVersion() == Config.C) {
                             mToolbar.setTitle(R.string.app_name_c);
-                            rlUpload.setVisibility(View.GONE);
+                            rlUpload.setVisibility(View.INVISIBLE);
                         } else if (mToolbar != null) {
                             mToolbar.setTitle(AppVersionConfig.title);
-                            rlUpload.setVisibility(View.GONE);
+                            rlUpload.setVisibility(View.INVISIBLE);
+                        }
+                        if(event.getAppVersion()!=-1){
+                            //每天第一次打开app，同步网络布控目标
+                            if (checkFirst()) {
+                                //同步网络布控目标
+                                getTargets();
+                                //统计每月ap/终端采集数
+                                mounthCollectData();
+                            }
                         }
                         setDevText();
                     }
@@ -491,14 +499,14 @@ public class MenuMainActivity extends BaseActivity {
                 for (KaiZhanBean dev : devs) {
                     if (dev.getMac().equals(MyApplication.mDevicdMac)) {
                         devText.setText(dev.getName() + "("
-                                + (MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID) + ")");
+                                + (MyApplication.mDevicdID == null ? "请连接设备" : MyApplication.mDevicdID) + ")");
                     }
                 }
             } else {
-                devText.setText(MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID);
+                devText.setText(MyApplication.mDevicdID == null ? "请连接设备" : MyApplication.mDevicdID);
             }
         } else
-            devText.setText("编号:" + (MyApplication.mDevicdID == null ? "" : MyApplication.mDevicdID));
+            devText.setText("编号:" + (MyApplication.mDevicdID == null ? "请连接设备" : MyApplication.mDevicdID));
     }
 
     private static String[] PERMISSIONS_STORAGE = {

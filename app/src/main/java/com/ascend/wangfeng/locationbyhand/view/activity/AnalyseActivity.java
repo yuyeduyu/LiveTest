@@ -191,7 +191,7 @@ public class AnalyseActivity extends BaseActivity {
      * 初始化 toolbar
      */
     private void initTool() {
-        mToolbar.setTitle("数据分析");
+        mToolbar.setTitle("云查询");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/layout_backgroud"
     android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:orientation="vertical">
@@ -240,19 +241,23 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray" />
-    </LinearLayout>
-
+    </LinearLayout>-->
+    <include layout="@layout/layout_chart_title"/>
     <LinearLayout
         android:id="@+id/v_id"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="28dp"
         android:layout_margin="16dp"
         android:orientation="horizontal"
+        android:background="@color/view_backgroud"
         android:visibility="gone"
         android:weightSum="5"></LinearLayout>
 
     <com.github.mikephil.charting.charts.BarChart
+        android:background="@color/view_backgroud"
         android:id="@+id/chart1"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -260,8 +265,15 @@
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_chart"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/view_backgroud"
         android:layout_weight="1"></com.github.mikephil.charting.charts.LineChart>
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:id="@+id/ll_nobarchart"/>
 </LinearLayout>

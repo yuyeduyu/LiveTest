@@ -115,7 +115,8 @@ public class LoginActivity extends BaseActivity {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.READ_PHONE_STATE"};
+            "android.permission.READ_PHONE_STATE",
+    "android.permission.ACCESS_COARSE_LOCATION"};
 
     /**
      * 获取动态权限

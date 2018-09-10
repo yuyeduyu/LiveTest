@@ -7,6 +7,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
+        android:background="@color/layout_backgroud"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -24,6 +25,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="设备编号"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -33,12 +35,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"
-                    />
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -50,6 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="监测范围"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -59,12 +56,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"
-                    />
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -76,13 +67,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="监测日志"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"
-                    />
+
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -94,6 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="布控目标"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -103,11 +91,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -119,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="布控警报"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <com.kyleduo.switchbutton.SwitchButton
@@ -131,13 +115,8 @@
                     android:textSize="16dp"
                     app:kswTextOff="off"
                     app:kswTextOn="On"
-                    app:kswTintColor="@color/orange"/>
+                    app:kswTintColor="@color/primary"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -149,6 +128,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="扫描信道"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -158,11 +138,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -174,6 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="工作模式"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -183,11 +159,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -199,6 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="采集模式"
+                    android:textColor="@color/text1"
                     android:textStyle="bold" />
 
                 <TextView
@@ -208,11 +180,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/set_track_channel"
@@ -223,6 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="信道锁定"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -232,11 +200,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
 
@@ -249,6 +212,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="设备地址"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -258,11 +222,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -274,13 +233,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="Task"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -292,6 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="频段"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/ghz_text"
@@ -300,11 +256,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -317,6 +268,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="上传时间"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/upTime_text"
@@ -324,12 +276,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="100dp"/>
-                <View
-                    android:visibility="visible"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -342,6 +289,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="上传路径"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
                 <TextView
                     android:text=""
@@ -351,11 +299,7 @@
                     android:layout_centerVertical="true"
                     android:background="@null"
                     android:layout_marginLeft="100dp"/>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
+
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -366,15 +310,10 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="数据分析"
+                    android:text="云查询"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
-                <View
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="gone"
@@ -386,14 +325,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="统计"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:visibility="gone"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/kaizhan"
@@ -405,13 +339,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="开站信息"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/ftptest"
@@ -423,22 +353,13 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="服务器连接测试"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:visibility="gone"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/gray"/>
             </RelativeLayout>
-            <View
-                android:id="@+id/view"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:background="@color/gray"/>
 
             <RelativeLayout
+                android:layout_marginTop="20dp"
                 android:id="@+id/about"
                 style="@style/set_text">
 
@@ -447,6 +368,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="关于我们"
+                    android:textColor="@color/text1"
                     android:textStyle="bold"/>
 
                 <View

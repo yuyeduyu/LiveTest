@@ -465,7 +465,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
             case 3://电量
                 int vol = getVol(request);
                 RxBus.getDefault().post(new VolEvent(vol));
-                Log.e(TAG, "case: 3"+"   "+vol);
                 break;
             case 4://编号
                 String num = getNumber(request);
@@ -515,28 +514,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
                 break;
         }
     }
-    /**
-     * 根据设备号，判断app版本
-     * @param num  5开头为nimi版
-     * @author lishanhui
-     * created at 2018-07-09 9:23
-     */
-    private void setAppVersion(String num) {
-        int appVersion = Config.C;
-        if (num.startsWith("5")){
-            //mini
-            appVersion = Config.C_MINI;
-
-        }else if (num.startsWith("P")){
-            //cplus
-            appVersion = Config.C_PLUS;
-        }
-//        toast(num+"---->"+appVersion);
-        MyApplication.setAppVersion(appVersion);
-        //通知更改界面aplistFragment stalistFragment
-        RxBus.getDefault().post(new AppVersionEvent(appVersion));
-    }
-
     private boolean isApPasswordSuccess(String request) {
         String[] rows = request.split(SEPARATOR_ROW);
         if (rows.length > 1) {

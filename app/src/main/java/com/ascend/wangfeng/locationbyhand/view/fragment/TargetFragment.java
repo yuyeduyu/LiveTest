@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,7 @@ import retrofit2.Retrofit;
 public class TargetFragment extends Fragment {
 
     @BindView(R.id.recycler)
-    SwipeMenuRecyclerView mRecycler;
+    RecyclerView mRecycler;
     SwipeAdapter adapter;
     @BindView(R.id.btn)
     Button mBtn;
@@ -209,7 +210,7 @@ public class TargetFragment extends Fragment {
         mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 //        mRecycler.setSwipeMenuCreator(swipeMenuCreator);
-        mRecycler.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
+       /* mRecycler.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
             public void onItemClick(Closeable closeable, final int adapterPosition, int menuPosition, int direction) {
                 if (adapterPosition == localList.size()) {
@@ -280,7 +281,7 @@ public class TargetFragment extends Fragment {
                     }
                 }
             }
-        });
+        });*/
 
         mRecycler.setAdapter(adapter);
         mRecycler.addItemDecoration(new MyItemDecoration(getActivity(),

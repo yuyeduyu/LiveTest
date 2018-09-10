@@ -17,6 +17,30 @@
         android:layout_marginTop="12dp"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/ll_notice"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_notice" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="设备连接异常"
+                android:textColor="@color/statu_red"
+                android:textSize="12sp" />
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/ll_dev"
             style="@style/set_text"
@@ -47,7 +71,7 @@
                 android:layout_toLeftOf="@id/iv_arrow"
                 android:textColor="@color/text1"
                 android:textSize="@dimen/text_14"
-                tools:text="设备编号" />
+                tools:text="请连接设备" />
 
         </RelativeLayout>
 
@@ -55,28 +79,31 @@
             android:layout_width="match_parent"
             android:layout_height="28dp"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
             android:layout_marginTop="2dp"
             android:background="@color/view_backgroud"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <LinearLayout
+                android:id="@+id/rl_upload"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@color/view_backgroud"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="invisible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="设备连接状态:"
+                    android:text="服务器连接状态:"
                     android:textColor="@color/text3"
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/bluestatu"
+                    android:id="@+id/upload_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
@@ -84,6 +111,7 @@
                     android:textColor="@color/text3"
                     android:textSize="12sp" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -106,9 +134,9 @@
                     android:layout_height="6dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
+                    android:layout_weight="1"
                     android:max="100"
-                    android:progressDrawable="@drawable/progress_bar_layer_list"
-                    android:layout_weight="1" />
+                    android:progressDrawable="@drawable/progress_bar_layer_list" />
 
                 <TextView
                     android:id="@+id/tv_volue"
@@ -122,24 +150,21 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/rl_upload"
-            android:layout_width="match_parent"
-            android:layout_height="28dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:background="@color/view_backgroud"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="服务器连接状态:"
+                android:text="设备连接状态:"
                 android:textColor="@color/text3"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/upload_text"
+                android:id="@+id/bluestatu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -147,17 +172,16 @@
                 android:textColor="@color/text3"
                 android:textSize="12sp" />
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:paddingTop="20dp"
         android:layout_weight="1"
         android:background="@color/view_backgroud"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -177,7 +201,7 @@
 
                 <TextView
                     style="@style/superview_item_text"
-                    android:text="采集信息" />
+                    android:text="信息采集" />
             </LinearLayout>
 
             <LinearLayout
@@ -211,6 +235,7 @@
                     style="@style/superview_item_text"
                     android:text="布控目标" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/ll_fenxi"
                 style="@style/superview_item_layout"
@@ -224,15 +249,15 @@
 
                 <TextView
                     style="@style/superview_item_text"
-                    android:text="数据分析" />
+                    android:text="云查询" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:paddingTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
 
             <LinearLayout
                 android:id="@+id/ll_tongji"

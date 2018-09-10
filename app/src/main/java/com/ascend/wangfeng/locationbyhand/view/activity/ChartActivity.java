@@ -56,6 +56,10 @@ public class ChartActivity extends BaseActivity {
         int channel = intent.getIntExtra("channel", 0);
         Tag = intent.getBooleanExtra("tag", false);
         bundle = new Bundle();
+        if (type==0)
+            bundle.putSerializable("ap",intent.getSerializableExtra("ap"));
+        else if (type==1)
+            bundle.putSerializable("sta",intent.getSerializableExtra("sta"));
         bundle.putBoolean("tag", Tag);
         MainServiceEvent event = new MainServiceEvent(MainServiceEvent.LOCK);
         if (MyApplication.mGhz == Ghz.G24) {

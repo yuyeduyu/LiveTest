@@ -3,6 +3,7 @@ package com.ascend.wangfeng.locationbyhand.view.activity;
 import android.graphics.Color;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -65,8 +66,6 @@ public class KaiZhanActivity extends BaseActivity {
     EditText etMinjing;
     @BindView(R.id.tv_paichusuo)
     TextView tvPaichusuo;
-    @BindView(R.id.ll_name)
-    LinearLayout llName;
     @BindView(R.id.ll_paichusuo)
     LinearLayout llPaichusuo;
 
@@ -321,8 +320,13 @@ public class KaiZhanActivity extends BaseActivity {
 
     //城市选择器
     private void shownCitySlect() {
+        WindowManager manager = getWindowManager();
+        DisplayMetrics metrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(metrics);
+        int width = metrics.widthPixels;  //以要素为单位
+        int height = metrics.heightPixels;
         ChangeAddressPopwindow mChangeAddressPopwindow =
-                new ChangeAddressPopwindow(KaiZhanActivity.this, "city.json", "gbk");
+                new ChangeAddressPopwindow(KaiZhanActivity.this, "city.json", "gbk",height);
         mChangeAddressPopwindow.setAddress("浙江", "杭州", "西湖区");
         mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 0);
         mChangeAddressPopwindow
@@ -341,10 +345,15 @@ public class KaiZhanActivity extends BaseActivity {
 
     //派出所选择器
     private void shownPaichusuoSlect() {
+        WindowManager manager = getWindowManager();
+        DisplayMetrics metrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(metrics);
+        int width = metrics.widthPixels;  //以要素为单位
+        int height = metrics.heightPixels;
         ChangeAddressPopwindow mChangeAddressPopwindow =
-                new ChangeAddressPopwindow(KaiZhanActivity.this, "paichusuo.json", "utf-8");
+                new ChangeAddressPopwindow(KaiZhanActivity.this, "paichusuo.json", "utf-8",height);
 //        mChangeAddressPopwindow.setAddress("台州市", "温岭市公安局", "太平派出所");
-        mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 0);
+        mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 250);
         mChangeAddressPopwindow
                 .setAddresskListener(new ChangeAddressPopwindow.OnAddressCListener() {
 

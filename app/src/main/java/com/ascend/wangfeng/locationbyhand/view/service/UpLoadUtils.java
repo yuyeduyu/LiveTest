@@ -74,22 +74,22 @@ public class UpLoadUtils {
                     EventBus.getDefault().post(new FTPEvent(true));
                     MyApplication.ftpConnect = true;
 
-                    FTPClientData ourFtpClientData = new FTPClientData(Config.UpLoadFtpUrl, Config.UpLoadFtpPort
-                            , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);
-                    FTPClient ourFtpClient = ourFtpClientData.ftpConnect();
-                    //上传AP数据
-                    boolean ourLoad1 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carapl");
-                    //上传终端数据
-                    boolean ourLoad2 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carmac");
-                    //上传连接数据
-                    boolean ourLoad3 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carnet");
-                    //上传GPS轨迹的坐标
-                    boolean ourLoad4 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".cargps");
+//                    FTPClientData ourFtpClientData = new FTPClientData(Config.UpLoadFtpUrl, Config.UpLoadFtpPort
+//                            , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);
+//                    FTPClient ourFtpClient = ourFtpClientData.ftpConnect();
+//                    //上传AP数据
+//                    boolean ourLoad1 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carapl");
+//                    //上传终端数据
+//                    boolean ourLoad2 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carmac");
+//                    //上传连接数据
+//                    boolean ourLoad3 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".carnet");
+//                    //上传GPS轨迹的坐标
+//                    boolean ourLoad4 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".cargps");
 
-                    if (otherLoad1 & ourLoad1) delectLocalData(filePath,fileName + ".carapl");
-                    if (otherLoad2 & ourLoad2) delectLocalData(filePath,fileName + ".carmac");
-                    if (otherLoad3 & ourLoad3) delectLocalData(filePath,fileName + ".carnet");
-                    if (otherLoad4 & ourLoad4) delectLocalData(filePath,fileName + ".cargps");
+                    if (otherLoad1) delectLocalData(filePath,fileName + ".carapl");
+                    if (otherLoad2) delectLocalData(filePath,fileName + ".carmac");
+                    if (otherLoad3) delectLocalData(filePath,fileName + ".carnet");
+                    if (otherLoad4) delectLocalData(filePath,fileName + ".cargps");
                 }
 
             }).start();

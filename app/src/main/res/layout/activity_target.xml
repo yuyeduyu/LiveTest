@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             app:tabMode="fixed"
-            android:background="@color/layout_backgroud"
-            app:tabIndicatorColor="@color/layout_backgroud"
+            android:background="@color/view_backgroud"
+            app:tabIndicatorColor="@color/primary"
             app:tabTextColor="@color/secondary_text"
             app:tabSelectedTextColor="@color/primary" />
 

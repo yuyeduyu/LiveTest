@@ -1,9 +1,12 @@
 package com.ascend.wangfeng.locationbyhand.util.citychoice;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -81,11 +84,12 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
     private int minsize = 12;
     private String filePath;
     private String style;
-    public ChangeAddressPopwindow(final Context context,String filePath,String style) {
+    public ChangeAddressPopwindow(final Context context,String filePath,String style,int mHeight) {
         super(context);
         this.context = context;
         this.filePath = filePath;
         this.style = style;
+
         View view = View.inflate(context, R.layout.popupwindow_basic_information_city, null);
 
         wvProvince = (WheelView) view.findViewById(R.id.wv_address_province);
@@ -102,7 +106,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         //设置SelectPicPopupWindow弹出窗体的宽
         this.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         //设置SelectPicPopupWindow弹出窗体的高
-        this.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        this.setHeight(mHeight);
         //设置SelectPicPopupWindow弹出窗体可点击
         this.setFocusable(true);
         //设置SelectPicPopupWindow弹出窗体动画效果

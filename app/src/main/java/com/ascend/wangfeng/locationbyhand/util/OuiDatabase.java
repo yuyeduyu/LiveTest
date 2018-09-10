@@ -36,7 +36,7 @@ public class OuiDatabase {
     public static String ouiMatch(String mac) {
         mac = formatMac(mac);
         openDatabase();
-        String result = null;
+        String result = "未知";
         String sql = "select value from oui where key=?";
         if (database==null)return "have not oui database";
         Cursor cursor = database.rawQuery(sql, new String[]{mac});

@@ -3,26 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:orientation="vertical"
     tools:context="com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity">
 
     <include layout="@layout/custom_toolbar" />
 
     <LinearLayout
-
+        android:background="@color/layout_backgroud"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:layout_weight="1"
         android:gravity="left"
-        android:layout_marginLeft="16dp"
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+            style="@style/set_text">
 
             <TextView
                 style="@style/setText_left"
@@ -34,11 +29,8 @@
                 android:imeOptions="actionNext" />
         </LinearLayout>
 
-        <include layout="@layout/view_line" />
-
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+            style="@style/set_text">
 
             <TextView
                 style="@style/setText_left"
@@ -51,10 +43,9 @@
                 android:imeOptions="actionNext"
                 android:inputType="number" />
         </LinearLayout>
-        <include layout="@layout/view_line" />
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+            style="@style/set_text">
 
             <TextView
                 style="@style/setText_left"
@@ -66,10 +57,8 @@
 
                 android:imeOptions="actionNext" />
         </LinearLayout>
-        <include layout="@layout/view_line" />
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+            style="@style/set_text">
 
             <TextView
                 style="@style/setText_left"
@@ -80,12 +69,11 @@
                 style="@style/setEdit"
                 android:imeOptions="actionNext" />
         </LinearLayout>
-        <include layout="@layout/view_line" />
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp">
+            style="@style/set_text">
 
-            <TextView
+
+        <TextView
                 style="@style/setText_left"
                 android:text="服务器路径:" />
 
@@ -96,13 +84,15 @@
                 android:imeOptions="actionDone"
                 android:inputType="text" />
         </LinearLayout>
-        <include layout="@layout/view_line" />
 
     </LinearLayout>
 
     <Button
         android:id="@+id/set_submit"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/button_bg"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         android:text="提交" />
 </LinearLayout>

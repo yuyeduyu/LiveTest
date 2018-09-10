@@ -67,6 +67,18 @@ public class FormAdapter extends RecyclerView.Adapter<FormAdapter.ViewHolder> {
                 holder.mImageView.setBackgroundResource(R.mipmap.sam);
             } else if (apBean.getOui().indexOf("Xiaomi") > -1) {
                 holder.mImageView.setBackgroundResource(R.mipmap.xiaomi);
+            }else if (apBean.getOui().indexOf("Lenovo") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.lianxiang);
+            }else if (apBean.getOui().indexOf("MEIZU") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.meizu);
+            }else if (apBean.getOui().indexOf("Nokia") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.nuojiya);
+            }else if (apBean.getOui().indexOf("SONY") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.suoni);
+            }else if (apBean.getOui().indexOf("zte corporation") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.zhongxing);
+            }else if (apBean.getOui().indexOf("Vivo") > -1||apBean.getOui().indexOf("vivo") > -1) {
+                holder.mImageView.setBackgroundResource(R.mipmap.vivo);
             } else {
                 holder.mImageView.setBackgroundResource(R.mipmap.phone);
             }

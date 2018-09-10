@@ -9,9 +9,9 @@ android {
     defaultConfig {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 42  //根据这个值 判断版本升级
-        versionName "3.6.9"
+        targetSdkVersion 21
+        versionCode 45  //根据这个值 判断版本升级
+        versionName "3.6.11"
     }
 
 //签名配置
@@ -56,7 +56,7 @@ android {
 
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
         }
-        menuH {
+        menu {
             applicationId "com.ascend.wangfeng.wxld.menu"
             manifestPlaceholders = [app_name: "便携式移动采集H"]
             buildConfigField "String", "appTitle", "\"便携式移动采集\""

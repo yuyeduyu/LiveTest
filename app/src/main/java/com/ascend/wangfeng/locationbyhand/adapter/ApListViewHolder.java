@@ -18,6 +18,7 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
     ImageView img;
     TextView name;
     TextView mac;
+    TextView tv_img;
     TextView signal;
     TextView time;
     TextView tv_ghz;
@@ -30,6 +31,7 @@ public class ApListViewHolder extends RecyclerView.ViewHolder implements View.On
     public ApListViewHolder(View itemView,OnItemClickLisener clickLisener,OnItemClickLisener longClickLisener) {
         super(itemView);
         img = (ImageView)itemView.findViewById(R.id.img);
+        tv_img = (TextView)itemView.findViewById(R.id.tv_img);
         name = (TextView)itemView.findViewById(R.id.name);
         mac = (TextView)itemView.findViewById(R.id.mac);
         signal =(TextView)itemView.findViewById(R.id.signal);

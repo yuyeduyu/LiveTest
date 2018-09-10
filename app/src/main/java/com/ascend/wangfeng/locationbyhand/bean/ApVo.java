@@ -2,13 +2,15 @@ package com.ascend.wangfeng.locationbyhand.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by fengye on 2017/2/8.
  * email 1040441325@qq.com
  * 转化后的ap，添加了tag 是否标注
  */
 
-public class ApVo implements Comparable<ApVo>{
+public class ApVo implements Comparable<ApVo>,Serializable{
 
     /**
      * bssid : 02:1A:11:F8:BC:43
@@ -33,6 +35,16 @@ public class ApVo implements Comparable<ApVo>{
     private long ltime;
     private boolean tag;
     private String note;
+
+    private int stas;
+
+    public int getStas() {
+        return stas;
+    }
+
+    public void setStas(int stas) {
+        this.stas = stas;
+    }
 
     public String getBssid() {
         return bssid;

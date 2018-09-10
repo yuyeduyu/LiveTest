@@ -181,6 +181,7 @@ public class ApListFragment extends BaseFragment implements
                 intent.putExtra("type", 0);                                   //类型
                 intent.putExtra("channel", mData.get(position).getChannel());        //信道
                 intent.putExtra("tag", mData.get(position).isTag());        //是否是布控目标
+                intent.putExtra("ap", mData.get(position));        //是否是布控目标
                 startActivity(intent);
             }
         }, new OnItemClickLisener() {
@@ -237,7 +238,6 @@ public class ApListFragment extends BaseFragment implements
     private void updateData(List<ApVo> list) {
         Calendar c = Calendar.getInstance();
         mUpdateTime.setText(new SimpleDateFormat("HH:mm:ss").format(c.getTime()));
-
         //筛选数据
         if (searchCondition != null) {
             list = DataFormat.searchAps(list, searchCondition);
