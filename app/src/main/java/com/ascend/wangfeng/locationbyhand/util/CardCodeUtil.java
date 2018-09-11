@@ -24,7 +24,8 @@ public class CardCodeUtil {
 
     public static boolean isMobileNO(String mobiles) {
 
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+//        Pattern p = Pattern.compile("^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\\d{8}$");
+        Pattern p = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
 
         Matcher m = p.matcher(mobiles);
 

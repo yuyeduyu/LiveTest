@@ -334,7 +334,6 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
                 , String provinceCode,String cityCode,String areaCode);
     }
 
-
     /**
      * 从文件中读取地址数据
      */

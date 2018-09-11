@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 45  //根据这个值 判断版本升级
-        versionName "3.6.11"
+        versionCode 46  //根据这个值 判断版本升级
+        versionName "3.6.12"
     }
 
 //签名配置
@@ -19,7 +19,7 @@ android {
         releaseConfig {                        //发布版本签名配置
             keyAlias 'feng'
             keyPassword 'wf1314'
-            storeFile file('E:/androidStoreKey/locationbyhand.jks')
+            storeFile file('D:/androidStoreKey/locationbyhand.jks')
             storePassword 'wf1314'
         }
     }
@@ -125,7 +125,7 @@ android {
             buildConfigField "boolean", "isManger", "false"//权限管理  true 高权限 flase 低权限
         }
     }
-    //打包命令:gradlew assemble
+    //打包命令:gradlew assembleRelease
 
 //源文件目录设置
     sourceSets {
