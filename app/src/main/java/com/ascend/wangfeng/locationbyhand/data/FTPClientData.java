@@ -1,8 +1,13 @@
 package com.ascend.wangfeng.locationbyhand.data;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.ascend.wangfeng.locationbyhand.MyApplication;
+import com.ascend.wangfeng.locationbyhand.bean.LoadError;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
+import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
+import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
@@ -10,6 +15,8 @@ import org.apache.commons.net.ftp.FTPReply;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zsw on 2018/5/7.
@@ -21,18 +28,15 @@ public class FTPClientData {
 
     FTPClient ftpClient = null;
     FileInputStream fis = null;
-
     private String url;                     //服务器地址
-
     private int port;                       //端口号
-
     private String user;                    //用户
-
     private String password;                //密码
-
     private String path;                    //服务器磁盘路径
+    private Context context;
 
-    public FTPClientData() {
+    public FTPClientData(Context context) {
+        this.context = context;
         this.url = MyApplication.UpLoadFtpUrl;
         this.port = MyApplication.UpLoadFtpPort;
         this.user = MyApplication.UpLoadFtpUser;
@@ -40,7 +44,8 @@ public class FTPClientData {
         this.path = MyApplication.UpLoadFilePath;
     }
 
-    public FTPClientData(String url, int port, String user, String password, String path) {
+    public FTPClientData(Context context, String url, int port, String user, String password, String path) {
+        this.context = context;
         this.url = url;
         this.port = port;
         this.user = user;
@@ -77,10 +82,13 @@ public class FTPClientData {
      * @param ftpClient
      * @param filePath
      * @param fileName
+     * @param loadError true 上传失败再次上传的数据，false 第一次上传的数据，上传失败则缓存上传失败数据
      * @return
      */
-    public boolean ftpUpload(FTPClient ftpClient, String filePath, String fileName) {
+    public boolean ftpUpload(FTPClient ftpClient, String filePath, String fileName, boolean loadError) {
         if (ftpClient == null) {
+            if (!loadError)
+                saveLoadError(filePath, fileName);
             return false;
         }
         try {
@@ -94,12 +102,37 @@ public class FTPClientData {
             ftpClient.enterLocalPassiveMode();
             fis = new FileInputStream(filePath + fileName);
             ftpClient.storeFile(fileName, fis);
+            delectLocalData(filePath, fileName);
+            if (loadError) {
+                //清除上传错误缓存数据
+                List<LoadError> loadErrors = SharedPreferencesUtil.getList(context, "loadError");
+                LoadError loadError1 = new LoadError(filePath, fileName);
+                loadErrors.remove(loadError1);
+                SharedPreferencesUtil.putList(context, "loadError", loadErrors);
+            }
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            if (!loadError)
+                saveLoadError(filePath, fileName);
             Log.e(TAG, "错误原因：-->:" + e.toString());
         }
         return false;
     }
 
+    private void delectLocalData(String filePath, String fileName) {
+        // 上传成功后， 删除手机上的文件
+        File localFile = new File(filePath + fileName);
+        LogUtils.e("delectfile", filePath + fileName);
+        if (localFile.exists()) {
+            localFile.delete();
+        }
+    }
+
+    private void saveLoadError(String filePath, String fileName) {
+        List<LoadError> loadError = SharedPreferencesUtil.getList(context, "loadError");
+        if (loadError == null) loadError = new ArrayList<>();
+        loadError.add(new LoadError(filePath, fileName));
+        SharedPreferencesUtil.putList(context, "loadError", loadError);
+    }
 }

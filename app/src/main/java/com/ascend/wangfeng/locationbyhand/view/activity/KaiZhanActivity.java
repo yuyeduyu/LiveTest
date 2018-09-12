@@ -226,7 +226,7 @@ public class KaiZhanActivity extends BaseActivity {
                     String filePath = "/mnt/sdcard/";
                     String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
 
-                    FTPClientData ftpClientData = new FTPClientData();
+                    FTPClientData ftpClientData = new FTPClientData(context);
 
                     FTPClient ftpClient = ftpClientData.ftpConnect();
                     if (ftpClient == null) {
@@ -265,7 +265,7 @@ public class KaiZhanActivity extends BaseActivity {
                     content.append("," + longitude);
                     content.append("," + latitude);
                     FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName + ".carsite", content);
-                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite");
+                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false);
 
                     (KaiZhanActivity.this).runOnUiThread(new Runnable() {
                         @Override

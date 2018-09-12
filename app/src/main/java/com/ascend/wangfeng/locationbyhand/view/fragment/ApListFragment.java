@@ -132,13 +132,13 @@ public class ApListFragment extends BaseFragment implements
             @Override
             public void onClick(View view) {
                 if (MyApplication.mDevicdID != null) {
-                    if (MyApplication.isConnected(getContext())){
+//                    if (MyApplication.isConnected(getContext())){
                         loadingDialog.show();
                         UpLoadUtils upLoadUtils = new UpLoadUtils();
                         upLoadUtils.UpLoad(getActivity(),aplist, stalist, sclist, gpslist);
-                    }
-                    else
-                        show(null, "请先连接网络");
+//                    }
+//                    else
+//                        show(null, "请先连接网络");
                 } else {
                     show(null, "请先连接设备");
                 }

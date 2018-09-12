@@ -169,7 +169,7 @@ public class SetftpActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                FTPClientData ftpClientData = new FTPClientData(url, port, user, password, path);
+                FTPClientData ftpClientData = new FTPClientData(SetftpActivity.this,url, port, user, password, path);
                 FTPClient ftpClient = ftpClientData.ftpConnect();
                 Looper.prepare();
                 if (ftpClient != null) {

@@ -52,7 +52,7 @@ import rx.schedulers.Schedulers;
 
 public class MainService extends Service implements MainServiceContract.View, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final int SAVE_RATE = 30;    // 轮询30次,保存一次 即一分钟保存一次
-    public static final int CACHE_TIME = 2 * 60 * 1000;
+    public int CACHE_TIME = 2 * 60 * 1000 + MyApplication.GetUpLoadTime();
     private static final String NOMAC = "00:00:00:00:00:00";
     public static final int RING_TIME = 10 * 1000;
     public static final int CHANNEL_RATE = 5;

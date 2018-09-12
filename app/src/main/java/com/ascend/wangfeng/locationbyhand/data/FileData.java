@@ -8,6 +8,7 @@ import com.ascend.wangfeng.locationbyhand.data.saveData.ApData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,74 +34,78 @@ public class FileData {
     private String version;
     private Context mContext;
 
-    public FileData(){}
+    public FileData() {
+    }
+
     //写入开站数据
-    public FileData(Context mContext, String filePath, String fileName,StringBuffer cont){
+    public FileData(Context mContext, String filePath, String fileName, StringBuffer cont) {
         this.mContext = mContext;
 
         this.filePath = filePath;
         this.fileName = fileName;
-        makeFilePath(filePath,fileName,false);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath, fileName, false);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(cont.toString());       // 将字符串写入到文本文件中
     }
-    //写入ap数据
-    public FileData(Context mContext, String filePath, String fileName, List<ApData> aplist, String version){
-        this.mContext = mContext;
 
+    //写入ap数据
+    public FileData(Context mContext, String filePath, String fileName, List<ApData> aplist, String version) {
+        this.mContext = mContext;
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(aplist);       // 将字符串写入到文本文件中
     }
+
     //写入终端数据
-    public FileData(Context mContext, String filePath, String fileName, List<StaData> stalist, String version, int a){
+    public FileData(Context mContext, String filePath, String fileName, List<StaData> stalist, String version, int a) {
         this.mContext = mContext;
 
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
-        writeTxtToFile(stalist,a);       // 将字符串写入到文本文件中
+        makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
+        writeTxtToFile(stalist, a);       // 将字符串写入到文本文件中
     }
+
     //写入连接信息
-    public FileData(Context mContext, String filePath, String fileName, List<StaConInfo> sclist, String version, String b){
+    public FileData(Context mContext, String filePath, String fileName, List<StaConInfo> sclist, String version, String b) {
         this.mContext = mContext;
 
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
-        writeTxtToFile(sclist,b);       // 将字符串写入到文本文件中
+        makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
+        writeTxtToFile(sclist, b);       // 将字符串写入到文本文件中
     }
 
     //写入经纬度坐标信息
-    public FileData(Context mContext, String filePath, String fileName, List<LocationData> gpslist, String version, String b , int a){
+    public FileData(Context mContext, String filePath, String fileName, List<LocationData> gpslist, String version, String b, int a) {
         this.mContext = mContext;
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
-        makeFilePath(filePath,fileName,true);                //生成文件夹之后，再生成文件，不然会出错
-        writeTxtToFile(gpslist,b,a);
+        makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
+        writeTxtToFile(gpslist, b, a);
     }
 
 
-
     // 生成文件并写入开头首行内容
-    private File makeFilePath(String filePath, String fileName,boolean haveTitle) {
+    private File makeFilePath(String filePath, String fileName, boolean haveTitle) {
         makeRootDirectory(filePath);                    //生产文件夹
         try {
             file = new File(filePath + fileName);
-            if (file.exists()){
+            LogUtils.e("creactfile",filePath+fileName);
+            if (file.exists()) {
                 file.delete();
-            }else {
+            } else {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
             }
             raf = new RandomAccessFile(file, "rwd");           //对文件内容进行操作
 
-            if (haveTitle){
-                strContent = "asd_iwm_02," + MyApplication.mDevicdMac.replaceAll(":","") + "," + version+ ","+ MyApplication.mDevicdID+","+"211.211.211.211," + "\n";
+            if (haveTitle) {
+                strContent = "asd_iwm_02," + MyApplication.mDevicdMac.replaceAll(":", "") + "," + version + "," + MyApplication.mDevicdID + "," + "211.211.211.211," + "\n";
 //            Log.e(TAG,"头行信息:"+strContent+"    手机MAC地址："+getLocalMacAddressFromIp());
                 raf.seek(file.length());
                 raf.write(strContent.getBytes());
@@ -115,11 +120,8 @@ public class FileData {
 
     private void writeTxtToFile(String cont) {
         try {
-
-                raf.seek(file.length());
-                raf.write(cont.getBytes());
-
-
+            raf.seek(file.length());
+            raf.write(cont.getBytes());
             raf.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,8 +131,8 @@ public class FileData {
 
     private void writeTxtToFile(List<ApData> aplist) {
         try {
-            for (int i = 0;i<aplist.size();i++){
-                String str  = aplist.get(i).toString()+"\n";
+            for (int i = 0; i < aplist.size(); i++) {
+                String str = aplist.get(i).toString() + "\n";
                 raf.seek(file.length());
                 raf.write(str.getBytes());
             }
@@ -144,8 +146,8 @@ public class FileData {
     // 将ap字符串写入到文本文件中
     private void writeTxtToFile(List<StaData> stalist, int a) {
         try {
-            for (int i = 0;i<stalist.size();i++){
-                String str  = stalist.get(i).toString()+"\n";
+            for (int i = 0; i < stalist.size(); i++) {
+                String str = stalist.get(i).toString() + "\n";
                 raf.seek(file.length());
                 raf.write(str.getBytes());
             }
@@ -163,8 +165,8 @@ public class FileData {
     // 将ap字符串写入到文本文件中
     private void writeTxtToFile(List<StaConInfo> sclist, String b) {
         try {
-            for (int i = 0;i<sclist.size();i++){
-                String str  = sclist.get(i).toString()+"\n";
+            for (int i = 0; i < sclist.size(); i++) {
+                String str = sclist.get(i).toString() + "\n";
                 raf.seek(file.length());
                 raf.write(str.getBytes());
             }
@@ -181,8 +183,8 @@ public class FileData {
     // 将ap字符串写入到文本文件中
     private void writeTxtToFile(List<LocationData> gpslist, String b, int a) {
         try {
-            for (int i = 0;i<gpslist.size();i++){
-                String str  = gpslist.get(i).toString()+"\n";
+            for (int i = 0; i < gpslist.size(); i++) {
+                String str = gpslist.get(i).toString() + "\n";
                 raf.seek(file.length());
                 raf.write(str.getBytes());
 
@@ -203,16 +205,16 @@ public class FileData {
                 file.mkdir();
             }
         } catch (Exception e) {
-            Log.i("error:", e+"");
+            Log.i("error:", e + "");
         }
     }
 
-    private String getMobileMAC(){
+    private String getMobileMAC() {
         String mobileMac = MacUtils.getMobileMAC(mContext);
         String mobileMAC = "";
         String[] macs = mobileMac.split(":");
-        for (int i = 0;i<macs.length;i++){
-            mobileMAC = mobileMAC+macs[i];
+        for (int i = 0; i < macs.length; i++) {
+            mobileMAC = mobileMAC + macs[i];
         }
         return mobileMAC;
     }
