@@ -54,34 +54,27 @@ public class LoginActivity extends BaseActivity {
     private void initData() {
         imei = ImeiUtils.getImei();
         mLoginImei.setText(imei);
+
+        if (!BuildConfig.isManger) {
+            //低版本，跳过登录
+            startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
+            finish();
+        } else {
+            checkIsLogin();
+        }
     }
 
     protected void initView() {
         name.setText(BuildConfig.AppName);
         getPermissions();
-        if (MyApplication.isDev) {
-            //测试版本，跳过登录
-//            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
-            //便携式车载采集系统
-            startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
-//            } else
-//                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
-            finish();
-        } else {
-            checkIsLogin();
-        }
-//        initData();
     }
 
     private void checkIsLogin() {
         String password = (String) SharedPreferencesUtils
                 .getParam(getBaseContext(), "passwordOfApp", "null");
         if (!password.equals("null")) {
-//            if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
             //便携式车载采集系统
             startActivity(new Intent(LoginActivity.this, MenuMainActivity.class));
-//            } else
-//                startActivity(new Intent(LoginActivity.this, NewMainActivity.class));
             finish();
         }
     }

@@ -165,11 +165,7 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
         initVol();
         listenConnect();
         initTool();
-        if (!MyApplication.isDev) {
-            checkIsLogin();
-        } else {
-            initBleActivity();
-        }
+        initBleActivity();
         //获取动态权限
         getPermissions();
         //版本更新监测
@@ -304,10 +300,10 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
         for (int i = 1; i < diffDays; i++) {
             c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 0), null);
             data.setApCount(String.valueOf(Integer.valueOf(data.getApCount() == null ? "0" : data.getApCount()) + c.getCount()));
-            Log.e("getTimeDataAp",c.getCount()+"");
+            Log.e("getTimeDataAp", c.getCount() + "");
             c = session.getDatabase().rawQuery(getSql(i, startLongTime, endLongTime, diffDays - 2, 1), null);
             data.setStaCount(String.valueOf(Integer.valueOf(data.getStaCount() == null ? "0" : data.getStaCount()) + c.getCount()));
-            Log.e("getTimeDataSat",c.getCount()+"");
+            Log.e("getTimeDataSat", c.getCount() + "");
             data.setDayTime(TimeUtil.getTime(startLongTime + (i * oneDay), Config.timeTypeByYear));
         }
         SharedPreferencesUtil.putObject(MenuMainActivity.this, mounth, data);
@@ -468,7 +464,7 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
                             mToolbar.setTitle(AppVersionConfig.title);
                             rlUpload.setVisibility(View.INVISIBLE);
                         }
-                        if(event.getAppVersion()!=-1){
+                        if (event.getAppVersion() != -1) {
                             //每天第一次打开app，同步网络布控目标
                             if (checkFirst()) {
                                 //同步网络布控目标
@@ -517,7 +513,9 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
-            "android.permission.ACCESS_FINE_LOCATION"};
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.READ_PHONE_STATE",
+            "android.permission.ACCESS_COARSE_LOCATION"};
 
     /**
      * 获取动态权限
@@ -687,11 +685,11 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
 
     @Override
     public void onNetStatusChanged(NetworkStatus currNetStatus) {
-        if (currNetStatus.equals(NetworkStatus.NETWORK_NONE)){
+        if (currNetStatus.equals(NetworkStatus.NETWORK_NONE)) {
             //没有网络
             uploadText.setText("连接异常");
             uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
-        }else {
+        } else {
             uploadText.setText("已连接");
             uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
         }
