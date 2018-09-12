@@ -39,9 +39,12 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
+import com.ascend.wangfeng.locationbyhand.util.network.NetStatusWatch;
+import com.ascend.wangfeng.locationbyhand.util.network.NetworkStatus;
 import com.ascend.wangfeng.locationbyhand.util.versionUpdate.AppVersionUitls;
 import com.ascend.wangfeng.locationbyhand.view.activity.AboutActivity;
 import com.ascend.wangfeng.locationbyhand.view.activity.AnalyseActivity;
@@ -88,7 +91,7 @@ import static com.ascend.wangfeng.locationbyhand.view.activity.StatisticsActivit
  * @author lish
  *         created at 2018-08-06 11:22
  */
-public class MenuMainActivity extends BaseActivity {
+public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnNetStatusChangedListener {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -172,6 +175,8 @@ public class MenuMainActivity extends BaseActivity {
         //版本更新监测
         AppVersionUitls.checkVersion(this, AppVersionConfig.appVersion
                 , AppVersionConfig.appName, null, MenuMainActivity.class, false);
+        //网络状态监听
+        NetStatusWatch.getInstance().regisiterListener(this);
     }
 
     //更新电量
@@ -611,6 +616,7 @@ public class MenuMainActivity extends BaseActivity {
         if (runnable != null)
             handler.removeCallbacks(runnable);
         if (mVolRxBus != null) mVolRxBus.unsubscribe();
+        NetStatusWatch.getInstance().unRegisiterListener(this);
     }
 
     //记录用户首次点击返回键的时间
@@ -677,5 +683,17 @@ public class MenuMainActivity extends BaseActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onNetStatusChanged(NetworkStatus currNetStatus) {
+        if (currNetStatus.equals(NetworkStatus.NETWORK_NONE)){
+            //没有网络
+            uploadText.setText("连接异常");
+            uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
+        }else {
+            uploadText.setText("已连接");
+            uploadText.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
+        }
     }
 }

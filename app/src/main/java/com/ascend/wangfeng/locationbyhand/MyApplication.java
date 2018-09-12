@@ -18,6 +18,7 @@ import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.util.CrashHandler;
+import com.ascend.wangfeng.locationbyhand.util.network.NetStatusWatch;
 //import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import java.util.List;
 
@@ -84,6 +85,8 @@ public class MyApplication extends Application {
         mContext = this;
         initBase();
         ftpData();
+        //初始化网络监听
+        NetStatusWatch.getInstance().init(this);
     }
 
     public static Boolean getIsDataRun() {
@@ -207,5 +210,10 @@ public class MyApplication extends Application {
         }
         //重置获取网络布控目标api
         AppClient.reSetTargetApi();
+    }
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        NetStatusWatch.getInstance().clearAllListener(this);
     }
 }
