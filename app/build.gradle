@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 48  //根据这个值 判断版本升级
-        versionName "3.6.14"
+        versionCode 52  //根据这个值 判断版本升级
+        versionName "3.6.18"
     }
 
 //签名配置
@@ -54,6 +54,8 @@ android {
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
 
+            buildConfigField "String", "Adress", "\"本地\""//app使用地区
+
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
         }
         menu {
@@ -70,6 +72,8 @@ android {
             buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+
+            buildConfigField "String", "Adress", "\"本地\""//app使用地区
 
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
         }
@@ -88,6 +92,8 @@ android {
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
 
+            buildConfigField "String", "Adress", "\"本地\""//app使用地区
+
             buildConfigField "boolean", "isManger", "false"//权限管理  true 高权限 flase 低权限
         }
         menutaizhouH {
@@ -105,6 +111,8 @@ android {
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
 
+            buildConfigField "String", "Adress", "\"台州\""//app使用地区
+
             buildConfigField "boolean", "isManger", "true"//权限管理  true 高权限 flase 低权限
         }
         menutaizhouL {
@@ -121,6 +129,8 @@ android {
             buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
             buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+
+            buildConfigField "String", "Adress", "\"台州\""//app使用地区
 
             buildConfigField "boolean", "isManger", "false"//权限管理  true 高权限 flase 低权限
         }

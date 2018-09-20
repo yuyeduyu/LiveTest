@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
 import com.ascend.wangfeng.locationbyhand.bean.KaiZhanBean;
@@ -187,7 +188,7 @@ public class KaiZhanActivity extends BaseActivity {
 //            return false;
 //        }
         if (TextUtils.isEmpty(cityName)){
-            Toast.makeText(KaiZhanActivity.this, "请选择地址", Toast.LENGTH_SHORT).show();
+            Toast.makeText(KaiZhanActivity.this, "请选择派出所", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (TextUtils.isEmpty(paichusuoName)) {
@@ -229,6 +230,11 @@ public class KaiZhanActivity extends BaseActivity {
                     FTPClientData ftpClientData = new FTPClientData(context);
 
                     FTPClient ftpClient = ftpClientData.ftpConnect();
+                    if (ftpClient == null) {
+                        ftpClientData = new FTPClientData(context, Config.URL_YIDONG, MyApplication.UpLoadFtpPort
+                                , MyApplication.UpLoadFtpUser, MyApplication.UpLoadFtpPass, MyApplication.UpLoadFilePath);
+                        ftpClient = ftpClientData.ftpConnect();
+                    }
                     if (ftpClient == null) {
                         EventBus.getDefault().post(new FTPEvent(false));
                         KaiZhanActivity.this.runOnUiThread(new Runnable() {

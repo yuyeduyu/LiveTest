@@ -33,6 +33,7 @@ public class Config {
 
     public static String TargetUrl = "http://192.168.168.56:9086/";     //网络布控目标服务器地址
 
+    public static String URL_YIDONG = "111.3.157.168"; //台州移动网段地址
     private static AlarmMacListDo alarmMacListDo;
 
     public static AlarmMacListDo getAlarmMacListDo() {

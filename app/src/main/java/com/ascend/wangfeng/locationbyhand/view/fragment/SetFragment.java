@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ascend.wangfeng.locationbyhand.AppVersionConfig;
+import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
@@ -132,6 +133,10 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     RelativeLayout kaizhan;
     @BindView(R.id.ftptest)
     RelativeLayout ftptest;
+    @BindView(R.id.upPath_text_yd)
+    TextView upPathTextYd;
+    @BindView(R.id.upPath_yd)
+    RelativeLayout upPathYd;
 
 
     private String TAG = getClass().getCanonicalName();
@@ -390,6 +395,11 @@ public class SetFragment extends BaseFragment implements SetContract.View {
         }
         if (MyApplication.AppVersion != Config.C_MINI)
             mGhz.setVisibility(View.VISIBLE);
+        if (BuildConfig.Adress.equals("台州")) {
+            upPathYd.setVisibility(View.VISIBLE);
+            upPathTextYd.setText(Config.URL_YIDONG+ ":" + MyApplication.UpLoadFtpPort
+                    + "/" + MyApplication.UpLoadFilePath);
+        }
     }
 
     /**
@@ -579,7 +589,8 @@ public class SetFragment extends BaseFragment implements SetContract.View {
                 //设置上传的文件路径
                 //得到新打开Activity关闭后返回的数据
                 //第二个参数为请求码，可以根据业务需求自己编号
-                startActivityForResult(new Intent(getActivity(), SetftpActivity.class), 1);
+                if (!BuildConfig.Adress.equals("台州"))
+                    startActivityForResult(new Intent(getActivity(), SetftpActivity.class), 1);
                 break;
             case R.id.ftptest:
                 //ftp服务器连接测试
@@ -700,4 +711,5 @@ public class SetFragment extends BaseFragment implements SetContract.View {
     public void onViewClicked() {
         startActivity(new Intent(getActivity(), KaiZhanActivity.class));
     }
+
 }

@@ -3,19 +3,30 @@ package com.ascend.wangfeng.locationbyhand.util.citychoice;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
+import com.ascend.wangfeng.locationbyhand.data.FTPClientData;
+import com.ascend.wangfeng.locationbyhand.data.FileData;
+import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.citychoice.wheelview.OnWheelChangedListener;
 import com.ascend.wangfeng.locationbyhand.util.citychoice.wheelview.OnWheelScrollListener;
 import com.ascend.wangfeng.locationbyhand.util.citychoice.wheelview.WheelView;
 import com.ascend.wangfeng.locationbyhand.util.citychoice.wheelview.adapter.AbstractWheelTextAdapter1;
+import com.ascend.wangfeng.locationbyhand.view.activity.KaiZhanActivity;
 
+import org.apache.commons.net.ftp.FTPClient;
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -250,7 +261,8 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
                 setTextviewSize(currentText, areaAdapter);
             }
         });
-
+        //所有派出所开站信息测试，后台测试使用
+//        uploadKaiZhan();
 
     }
 
@@ -615,5 +627,70 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         }
         return areaIndex;
     }
+    /**
+     *所有派出所开站信息测试,供后台测试使用
+     * @Author lish
+     * @Date 2018-09-13 9:20
+     */
+    private void uploadKaiZhan(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int num = 0;
+                for (int i=0;i<mProvinceDatas.length;i++){
+                    for (int j=0;j<mCitisDatasMap.get(mProvinceDatas[i]).length;j++){
+                            for (int k=0;k<mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j]).length;k++){
+                                LogUtils.e("area",mProvinceDatas[i]+"--"+mCitisDatasMap.get(mProvinceDatas[i])[j]+"--"
+                                +mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k]+"/n");
+                                uoload(mProvinceDatas[i],mCitisDatasMap.get(mProvinceDatas[i])[j]
+                                        ,mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k]
+                                        ,i,j,k,num);
+                                num++;
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                    }
+                }
+            }
 
+        }).start();
+    }
+
+    private void uoload(String mProvinceData, String s, String s1, int i, int j, int k,int id) {
+                long time = (System.currentTimeMillis() / 1000);
+                String filePath = "/mnt/sdcard/";
+                String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
+
+                FTPClientData ftpClientData = new FTPClientData(context);
+
+                FTPClient ftpClient = ftpClientData.ftpConnect();
+
+                try {
+                    ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //上传开站数据
+                StringBuffer content = new StringBuffer();
+                content.append("MAC"+i+""+j+""+k);
+                content.append(",设备编号" + id);
+                content.append(",IMEI" + id);
+                content.append(",姓名" + id);
+                content.append(",身份证" +"88888888" );
+                content.append(",手机号" + "13333333333");
+                content.append(",民警" + id);
+                content.append("," + mProvinceData);
+                content.append("," + s);
+                content.append("," + s1);
+
+                content.append(",120.354656");
+                content.append(",30.231456");
+                FileData fileData = new FileData(context, filePath, fileName + ".carsite", content);
+                final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false);
+
+                Log.e("load","文件:"+id+"--->"+sub);
+    }
 }

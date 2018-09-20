@@ -39,7 +39,6 @@ import com.ascend.wangfeng.locationbyhand.event.ble.VolEvent;
 import com.ascend.wangfeng.locationbyhand.keeplive.LiveService;
 import com.ascend.wangfeng.locationbyhand.login.LoginActivity;
 import com.ascend.wangfeng.locationbyhand.util.CustomDatePickerUtils.GetDataUtils;
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtils;
 import com.ascend.wangfeng.locationbyhand.util.TimeUtil;
@@ -137,6 +136,8 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
     TextView tvVolue;
     @BindView(R.id.ll_notice)
     LinearLayout llNotice;
+    @BindView(R.id.ll_limit)
+    LinearLayout llLimit;
     private DaoSession daoSession;
 
     Runnable runnable = null;//更新电量
@@ -212,10 +213,11 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
      * created at 2018-08-27 15:18
      */
     private void initMangerView() {
-        ivCollect.setImageResource(R.mipmap.caiji_l);
-        ivLog.setImageResource(R.mipmap.rizhi_l);
-        ivBukong.setImageResource(R.mipmap.bukong_l);
-        ivFenxi.setImageResource(R.mipmap.fenxi_l);
+            llLimit.setVisibility(View.GONE);
+//        ivCollect.setImageResource(R.mipmap.caiji_l);
+//        ivLog.setImageResource(R.mipmap.rizhi_l);
+//        ivBukong.setImageResource(R.mipmap.bukong_l);
+//        ivFenxi.setImageResource(R.mipmap.fenxi_l);
     }
 
     /**
@@ -249,9 +251,9 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
                     data = new MounthCollectData();
                 } else {
                     //测试数据
-                    data.setApCount("11");
-                    data.setStaCount("11");
-                    data.setDayTime("2018-09-02");
+//                    data.setApCount("11");
+//                    data.setStaCount("11");
+//                    data.setDayTime("2018-09-02");
 //                    data = new MounthCollectData();
 //                    SharedPreferencesUtil.putObject(MenuMainActivity.this,mounth,data);
                     startTime = data.getDayTime();
