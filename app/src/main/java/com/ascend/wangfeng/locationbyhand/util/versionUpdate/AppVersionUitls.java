@@ -1,5 +1,6 @@
 package com.ascend.wangfeng.locationbyhand.util.versionUpdate;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import rx.Subscriber;
@@ -105,7 +107,11 @@ public class AppVersionUitls {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //...To-do
-//                        downApk(context,appName);
+                          /*如果服务正在运行，直接return*/
+                        if (isServiceRunning(context,"com.ascend.wangfeng.locationbyhand.util.versionUpdate.VersionUpdateService")) {
+                            Log.e("服务正在运行","return");
+                            return;
+                        }
                         VersionUpdateService.beginUpdate(context, appName, R.drawable.ic_my_launcher, cls);
                         dialog.dismiss();
                     }
@@ -196,5 +202,17 @@ public class AppVersionUitls {
                         }
                     }
                 });
+    }
+    /**
+     * 判断服务是否运行
+     */
+    private static boolean isServiceRunning(Context context,final String className) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> info = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (info == null || info.size() == 0) return false;
+        for (ActivityManager.RunningServiceInfo aInfo : info) {
+            if (className.equals(aInfo.service.getClassName())) return true;
+        }
+        return false;
     }
 }

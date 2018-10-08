@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 52  //根据这个值 判断版本升级
-        versionName "3.6.18"
+        versionCode 56  //根据这个值 判断版本升级,测试版本有奇数，发布版本为偶数
+        versionName "3.6.21"
     }
 
 //签名配置

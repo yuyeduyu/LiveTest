@@ -12,7 +12,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -87,6 +87,7 @@ public class VersionUpdateService extends Service {
                     notification.contentIntent = pendingIntent;
                     notificationManager.notify(notification_id, notification);
                     stopService(updateIntent);
+                    stopSelf();
                     break;
                 case DOWN_ERROR:
                     NotificationCompat.Builder builder2 = new NotificationCompat.Builder(getBaseContext());
@@ -104,13 +105,20 @@ public class VersionUpdateService extends Service {
                     Notification notification2 = builder2.build();
                     notification2.contentIntent = pendingIntent;
                     notificationManager.notify(notification_id, notification2);
+                    stopSelf();
                     break;
                 default:
                     stopService(updateIntent);
+                    stopSelf();
                     break;
             }
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -124,7 +132,7 @@ public class VersionUpdateService extends Service {
      * @param iconId            图标资源id
      * @param cls 点击通知时跳转目标Activity
      */
-    public static void beginUpdate(Context context, String appName, int iconId,  Class<?> cls) {
+    public static void beginUpdate(Context context, String appName, int iconId, Class<?> cls) {
         if (context == null) {
             throw new RuntimeException(
                     "Can't beginUpdate when the context is null!");
@@ -395,4 +403,5 @@ public class VersionUpdateService extends Service {
         }
         return type;
     }
+
 }

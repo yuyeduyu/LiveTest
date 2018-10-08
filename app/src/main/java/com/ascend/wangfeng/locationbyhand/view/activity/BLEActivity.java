@@ -104,17 +104,21 @@ public class BLEActivity extends AppCompatActivity {
         adapter.setOnItemListener(new BleAdapter.OnItemListener() {
             @Override
             public void onClick(View view, int position) {
-                if (mDevices.get(position).getName()==null){
-                    Toast.makeText(BLEActivity.this,"请连接本APP专用蓝牙设备",Toast.LENGTH_SHORT).show();
+                if (mDevices.get(position).getName() == null) {
+                    Toast.makeText(BLEActivity.this, "请连接本APP专用蓝牙设备", Toast.LENGTH_SHORT).show();
                     return;
-                }else {
+                } else {
                     MyApplication.mDevicdID = mDevices.get(position).getName().trim();
                     MyApplication.mDevicdMac = mDevices.get(position).getAddress();
                     if (AppVersionConfig.appTitle.equals("便携式移动采集")) {
                         startService(new Intent(BLEActivity.this, LocationService.class));
-                        //便携式移动采集
-                        isKaiZhan(mDevices.get(position));
-                    }else {
+                        if (!mDevices.get(position).getName().trim().startsWith("504")) {
+                            Toast.makeText(BLEActivity.this, "请连接本APP专用蓝牙设备", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //便携式移动采集
+                            isKaiZhan(mDevices.get(position));
+                        }
+                    } else {
                         connectBLE(mDevices.get(position));
                         finish();
                     }
@@ -131,11 +135,13 @@ public class BLEActivity extends AppCompatActivity {
             }
         });
     }
+
     /**
      * 连接蓝牙
+     *
+     * @param bluetoothDevice
      * @author lish
      * created at 2018-08-22 14:35
-     * @param bluetoothDevice
      */
     private void connectBLE(BluetoothDevice bluetoothDevice) {
         RxBus.getDefault().post(new MainServiceEvent(MainServiceEvent.CLEAE_DATA));
@@ -144,9 +150,9 @@ public class BLEActivity extends AppCompatActivity {
         MessageEvent event = new MessageEvent(MessageEvent.CONNECT);
         event.setDevice(bluetoothDevice);
         RxBus.getDefault().post(event);
-        if (bluetoothDevice.getName()!=null){
+        if (bluetoothDevice.getName() != null) {
             setAppVersion(bluetoothDevice.getName().trim());
-        }else {
+        } else {
             RxBus.getDefault().post(new AppVersionEvent(-1));
             MyApplication.mDevicdID = "";
         }
@@ -155,9 +161,9 @@ public class BLEActivity extends AppCompatActivity {
     /**
      * 如果设备没有开站信息 则跳转开站界面
      *
+     * @param bluetoothDevice
      * @author lish
      * created at 2018-08-10 11:52
-     * @param bluetoothDevice
      */
     private void isKaiZhan(BluetoothDevice bluetoothDevice) {
         List<KaiZhanBean> devs = SharedPreferencesUtil.getList(BLEActivity.this
@@ -174,7 +180,7 @@ public class BLEActivity extends AppCompatActivity {
             if (!isKaiZhan) {
                 //手机没有设备开站数据，则提醒开站
                 shownKaizhanDialog(this);
-            }else {
+            } else {
                 connectBLE(bluetoothDevice);
                 finish();
             }
@@ -208,7 +214,7 @@ public class BLEActivity extends AppCompatActivity {
         } else if (num.startsWith("P01C502")) {
             //cplus
             appVersion = Config.C_PLUS;
-        }else if (num.startsWith("P01C201")||num.startsWith("P01C17")){
+        } else if (num.startsWith("P01C201") || num.startsWith("P01C17")) {
             //C
             appVersion = Config.C;
         }
@@ -217,8 +223,10 @@ public class BLEActivity extends AppCompatActivity {
         //通知更改界面aplistFragment stalistFragment
         RxBus.getDefault().post(new AppVersionEvent(appVersion));
     }
+
     /**
      * 开站确认dialog
+     *
      * @author lish
      * created at 2018-08-22 15:11
      */

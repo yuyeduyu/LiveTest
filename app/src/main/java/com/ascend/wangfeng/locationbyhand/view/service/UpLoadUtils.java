@@ -14,6 +14,7 @@ import com.ascend.wangfeng.locationbyhand.data.saveData.LocationData;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaConInfo;
 import com.ascend.wangfeng.locationbyhand.data.saveData.StaData;
 import com.ascend.wangfeng.locationbyhand.event.FTPEvent;
+import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 import com.ascend.wangfeng.locationbyhand.util.SharedPreferencesUtil;
 import com.ascend.wangfeng.locationbyhand.util.VersionUtils;
 import com.ascend.wangfeng.locationbyhand.view.activity.SetftpActivity;
@@ -55,28 +56,31 @@ public class UpLoadUtils {
                     if (otherFtpClient == null) {
                         EventBus.getDefault().post(new FTPEvent(false));
                         MyApplication.ftpConnect = false;
-                    } else {
-                        //重新上传失败的数据
-                        List<LoadError> loadErrors = SharedPreferencesUtil.getList(context, "loadError");
-                        if (loadErrors != null) {
-                            for (LoadError loadError : loadErrors) {
-                                otherFtpClientData.ftpUpload(otherFtpClient, loadError.getFilePath(), loadError.getFileName(), true);
-                            }
+                    }
+
+                    //重新上传失败的数据
+                    List<LoadError> loadErrors = SharedPreferencesUtil.getList(context, "loadError");
+                    if (loadErrors != null) {
+                        for (LoadError loadError : loadErrors) {
+                            otherFtpClientData.ftpUpload(otherFtpClient, loadError.getFilePath(), loadError.getFileName(), true);
                         }
-                        //上传AP数据
-                        FileData fileData = new FileData(context, filePath, fileName + ".carapl", aplist, version);
-                        boolean otherLoad1 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carapl", false);
-                        //上传终端数据
-                        FileData staFile = new FileData(context, filePath, fileName + ".carmac", stalist, version, 1);
-                        boolean otherLoad2 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carmac", false);
-                        //上传连接数据
-                        FileData ScFile = new FileData(context, filePath, fileName + ".carnet", sclist, version, "1");
-                        boolean otherLoad3 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carnet", false);
-                        //上传GPS轨迹的坐标
-                        FileData GpsFile = new FileData(context, filePath, fileName + ".cargps", gpslist, version, "", 1);
-                        boolean otherLoad4 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".cargps", false);
+                    }
+                    //上传AP数据
+                    FileData fileData = new FileData(context, filePath, fileName + ".carapl", aplist, version);
+                    boolean otherLoad1 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carapl", false);
+                    //上传终端数据
+                    FileData staFile = new FileData(context, filePath, fileName + ".carmac", stalist, version, 1);
+                    boolean otherLoad2 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carmac", false);
+                    //上传连接数据
+                    FileData ScFile = new FileData(context, filePath, fileName + ".carnet", sclist, version, "1");
+                    boolean otherLoad3 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".carnet", false);
+                    //上传GPS轨迹的坐标
+                    FileData GpsFile = new FileData(context, filePath, fileName + ".cargps", gpslist, version, "", 1);
+                    boolean otherLoad4 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".cargps", false);
+                    if (otherLoad1){
                         EventBus.getDefault().post(new FTPEvent(true));
                         MyApplication.ftpConnect = true;
+                    }
 
 //                    FTPClientData ourFtpClientData = new FTPClientData(Config.UpLoadFtpUrl, Config.UpLoadFtpPort
 //                            , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);
@@ -98,7 +102,6 @@ public class UpLoadUtils {
 //                        delectLocalData(filePath, fileName + ".carnet");
 //                    if (otherLoad4)
 //                        delectLocalData(filePath, fileName + ".cargps");
-                    }
                 }
 
             }).start();

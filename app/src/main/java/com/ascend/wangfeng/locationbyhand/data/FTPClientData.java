@@ -115,6 +115,16 @@ public class FTPClientData {
             e.printStackTrace();
             if (!loadError)
                 saveLoadError(filePath, fileName);
+            //找不到文件则从错误集合中删除
+            if (e.toString().contains("java.io.FileNotFoundException")) {
+                if (loadError) {
+                    //清除上传错误缓存数据
+                    List<LoadError> loadErrors = SharedPreferencesUtil.getList(context, "loadError");
+                    LoadError loadError1 = new LoadError(filePath, fileName);
+                    loadErrors.remove(loadError1);
+                    SharedPreferencesUtil.putList(context, "loadError", loadErrors);
+                }
+            }
             Log.e(TAG, "错误原因：-->:" + e.toString());
         }
         return false;
