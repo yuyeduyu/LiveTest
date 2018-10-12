@@ -271,7 +271,7 @@ public class KaiZhanActivity extends BaseActivity {
                     content.append("," + longitude);
                     content.append("," + latitude);
                     FileData fileData = new FileData(KaiZhanActivity.this, filePath, fileName + ".carsite", content);
-                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false);
+                    final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false,true);
 
                     (KaiZhanActivity.this).runOnUiThread(new Runnable() {
                         @Override

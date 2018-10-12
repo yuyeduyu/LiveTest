@@ -10,8 +10,8 @@ android {
         applicationId "com.ascend.wangfeng.wxld"
         minSdkVersion 19
         targetSdkVersion 21
-        versionCode 56  //根据这个值 判断版本升级,测试版本有奇数，发布版本为偶数
-        versionName "3.6.21"
+        versionCode 58  //根据这个值 判断版本升级,测试版本有奇数，发布版本为偶数
+        versionName "3.6.23"
     }
 
 //签名配置
@@ -48,11 +48,11 @@ android {
             buildConfigField "String", "appName", "\"app-wxld-release.apk\""//服务器中下载app的名称
             buildConfigField "String", "AppName", "\"无线雷达\""//app名称
 
-            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "String", "UpLoadFtpUrl", "\"47.92.210.239\""//上传的地址
             buildConfigField "int", "UpLoadFtpPort", "21"//端口号
             buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
-            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+            buildConfigField "String", "UpLoadFilePath", "\"tzwificar\""//文件名
 
             buildConfigField "String", "Adress", "\"本地\""//app使用地区
 
@@ -67,11 +67,11 @@ android {
             buildConfigField "String", "appName", "\"app-menu-release.apk\""
             buildConfigField "String", "AppName", "\"便携式移动采集\""
 
-            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "String", "UpLoadFtpUrl", "\"47.92.210.239\""//上传的地址
             buildConfigField "int", "UpLoadFtpPort", "21"//端口号
             buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
-            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+            buildConfigField "String", "UpLoadFilePath", "\"tzwificar\""//文件名
 
             buildConfigField "String", "Adress", "\"本地\""//app使用地区
 
@@ -86,11 +86,11 @@ android {
             buildConfigField "String", "appName", "\"app-menuL-release.apk\""
             buildConfigField "String", "AppName", "\"便携式移动采集\""
 
-            buildConfigField "String", "UpLoadFtpUrl", "\"123.57.175.155\""//上传的地址
+            buildConfigField "String", "UpLoadFtpUrl", "\"47.92.210.239\""//上传的地址
             buildConfigField "int", "UpLoadFtpPort", "21"//端口号
             buildConfigField "String", "UpLoadFtpUser", "\"test123\""//ftp帐号
             buildConfigField "String", "UpLoadFtpPass", "\"test123\""//ftp密码
-            buildConfigField "String", "UpLoadFilePath", "\"wificar\""//文件名
+            buildConfigField "String", "UpLoadFilePath", "\"tzwificar\""//文件名
 
             buildConfigField "String", "Adress", "\"本地\""//app使用地区
 

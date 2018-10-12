@@ -25,11 +25,11 @@ public class Config {
 
     public static int SAVEDATATIME = 30;//日志保存时间
 
-    public static String UpLoadFtpUrl = "123.57.175.155";                   //上传的地址
+    public static String UpLoadFtpUrl = "47.92.210.239";                   //上传的地址
     public static int UpLoadFtpPort = 21;                                   //端口号
     public static String UpLoadFtpUser = "test123";                         //上传的地址
     public static String UpLoadFtpPass = "test123";                         //上传的地址
-    public static String UpLoadFilePath = "wificartest";                        //文件名
+    public static String UpLoadFilePath = "tzwificar";                        //文件名
 
     public static String TargetUrl = "http://192.168.168.56:9086/";     //网络布控目标服务器地址
 

@@ -689,7 +689,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
                 content.append(",120.354656");
                 content.append(",30.231456");
                 FileData fileData = new FileData(context, filePath, fileName + ".carsite", content);
-                final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false);
+                final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false,true);
 
                 Log.e("load","文件:"+id+"--->"+sub);
     }

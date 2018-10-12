@@ -48,17 +48,18 @@ public class FileData {
     }
 
     //写入ap数据
-    public FileData(Context mContext, String filePath, String fileName, List<ApData> aplist, String version) {
+    public File FileData(Context mContext, String filePath, String fileName, List<ApData> aplist, String version) {
         this.mContext = mContext;
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
         makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(aplist);       // 将字符串写入到文本文件中
+        return file;
     }
 
     //写入终端数据
-    public FileData(Context mContext, String filePath, String fileName, List<StaData> stalist, String version, int a) {
+    public File FileData(Context mContext, String filePath, String fileName, List<StaData> stalist, String version, int a) {
         this.mContext = mContext;
 
         this.filePath = filePath;
@@ -66,10 +67,11 @@ public class FileData {
         this.version = version;
         makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(stalist, a);       // 将字符串写入到文本文件中
+        return file;
     }
 
     //写入连接信息
-    public FileData(Context mContext, String filePath, String fileName, List<StaConInfo> sclist, String version, String b) {
+    public File FileData(Context mContext, String filePath, String fileName, List<StaConInfo> sclist, String version, String b) {
         this.mContext = mContext;
 
         this.filePath = filePath;
@@ -77,16 +79,18 @@ public class FileData {
         this.version = version;
         makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(sclist, b);       // 将字符串写入到文本文件中
+        return file;
     }
 
     //写入经纬度坐标信息
-    public FileData(Context mContext, String filePath, String fileName, List<LocationData> gpslist, String version, String b, int a) {
+    public File FileData(Context mContext, String filePath, String fileName, List<LocationData> gpslist, String version, String b, int a) {
         this.mContext = mContext;
         this.filePath = filePath;
         this.fileName = fileName;
         this.version = version;
         makeFilePath(filePath, fileName, true);                //生成文件夹之后，再生成文件，不然会出错
         writeTxtToFile(gpslist, b, a);
+        return file;
     }
 
 

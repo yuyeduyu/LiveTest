@@ -83,9 +83,10 @@ public class FTPClientData {
      * @param filePath
      * @param fileName
      * @param loadError true 上传失败再次上传的数据，false 第一次上传的数据，上传失败则缓存上传失败数据
+     * @param isDelect  true ,提交成功后 则删除文件 false ,提交成功后，不删除文件
      * @return
      */
-    public boolean ftpUpload(FTPClient ftpClient, String filePath, String fileName, boolean loadError) {
+    public boolean ftpUpload(FTPClient ftpClient, String filePath, String fileName, boolean loadError, boolean isDelect) {
         if (ftpClient == null) {
             if (!loadError)
                 saveLoadError(filePath, fileName);
@@ -102,13 +103,16 @@ public class FTPClientData {
             ftpClient.enterLocalPassiveMode();
             fis = new FileInputStream(filePath + fileName);
             ftpClient.storeFile(fileName, fis);
-            delectLocalData(filePath, fileName);
+            if (isDelect)
+                delectLocalData(filePath, fileName);
             if (loadError) {
                 //清除上传错误缓存数据
                 List<LoadError> loadErrors = SharedPreferencesUtil.getList(context, "loadError");
-                LoadError loadError1 = new LoadError(filePath, fileName);
-                loadErrors.remove(loadError1);
-                SharedPreferencesUtil.putList(context, "loadError", loadErrors);
+                if (loadErrors!=null){
+                    LoadError loadError1 = new LoadError(filePath, fileName);
+                    loadErrors.remove(loadError1);
+                    SharedPreferencesUtil.putList(context, "loadError", loadErrors);
+                }
             }
             return true;
         } catch (IOException e) {
@@ -126,8 +130,8 @@ public class FTPClientData {
                 }
             }
             Log.e(TAG, "错误原因：-->:" + e.toString());
+            return false;
         }
-        return false;
     }
 
     private void delectLocalData(String filePath, String fileName) {

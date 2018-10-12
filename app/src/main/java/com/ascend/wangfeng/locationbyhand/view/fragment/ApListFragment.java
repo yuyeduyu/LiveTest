@@ -142,7 +142,6 @@ public class ApListFragment extends BaseFragment implements
                 } else {
                     show(null, "请先连接设备");
                 }
-
             }
         });
     }

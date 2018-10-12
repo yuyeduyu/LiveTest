@@ -346,7 +346,7 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
 
     private void initService() {
         //启动服务
-        startService(new Intent(MenuMainActivity.this, BleService.class));
+//        startService(new Intent(MenuMainActivity.this, BleService.class));
     }
 
     private void listenConnect() {
@@ -389,7 +389,6 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
                             bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.primary));
                             bluestatu.setText("已连接");
                             llNotice.setVisibility(View.GONE);
-                            setDevText();
                             //重载ap设置的密码
                             Config.reLoadApPassword();
                         } else {
@@ -398,6 +397,7 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
                             llNotice.setVisibility(View.VISIBLE);
                             bluestatu.setTextColor(ContextCompat.getColor(MenuMainActivity.this, R.color.statu_red));
                         }
+                        setDevText();
                     }
                 });
     }
