@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
 import com.ascend.wangfeng.locationbyhand.MyApplication;
 import com.ascend.wangfeng.locationbyhand.R;
@@ -143,7 +144,17 @@ public class KaiZhanActivity extends BaseActivity {
                 break;
             case R.id.ll_paichusuo:
                 //选择派出所
-                shownPaichusuoSlect();
+//                杭州  台州迷你雷达 雷达测试
+                if (BuildConfig.Adress.equals("本地")){
+                    //公司测试 派出所数据
+                    paichusuoName = "雷达测试";
+                    cityName = "杭州";
+                    areaName = "台州迷你雷达";
+                    tvPaichusuo.setText(cityName+"  "+areaName+"  "+paichusuoName);
+                }else if (BuildConfig.Adress.equals("台州")){
+                    //台州地区，派出所列表
+                    shownPaichusuoSlect();
+                }
                 break;
         }
     }
@@ -359,6 +370,7 @@ public class KaiZhanActivity extends BaseActivity {
         ChangeAddressPopwindow mChangeAddressPopwindow =
                 new ChangeAddressPopwindow(KaiZhanActivity.this, "paichusuo.json", "utf-8",height);
 //        mChangeAddressPopwindow.setAddress("台州市", "温岭市公安局", "太平派出所");
+        //杭州  台州迷你雷达 雷达测试
         mChangeAddressPopwindow.showAtLocation(llAdress, Gravity.BOTTOM, 0, 250);
         mChangeAddressPopwindow
                 .setAddresskListener(new ChangeAddressPopwindow.OnAddressCListener() {

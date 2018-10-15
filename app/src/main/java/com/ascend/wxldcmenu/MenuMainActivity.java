@@ -346,7 +346,7 @@ public class MenuMainActivity extends BaseActivity implements NetStatusWatch.OnN
 
     private void initService() {
         //启动服务
-//        startService(new Intent(MenuMainActivity.this, BleService.class));
+        startService(new Intent(MenuMainActivity.this, BleService.class));
     }
 
     private void listenConnect() {
