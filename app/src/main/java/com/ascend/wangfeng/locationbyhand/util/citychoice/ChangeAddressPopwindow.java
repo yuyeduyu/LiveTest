@@ -95,7 +95,8 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
     private int minsize = 12;
     private String filePath;
     private String style;
-    public ChangeAddressPopwindow(final Context context,String filePath,String style,int mHeight) {
+
+    public ChangeAddressPopwindow(final Context context, String filePath, String style, int mHeight) {
         super(context);
         this.context = context;
         this.filePath = filePath;
@@ -324,7 +325,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         if (v == btnSure) {
             if (onAddressCListener != null) {
                 onAddressCListener.onClick(strProvince, strCity, strArea
-                        , getProvinceCode(strProvince),getCityCode(strCity),getAreaCode(strArea));
+                        , getProvinceCode(strProvince), getCityCode(strCity), getAreaCode(strArea));
             }
         } else if (v == btnCancel) {
 
@@ -343,7 +344,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
      */
     public interface OnAddressCListener {
         public void onClick(String province, String city, String area
-                , String provinceCode,String cityCode,String areaCode);
+                , String provinceCode, String cityCode, String areaCode);
     }
 
     /**
@@ -448,7 +449,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         return mProvinceCodes.get(province);
     }
 
-  /**
+    /**
      * 获取市编码
      *
      * @param city
@@ -459,7 +460,7 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         return mCitiysCodes.get(city);
     }
 
-  /**
+    /**
      * 获取县，区编码
      *
      * @param area
@@ -627,31 +628,33 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         }
         return areaIndex;
     }
+
     /**
-     *所有派出所开站信息测试,供后台测试使用
+     * 所有派出所开站信息测试,供后台测试使用
+     *
      * @Author lish
      * @Date 2018-09-13 9:20
      */
-    private void uploadKaiZhan(){
+    private void uploadKaiZhan() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int num = 0;
-                for (int i=0;i<mProvinceDatas.length;i++){
-                    for (int j=0;j<mCitisDatasMap.get(mProvinceDatas[i]).length;j++){
-                            for (int k=0;k<mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j]).length;k++){
-                                LogUtils.e("area",mProvinceDatas[i]+"--"+mCitisDatasMap.get(mProvinceDatas[i])[j]+"--"
-                                +mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k]+"/n");
-                                uoload(mProvinceDatas[i],mCitisDatasMap.get(mProvinceDatas[i])[j]
-                                        ,mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k]
-                                        ,i,j,k,num);
-                                num++;
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                for (int i = 0; i < mProvinceDatas.length; i++) {
+                    for (int j = 0; j < mCitisDatasMap.get(mProvinceDatas[i]).length; j++) {
+                        for (int k = 0; k < mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j]).length; k++) {
+                            LogUtils.e("area", mProvinceDatas[i] + "--" + mCitisDatasMap.get(mProvinceDatas[i])[j] + "--"
+                                    + mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k] + "/n");
+                            uoload(mProvinceDatas[i], mCitisDatasMap.get(mProvinceDatas[i])[j]
+                                    , mAreaDatasMap.get(mCitisDatasMap.get(mProvinceDatas[i])[j])[k]
+                                    , i, j, k, num);
+                            num++;
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
+                        }
                     }
                 }
             }
@@ -659,38 +662,38 @@ public class ChangeAddressPopwindow extends PopupWindow implements View.OnClickL
         }).start();
     }
 
-    private void uoload(String mProvinceData, String s, String s1, int i, int j, int k,int id) {
-                long time = (System.currentTimeMillis() / 1000);
-                String filePath = "/mnt/sdcard/";
-                String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
+    private void uoload(String mProvinceData, String s, String s1, int i, int j, int k, int id) {
+        long time = (System.currentTimeMillis() / 1000);
+        String filePath = "/mnt/sdcard/";
+        String fileName = MyApplication.mDevicdID + "[211.211.211.211]_" + time;
 
-                FTPClientData ftpClientData = new FTPClientData(context);
+        FTPClientData ftpClientData = new FTPClientData(context);
 
-                FTPClient ftpClient = ftpClientData.ftpConnect();
+        FTPClient ftpClient = ftpClientData.ftpConnect();
 
-                try {
-                    ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //上传开站数据
-                StringBuffer content = new StringBuffer();
-                content.append("MAC"+i+""+j+""+k);
-                content.append(",设备编号" + id);
-                content.append(",IMEI" + id);
-                content.append(",姓名" + id);
-                content.append(",身份证" +"88888888" );
-                content.append(",手机号" + "13333333333");
-                content.append(",民警" + id);
-                content.append("," + mProvinceData);
-                content.append("," + s);
-                content.append("," + s1);
+        try {
+            ftpClient.makeDirectory(MyApplication.UpLoadFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //上传开站数据
+        StringBuffer content = new StringBuffer();
+        content.append("MAC" + i + "" + j + "" + k);
+        content.append(",设备编号" + id);
+        content.append(",IMEI" + id);
+        content.append(",姓名" + id);
+        content.append(",身份证" + "88888888");
+        content.append(",手机号" + "13333333333");
+        content.append(",民警" + id);
+        content.append("," + mProvinceData);
+        content.append("," + s);
+        content.append("," + s1);
 
-                content.append(",120.354656");
-                content.append(",30.231456");
-                FileData fileData = new FileData(context, filePath, fileName + ".carsite", content);
-                final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite",false,true);
-
-                Log.e("load","文件:"+id+"--->"+sub);
+        content.append(",120.354656");
+        content.append(",30.231456");
+        FileData fileData = new FileData(context, filePath, fileName + ".carsite", content);
+        final boolean sub = ftpClientData.ftpUpload(ftpClient, filePath, fileName + ".carsite", false, true);
+        ftpClientData.ftpDisconnect();
+        Log.e("load", "文件:" + id + "--->" + sub);
     }
 }

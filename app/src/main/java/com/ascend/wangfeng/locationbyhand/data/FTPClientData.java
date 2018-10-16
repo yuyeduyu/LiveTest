@@ -133,7 +133,27 @@ public class FTPClientData {
             return false;
         }
     }
+    /**
+     * 断开ftp服务器连接
+     *
+     * @return 断开结果
+     */
+    public boolean ftpDisconnect() {
+        // 判断空指针
+        if (ftpClient == null) {
+            return true;
+        }
 
+        // 断开ftp服务器连接
+        try {
+            ftpClient.logout();
+            ftpClient.disconnect();
+            return true;
+        } catch (Exception e) {
+            Log.d(TAG, "Error occurred while disconnecting from ftp server.");
+        }
+        return false;
+    }
     private void delectLocalData(String filePath, String fileName) {
         // 上传成功后， 删除手机上的文件
         File localFile = new File(filePath + fileName);

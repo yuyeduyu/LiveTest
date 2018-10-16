@@ -114,8 +114,10 @@ public class UpLoadUtils {
                                 , Config.UpLoadFtpUser, Config.UpLoadFtpPass, Config.UpLoadFilePath);
                         FTPClient ourFtpClient = ourFtpClientData.ftpConnect();
                         boolean ourLoad1 = ourFtpClientData.ftpUpload(ourFtpClient, filePath, fileName + ".zap", false, false);
+                        ourFtpClientData.ftpDisconnect();
                     }
                     boolean otherLoad1 = otherFtpClientData.ftpUpload(otherFtpClient, filePath, fileName + ".zap", false, true);
+                    otherFtpClientData.ftpDisconnect();
                     if (otherLoad1) {
                         EventBus.getDefault().post(new FTPEvent(true));
                     } else {
@@ -161,6 +163,7 @@ public class UpLoadUtils {
                     otherFtpClientData = new FTPClientData(context, Config.URL_YIDONG, MyApplication.UpLoadFtpPort
                             , MyApplication.UpLoadFtpUser, MyApplication.UpLoadFtpPass, MyApplication.UpLoadFilePath);
                     otherFtpClient = otherFtpClientData.ftpConnect();
+                    otherFtpClientData.ftpDisconnect();
                 }
                 Looper.prepare();
                 if (otherFtpClient != null) {
