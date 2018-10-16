@@ -43,7 +43,8 @@ public class UpLoadUtils {
     //点击上传文件
     public void UpLoad(final Context context, final List<ApData> aplist, final List<StaData> stalist
             , final List<StaConInfo> sclist, final List<LocationData> gpslist) {
-        if (MyApplication.mDevicdID != null) {                               //连接成功
+        if (MyApplication.mDevicdID != null& (aplist.size()>0 || stalist.size()>0 || sclist.size()>0)) {
+            //连接成功
             version = VersionUtils.getVersion(context).toString();
             new Thread(new Runnable() {
                 @Override
