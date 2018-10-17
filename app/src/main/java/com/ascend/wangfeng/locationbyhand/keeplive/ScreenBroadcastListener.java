@@ -40,6 +40,7 @@ public class ScreenBroadcastListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
+            Log.e("-------","Receive"+action);
             if (Intent.ACTION_SCREEN_ON.equals(action)) { // 开屏
                 mListener.onScreenOn();
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) { // 锁屏

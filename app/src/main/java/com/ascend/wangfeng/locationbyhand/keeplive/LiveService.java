@@ -37,10 +37,12 @@ public class LiveService extends Service {
             @Override
             public void onScreenOn() {
                 screenManager.finishActivity();
+                Log.e("screenManager","Receive开屏");
             }
             @Override
             public void onScreenOff() {
                 screenManager.startActivity();
+                Log.e("screenManager","Receive关闭");
             }
         });
         return START_REDELIVER_INTENT;

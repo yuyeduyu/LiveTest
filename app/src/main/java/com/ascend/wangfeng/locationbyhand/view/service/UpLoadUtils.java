@@ -3,6 +3,7 @@ package com.ascend.wangfeng.locationbyhand.view.service;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.ascend.wangfeng.locationbyhand.BuildConfig;
 import com.ascend.wangfeng.locationbyhand.Config;
@@ -38,14 +39,15 @@ import java.util.List;
  */
 
 public class UpLoadUtils {
-    private String version = "";
+    private String version = MyApplication.Version;//APP版本名称 + APP版本号
 
     //点击上传文件
     public void UpLoad(final Context context, final List<ApData> aplist, final List<StaData> stalist
             , final List<StaConInfo> sclist, final List<LocationData> gpslist) {
         if (MyApplication.mDevicdID != null& (aplist.size()>0 || stalist.size()>0 || sclist.size()>0)) {
             //连接成功
-            version = VersionUtils.getVersion(context).toString();
+//            version = VersionUtils.getAppName(context, VersionUtils.getPackageName(context))+"  "+VersionUtils.getVersion(context).toString();
+            Log.e("version",version);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -128,7 +130,7 @@ public class UpLoadUtils {
                 }
 
             }).start();
-        }
+        }else   EventBus.getDefault().post(new FTPEvent(true));
     }
     /**
      * android 调用linux命令 需要root权限，

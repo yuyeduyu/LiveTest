@@ -18,6 +18,7 @@ import com.ascend.wangfeng.locationbyhand.api.AppClient;
 import com.ascend.wangfeng.locationbyhand.bean.Ghz;
 import com.ascend.wangfeng.locationbyhand.bean.dbBean.NoteDo;
 import com.ascend.wangfeng.locationbyhand.util.CrashHandler;
+import com.ascend.wangfeng.locationbyhand.util.VersionUtils;
 import com.ascend.wangfeng.locationbyhand.util.network.NetStatusWatch;
 //import com.ascend.wangfeng.locationbyhand.view.service.LocationService;
 import java.util.List;
@@ -68,6 +69,7 @@ public class MyApplication extends Application {
         return AppVersion;
     }
 
+    public static String Version = "";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -87,6 +89,8 @@ public class MyApplication extends Application {
         ftpData();
         //初始化网络监听
         NetStatusWatch.getInstance().init(this);
+
+        Version = VersionUtils.getAppName(this, VersionUtils.getPackageName(this))+"_"+VersionUtils.getVersion(this).toString();
     }
 
     public static Boolean getIsDataRun() {
