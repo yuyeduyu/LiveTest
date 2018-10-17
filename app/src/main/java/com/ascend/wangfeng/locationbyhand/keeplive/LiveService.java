@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 
 /**
  * 作者：lish on 2018-08-03.

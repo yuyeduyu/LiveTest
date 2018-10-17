@@ -10,7 +10,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.ascend.wangfeng.locationbyhand.R;
-import com.ascend.wangfeng.locationbyhand.util.LogUtils;
 
 public class LiveActivity extends Activity {
 

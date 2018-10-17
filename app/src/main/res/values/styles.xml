@@ -8,8 +8,8 @@
         <!--Toolbar颜色-->
         <item name="colorPrimary">@color/primary</item>
         <!--返回键样式-->
-        <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowToggle</item>
-        <item name="android:windowAnimationStyle">@style/activityAnimation</item>
+     <!--   <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowToggle</item>
+        <item name="android:windowAnimationStyle">@style/activityAnimation</item>-->
     </style>
     <!-- animation 样式 -->
     <style name="activityAnimation" parent="@android:style/Animation.Activity">
@@ -47,13 +47,6 @@
         <item name="android:paddingRight">16dp</item>
     </style>
 
-    <!--tablayout 颜色-->
-    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
-        <!--<item name="tabMaxWidth">@dimen/tab_max_width</item>-->
-        <item name="tabIndicatorColor">@color/primary_dark</item>
-        <item name="tabIndicatorHeight">@dimen/ksw_md_thumb_shadow_inset_top</item>
-        <item name="tabSelectedTextColor">@color/primary_dark</item>
-    </style>
 
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">20sp</item>
